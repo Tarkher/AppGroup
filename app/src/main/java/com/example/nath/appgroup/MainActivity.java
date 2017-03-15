@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBarListener(customImageView));
 
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
+        //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
     }
 
     @Override
@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.cartoonize:
                 Algorithms.cartoonize(imageToProcess);
+                break;
             case R.id.reset:
                 customImageView.setImage(customImageView.getImageBackup(), false);
                 return true;
