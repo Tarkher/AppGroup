@@ -399,6 +399,25 @@ public class Algorithms {
         return 0xFF000000 |(Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
     }
 
+    static float [] RGBtoHSV(int r,int g, int b) {
+        int max = Math.max(Math.max(r, g),b), min = Math.min(Math.min(r, g,), b),
+                d = max - min;
+
+        float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
+
+        switch (max) {
+            case min: h = 0; break;
+            case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+            case g: h = (b - r) + d * 2; h /= 6 * d; break;
+            case b: h = (r - g) + d * 4; h /= 6 * d; break;
+        }
+
+        return {
+                h: h,
+                s: s,
+                v: v
+        };
+
     public static void cartoonize (Image img) {
         int w = img.getWidth();
         int h = img.getHeight();
@@ -411,13 +430,14 @@ public class Algorithms {
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
-            float[] hsv = new float[3];
 
             int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
             int green = (tmp & 0x0000FF00) >> 8;//same for the green component
             int red = (tmp & 0x00FF0000) >> 16;//same for the red component
 
+            float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
+
             hsv[0] = Algorithms.find_closest_value(hValues, hsv[0]);
             hsv[1] = Algorithms.find_closest_value(sValues, hsv[1]);
             hsv[2] = Algorithms.find_closest_value(vValues, hsv[2]);
