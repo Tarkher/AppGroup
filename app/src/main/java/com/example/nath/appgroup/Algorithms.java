@@ -424,7 +424,7 @@ public class Algorithms {
         return hsv;
     }
 
-    public static void cartoonize (Image img) {
+    public static void cartoonize (Image img, int n) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
@@ -432,7 +432,7 @@ public class Algorithms {
 
         // For the discrete space of HSV values we choose the roots of the nth Chebychev polynomial (
 
-        int n = 12, j = 0;
+        int j = 0;
         float [] hValues = new float [n/2];
         float [] sValues = new float [n/2];
         float [] vValues = new float [n/2];

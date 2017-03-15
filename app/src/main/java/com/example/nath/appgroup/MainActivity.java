@@ -237,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.cartoonize:
                 Image trace_edges = imageToProcess.clone();
-                Algorithms.cartoonize(imageToProcess);
+                Algorithms.cartoonize(imageToProcess, 12); // SEEKBAR STP
+
 
                 Algorithms.toGray(trace_edges);
 
