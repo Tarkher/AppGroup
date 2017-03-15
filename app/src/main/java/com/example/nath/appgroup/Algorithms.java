@@ -2,6 +2,7 @@ package com.example.nath.appgroup;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.ImageView;
 
 
@@ -368,15 +369,34 @@ public class Algorithms {
     private static float find_closest_value (float [] tab, float e) {
         float closest = tab[0];
         float d_min = Math.abs(closest - e);
-        float d = d_min;
         for (int i = 1; i < tab.length; i++) {
-            d = Math.abs(tab[i] - e);
+            float d = Math.abs(tab[i] - e);
             if (d < d_min) {
                 d_min = d;
                 closest = tab[i];
             }
         }
         return closest;
+    }
+
+    private static int HSVtoRGB(float h, float s, float v) {
+        float r, g, b, f, p, q, t;
+        r = 0.0f; b = 0.0f; g = 0.0f;
+        int i;
+        i = (int) Math.floor(h * 6);
+        f = h * 6 - i;
+        p = v * (1 - s);
+        q = v * (1 - f * s);
+        t = v * (1 - (1 - f) * s);
+        switch (i % 6) {
+            case 0: r = v; g = t; b = p; break;
+            case 1: r = q; g = v; b = p; break;
+            case 2: r = p; g = v; b = t; break;
+            case 3: r = p; g = q; b = v; break;
+            case 4: r = t; g = p; b = v; break;
+            case 5: r = v; g = p; b = q; break;
+        }
+        return 0xFF000000 |(Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
     }
 
     public static void cartoonize (Image img) {
@@ -398,11 +418,11 @@ public class Algorithms {
             int red = (tmp & 0x00FF0000) >> 16;//same for the red component
 
             Color.RGBToHSV(red, green, blue, hsv);
-            hsv[0] = find_closest_value(hValues, hsv[0]);
-            hsv[1] = find_closest_value(sValues, hsv[1]);
-            hsv[2] = find_closest_value(vValues, hsv[2]);
+            hsv[0] = Algorithms.find_closest_value(hValues, hsv[0]);
+            hsv[1] = Algorithms.find_closest_value(sValues, hsv[1]);
+            hsv[2] = Algorithms.find_closest_value(vValues, hsv[2]);
 
-            tab[i] = Color.HSVToColor(hsv); //Sets the alpha to the gray level
+            tab[i] = HSVtoRGB(hsv[0], hsv[1], hsv[2]);
         }
 
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
