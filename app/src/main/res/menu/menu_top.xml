@@ -53,6 +53,10 @@
         android:title="laplacien"
         app:showAsAction="never" />
     <item
+        android:id="@+id/cartoonize"
+        android:title="cartoonize"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/reset"
         android:title="reset"
         app:showAsAction="never" />
