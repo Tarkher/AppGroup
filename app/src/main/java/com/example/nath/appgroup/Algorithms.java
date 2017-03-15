@@ -408,5 +408,4 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
-
 }
