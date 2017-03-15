@@ -1,0 +1,60 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/camera"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title=""
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/gallery"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title=""
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title=""
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/toGray"
+        android:title="toGray"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/dynamicExtensionColor"
+        android:title="dynamicExtensionColor"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contrastEqualization"
+        android:title="contrastEqualization"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/colorize"
+        android:title="colorize"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/luminosity"
+        android:title="luminosity"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sobel"
+        android:title="sobel"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/moyenneur"
+        android:title="moyenneur"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/gaussien"
+        android:title="gaussien"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/laplacien"
+        android:title="laplacien"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/reset"
+        android:title="reset"
+        app:showAsAction="never" />
+
+</menu>
