@@ -430,22 +430,21 @@ public class Algorithms {
         int size = w * h;
         int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        // For the discrete space of HSV values we choose the roots of the nth Chebychev polynomial (
+        // For the discrete space of HSV values we choose the roots of the nth Chebychev's polynomial (
 
         int j = 0;
         float [] hValues = new float [n/2];
         float [] sValues = new float [n/2];
         float [] vValues = new float [n/2];
         for (int k = 1; k <= n; k++) {
-            float root = (float) Math.cos((2*k-1)*Math.PI/(2*n));
-            if (root > 0) {
+            float root = (float) Math.cos((2*k-1)*Math.PI/(2*n)); // Chebychev's polynomials roots
+            if (root > 0) { // they are symmetrical so we take only the positive ones
                 hValues[j] = root;
                 sValues[j] = root;
                 vValues[j] = root;
                 j++;
             }
         }
-
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
