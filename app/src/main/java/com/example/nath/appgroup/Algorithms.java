@@ -408,24 +408,5 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
-    /*
-    function cartoonize() {
-        var hValues = [0, 0.2, 0.5, 0.8, 1];
-        var sValues = [0, 0.2, 0.5, 0.8, 1];
-        var vValues = [0, 0.2, 0.5, 0.8, 1];
-        for (var i = 0; i < pixels.length; i += 4) {
-            var hsv_color = RGBtoHSV(pixels[i], pixels[i + 1], pixels[i + 2]);
-            var new_h = find_closest_value(hValues, hsv_color.h);
-            var new_s = find_closest_value(sValues, hsv_color.s);
-            var new_v = find_closest_value(vValues, hsv_color.v);
-            var new_color = HSVtoRGB(new_h, new_s, new_v);
-            pixels[i] = red(new_color);
-            pixels[i + 1] = green(new_color);
-            pixels[i + 2] = blue(new_color);
-            pixels[i + 3] = alpha(new_color);
-        }
-        updatePixels();
-    }
-     */
 
 }
