@@ -344,7 +344,7 @@ public class Algorithms {
         image.setImageBitmap(tmp);//to put in the image view
     }
 
-    private void trace(Image source, Image draw) { // Trace the draw gray image on the source image
+    public static void trace(Image source, Image draw, int threshold) { // Trace the draw gray image on the source image
         int w = source.getWidth();
         int h = source.getHeight();
         int size = w * h;
@@ -353,14 +353,16 @@ public class Algorithms {
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
 
             int tmp2 = tab2[i];
             int gray = tmp2 & 0x000000FF; //Gets the gray level of the image to trace
 
-            tab[i] = (gray << 24) | (red << 16) | (green << 8) | blue; //Sets the alpha to the gray level
+            int pixel;
+            if (gray > threshold) // if we are on an edge we set the color to black
+                pixel = 0xFF000000;
+            else
+                pixel = tmp;
+            tab[i] = pixel;
         }
 
         source.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
@@ -428,9 +430,22 @@ public class Algorithms {
         int size = w * h;
         int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        float [] hValues = {0.0f, 0.2f, 0.5f, 0.8f, 1.0f};
-        float [] sValues = {0.0f, 0.2f, 0.5f, 0.8f, 1.0f};
-        float [] vValues = {0.0f, 0.2f, 0.5f, 0.8f, 1.0f};
+        // For the discrete space of HSV values we choose the roots of the nth Chebychev polynomial (
+
+        int n = 12, j = 0;
+        float [] hValues = new float [n/2];
+        float [] sValues = new float [n/2];
+        float [] vValues = new float [n/2];
+        for (int k = 1; k <= n; k++) {
+            float root = (float) Math.cos((2*k-1)*Math.PI/(2*n));
+            if (root > 0) {
+                hValues[j] = root;
+                sValues[j] = root;
+                vValues[j] = root;
+                j++;
+            }
+        }
+
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];

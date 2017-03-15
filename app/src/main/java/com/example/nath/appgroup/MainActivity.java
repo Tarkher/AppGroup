@@ -236,7 +236,63 @@ public class MainActivity extends AppCompatActivity {
                 Algorithms.convolution(imageToProcess, matrixLaplacien);
                 break;
             case R.id.cartoonize:
+                Image trace_edges = imageToProcess.clone();
                 Algorithms.cartoonize(imageToProcess);
+
+                Algorithms.toGray(trace_edges);
+
+                float[][] Gx_trace = new float[3][3];
+                Gx_trace[0][0] = -1;
+                Gx_trace[0][1] = 0;
+                Gx_trace[0][2] = 1;
+
+                Gx_trace[1][0] = -2;
+                Gx_trace[1][1] = 0;
+                Gx_trace[1][2] = 2;
+
+                Gx_trace[2][0] = -1;
+                Gx_trace[2][1] = 0;
+                Gx_trace[2][2] = 1;
+
+                float[][] Gy_trace = new float[3][3];
+                Gy_trace[0][0] = -1;
+                Gy_trace[0][1] = -2;
+                Gy_trace[0][2] = -1;
+
+                Gy_trace[1][0] = 0;
+                Gy_trace[1][1] = 0;
+                Gy_trace[1][2] = 0;
+
+                Gy_trace[2][0] = 1;
+                Gy_trace[2][1] = 2;
+                Gy_trace[2][2] = 1;
+
+                Image imgGx_trace = trace_edges.clone();
+                Image imgGy_trace = trace_edges.clone();
+
+                Algorithms.convolution(imgGx_trace, Gx_trace);
+                Algorithms.convolution(imgGy_trace, Gy_trace);
+
+                int[] imgGxPixels_trace = imgGx_trace.getPixels(0, 0, imgGx_trace.getWidth(), imgGx_trace.getHeight());
+                int[] imgGyPixels_trace = imgGy_trace.getPixels(0, 0, imgGy_trace.getWidth(), imgGy_trace.getHeight());
+
+                int[] output_trace = new int[trace_edges.getHeight() * trace_edges.getWidth()];
+
+                for (int i = 0; i < trace_edges.getHeight(); ++i) {
+                    for (int j = 0; j < trace_edges.getWidth(); ++j) {
+                        int valGx_trace = Color.red(imgGxPixels_trace[i * trace_edges.getWidth() + j]);
+                        int valGy_trace = Color.red(imgGyPixels_trace[i * trace_edges.getWidth() + j]);
+
+                        int val = (int)Math.sqrt(valGx_trace * valGx_trace + valGy_trace * valGy_trace);
+                        output_trace[i * trace_edges.getWidth() + j] = Color.rgb(val, val, val);
+                    }
+                }
+
+                trace_edges.setPixels(output_trace, 0, 0, trace_edges.getWidth(), trace_edges.getHeight());
+
+
+                // LA FONCTION TRACE DOIT AVOIR UNE SEEKBAR DE 0 A 255 MAIS UNIQUEMENT TRACE
+                Algorithms.trace(imageToProcess, trace_edges, 255);
                 break;
             case R.id.reset:
                 customImageView.setImage(customImageView.getImageBackup(), false);
