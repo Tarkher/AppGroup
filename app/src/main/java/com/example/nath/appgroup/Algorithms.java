@@ -399,24 +399,28 @@ public class Algorithms {
         return 0xFF000000 |(Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
     }
 
-    static float [] RGBtoHSV(int r,int g, int b) {
-        int max = Math.max(Math.max(r, g),b), min = Math.min(Math.min(r, g,), b),
-                d = max - min;
-
+    static float [] RGBtoHSV(int r, int g, int b) {
+        int max = Math.max(Math.max(r, g),b), min = Math.min(Math.min(r, g), b), d = max - min;
         float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
 
-        switch (max) {
-            case min: h = 0; break;
-            case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
-            case g: h = (b - r) + d * 2; h /= 6 * d; break;
-            case b: h = (r - g) + d * 4; h /= 6 * d; break;
-        }
 
-        return {
-                h: h,
-                s: s,
-                v: v
-        };
+        if (max == min)
+            h = 0;
+        else if (max == r) {
+            h = (g - b) + d * (g < b ? 6: 0);
+            h /= 6 * d;
+        }
+        else if (max == g) {
+            h = (b - r) + d * 2;
+            h /= 6 * d;
+        }
+        else {
+            h = (r - g) + d * 4;
+            h /= 6 * d;
+        }
+        float [] hsv = {h, s, v};
+        return hsv;
+    }
 
     public static void cartoonize (Image img) {
         int w = img.getWidth();
@@ -435,8 +439,7 @@ public class Algorithms {
             int green = (tmp & 0x0000FF00) >> 8;//same for the green component
             int red = (tmp & 0x00FF0000) >> 16;//same for the red component
 
-            float[] hsv = new float[3];
-            Color.RGBToHSV(red, green, blue, hsv);
+            float [] hsv = RGBtoHSV(red, green, blue);
 
             hsv[0] = Algorithms.find_closest_value(hValues, hsv[0]);
             hsv[1] = Algorithms.find_closest_value(sValues, hsv[1]);
