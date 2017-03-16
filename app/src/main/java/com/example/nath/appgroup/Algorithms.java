@@ -492,7 +492,7 @@ public class Algorithms {
         int size = w * h;
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        double rho = 10.0; // The resolution of the rho's discretisation in the Hough space
+        double rho = 1.0; // The resolution of the rho's discretisation in the Hough space
         double theta = 10.0; // The resolution of the theta's discretisation in the Hough space
 
         int Ntheta = (int) (180.0 / theta); // In [0;pi] the normal parameters for a line are unique
@@ -506,8 +506,9 @@ public class Algorithms {
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 int pixel = tab[i];
-                if ((pixel & 0x000000FF) > 200) {
-                    for (int i_theta = 0; i_theta < Ntheta; i++) {
+                int gray = pixel & 0x000000FF;
+                if (gray > 200) {
+                    for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
                         double ith_theta = i_theta * dtheta;
                         double ith_rho = j * Math.cos(ith_theta) + (h - i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plane
                         int j_rho = (int) (ith_rho / drho); // We find out the corresponding rho step
@@ -523,7 +524,7 @@ public class Algorithms {
 
         ArrayList<Double[]> lines = new ArrayList<>(); // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
 
-        int threshold = 100;
+        int threshold = 20;
 
         for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
             for (int j_rho = 0; j_rho < Nrho; j_rho++) {
@@ -556,15 +557,17 @@ public class Algorithms {
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                boolean on_a_line = false;
+                int on_a_line;
                 for (int k = 0; k < n_lines; k++) {
                     Double[] t = lines.get(k); // t = {a, b} the coefficients of the line
                     if (t[0].equals(Double.NaN)) // If the line is vertical
-                        on_a_line = (j == t[1].intValue());
+                        on_a_line = j - t[1].intValue();
                     else
-                        on_a_line = ((int) ((h-i) - t[0]*j - t[1])) == 0; // Testing if the point is on the line ie if y - ax - b = 0
-                    if (on_a_line)
-                        tab[i*w+h] = 0xFFFF0000; // Drawing the (red) line
+                        on_a_line = (int) ((h-i) - t[0]*j - t[1]); // Testing if the point is on the line ie if y - ax - b = 0
+
+                    if (on_a_line == 0) {
+                        tab[i * w + h] = 0xFFFF0000; // Drawing the (red) line
+                    }
                 }
             }
         }

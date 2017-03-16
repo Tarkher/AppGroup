@@ -57,6 +57,10 @@
         android:title="cartoonize"
         app:showAsAction="never" />
     <item
+        android:id="@+id/houghtransform"
+        android:title="Hough transform"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/reset"
         android:title="reset"
         app:showAsAction="never" />

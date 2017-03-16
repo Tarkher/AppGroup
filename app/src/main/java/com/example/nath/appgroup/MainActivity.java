@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ocean);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -294,6 +294,9 @@ public class MainActivity extends AppCompatActivity {
 
                 // LA FONCTION TRACE DOIT AVOIR UNE SEEKBAR DE 0 A 255 MAIS UNIQUEMENT TRACE
                 Algorithms.trace(imageToProcess, trace_edges, 255);
+                break;
+            case R.id.houghtransform:
+                Algorithms.hough_transform(imageToProcess);
                 break;
             case R.id.reset:
                 customImageView.setImage(customImageView.getImageBackup(), false);
