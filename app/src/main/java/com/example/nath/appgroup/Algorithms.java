@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 
 public class Algorithms {
     public static void toGray(Image img) {//Transforms a bitmap image into a gray level one using its pixels' array
@@ -488,7 +490,7 @@ public class Algorithms {
                 if ((pixel & 0x000000FF) > 200) {
                     for (int i_theta = 0; i_theta < Ntheta; i++) {
                         double ith_theta = i_theta * dtheta;
-                        double ith_rho = j * Math.cos(ith_theta) + (h-i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plan
+                        double ith_rho = j * Math.cos(ith_theta) + (h-i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plane
                         int j_rho = (int) (ith_rho/drho); // We find out the corresponding rho step
                         if (j_rho > 0 && j_rho < Nrho) // If it fits in our Hough plane
                             acc[i_theta][j_rho] += 1; // We increment all the pixels the discrete sinusoidal curve passes through
@@ -498,10 +500,51 @@ public class Algorithms {
             }
         }
 
-        // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plan
+        // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plane
 
+        ArrayList<Double[]> lines; // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
 
+        int threshold = 100;
 
-    }
+        for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
+            for (int j_rho = 0; j_rho < Nrho; j_rho++) {
+                if (acc[i_theta][j_rho] > threshold) {
+                    double theta0 = i_theta*dtheta;
+                    double rho0 = j_rho*drho;
+                    // We are now trying to find the corresponding line y = a*x + b of the line rho0 = x * cos(theta0) + y * sin(theta0)
+
+                    Double a, b;
+
+                    if (Math.abs(theta0 - Math.PI/2.0) < 0.1) { // The cosine is almost equal to zero (horizontal line)
+                        a = 0.0;
+                        b = rho0 / Math.sin(theta0);
+                    }
+                    else if (Math.abs(theta0 - Math.PI) < 0.1 || Math.abs(theta0) < 0.1) { // The sine is almost equal to zero (vertical line)
+                        a = Double.NaN; // Convention for vertical lines
+                        b = rho0 / Math.cos(theta0);
+                    }
+                    else { // classic line
+                        a = (-1.0) * Math.cos(theta0) / Math.sin(theta0);
+                        b = rho0 / Math.sin(theta0);
+                    }
+
+                    Double [] line = {a, b};
+                    lines.add(line);
+                }
+            }
+        }
+
+        // Now we go back into the (x, y) plane and trace the lines onto the image
+        int n_lines = lines.size(); // the number of lines we found in the image
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                boolean on_a_line = false;
+                for (int k = 0; k < n_lines; k++) {
+                    Double [] t = lines.get(k); // t = {a, b} the coefficients of the line
+
+                }
+            }
+        }
 
 }
