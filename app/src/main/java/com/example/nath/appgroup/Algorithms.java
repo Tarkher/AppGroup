@@ -465,4 +465,43 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
+    public static void hough_transform (Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int size = w * h;
+        int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+
+        double rho = 10.0; // The resolution of the rho's discretisation in the Hough space
+        double theta = 10.0; // The resolution of the theta's discretisation in the Hough space
+
+        int Ntheta = (int) (180.0/theta); // In [0;pi] the normal parameters for a line are unique
+        int Nrho = (int) Math.floor(Math.sqrt(w*w+h*h)); // The number of steps needed to describe the whole Hough space
+
+        double drho = Math.floor(Math.sqrt(w*w+h*h))/Nrho; // The size of a single step for rho
+        double dtheta = Math.PI/Ntheta; // The size of a single step for theta
+
+        int [][] acc = new int [Ntheta][Nrho];
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int pixel = tab[i];
+                if ((pixel & 0x000000FF) > 200) {
+                    for (int i_theta = 0; i_theta < Ntheta; i++) {
+                        double ith_theta = i_theta * dtheta;
+                        double ith_rho = j * Math.cos(ith_theta) + (h-i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plan
+                        int j_rho = (int) (ith_rho/drho); // We find out the corresponding rho step
+                        if (j_rho > 0 && j_rho < Nrho) // If it fits in our Hough plane
+                            acc[i_theta][j_rho] += 1; // We increment all the pixels the discrete sinusoidal curve passes through
+            }
+
+                }
+            }
+        }
+
+        // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plan
+
+
+
+    }
+
 }
