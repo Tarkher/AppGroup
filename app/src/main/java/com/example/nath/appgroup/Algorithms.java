@@ -133,12 +133,12 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
     }
 
-    public static void contrastEqualization (Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
+    public static void contrastEqualization(Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
         int w = img.getWidth();
         int hei = img.getHeight();
         int size = w * hei;
-        int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
-        int [] val = new int[size];
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] val = new int[size];
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
@@ -149,25 +149,25 @@ public class Algorithms {
             val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);//the max of the R/G/B values (value field in HSV)
         }
 
-        int [] h = histo_c(val);
+        int[] h = histo_c(val);
         int min = size;
 
         for (int i = 0; i < 256; i++) {//We get the min and max of pixels below a i level of value
-                min = h[i] < min ? h[i] : min;
+            min = h[i] < min ? h[i] : min;
         }
 
 
         //Send the values of the cumulative histogram in [0,255], max is always size by definition
-        int [] LUT_value = norm_h(min, size, 0, goal, h);
+        int[] LUT_value = norm_h(min, size, 0, goal, h);
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
             int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
             int green = (tmp & 0x0000FF00) >> 8;//same for the green component
             int red = (tmp & 0x00FF0000) >> 16;//same for the red component
-            float [] hsv = new float [3];
+            float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
-            float new_value = LUT_value[val[i]]/255.0f;
+            float new_value = LUT_value[val[i]] / 255.0f;
             hsv[2] = new_value;
             tmp = Color.HSVToColor(hsv);
             tab[i] = tmp;//Replaces the pixel in the array
@@ -178,15 +178,15 @@ public class Algorithms {
     public static void colorize(Image img, double hue) {//Modifies the bitmap's hue with a self made hsv to rgb translator
         int w = img.getWidth();
         int h = img.getHeight();
-        int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
         img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        for (int i = 0; i<w*h; i++) {
+        for (int i = 0; i < w * h; i++) {
             int tmp = tab[i];
             /* RGB to HSV conversion (the hue is already given so we are not calculating it) */
-            double blue = (tmp & 0x000000FF)/255.0;
-            double green = ((tmp & 0x0000FF00) >> 8)/255.0;
-            double red = ((tmp & 0x00FF0000) >> 16)/255.0;
+            double blue = (tmp & 0x000000FF) / 255.0;
+            double green = ((tmp & 0x0000FF00) >> 8) / 255.0;
+            double red = ((tmp & 0x00FF0000) >> 16) / 255.0;
 
             double color_max = blue >= green ? (blue >= red ? blue : red) : (green >= red ? green : red);//max of the R/G/B values
             double color_min = blue <= green ? (blue <= red ? blue : red) : (green <= red ? green : red);//min of the R/G/B values
@@ -205,28 +205,23 @@ public class Algorithms {
                 red = c;
                 green = x;
                 blue = 0;
-            }
-            else if (60 <= hue & hue < 120) {
+            } else if (60 <= hue & hue < 120) {
                 red = x;
                 green = c;
                 blue = 0;
-            }
-            else if (120 <= hue & hue < 180) {
+            } else if (120 <= hue & hue < 180) {
                 red = 0;
                 green = c;
                 blue = x;
-            }
-            else if (180 <= hue & hue < 240) {
+            } else if (180 <= hue & hue < 240) {
                 red = 0;
                 green = x;
                 blue = c;
-            }
-            else if (240 <= hue & hue < 300) {
+            } else if (240 <= hue & hue < 300) {
                 red = x;
                 green = 0;
                 blue = c;
-            }
-            else {
+            } else {
                 red = c;
                 green = 0;
                 blue = x;
@@ -276,70 +271,70 @@ public class Algorithms {
 
     //TODO: ZOOM------------------------------------------------------------------------------------
 
-    public void zoomAliasing (Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
+    public void zoomAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
         int w = img.getWidth();
         int h = img.getHeight();
-        int [] tab = new int[h*w];
+        int[] tab = new int[h * w];
         img.getPixels(tab, 0, w, 0, 0, w, h);
 
-        int w_new = (int)(w * zoom);
-        int h_new = (int)(h * zoom);
-        int new_size = w_new*h_new;
-        int [] tab_new = new int [new_size];
+        int w_new = (int) (w * zoom);
+        int h_new = (int) (h * zoom);
+        int new_size = w_new * h_new;
+        int[] tab_new = new int[new_size];
 
-        for (int k = 0; k < new_size; ++k){//j is the number of the line
-                int i = k % w_new;
-                int j = k / w_new;
-                tab_new [j*w_new + i] = tab[(int) (j/zoom)*w + (int) (i/zoom)];//Managing the scales in the new and old image
-            }
+        for (int k = 0; k < new_size; ++k) {//j is the number of the line
+            int i = k % w_new;
+            int j = k / w_new;
+            tab_new[j * w_new + i] = tab[(int) (j / zoom) * w + (int) (i / zoom)];//Managing the scales in the new and old image
+        }
 
         Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);//Creating a new well sized bitmap
         tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);//with the zoomed pixels
         image.setImageBitmap(tmp);//to put in the image view
     }
 
-    public void zoomNoAliasing (Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
+    public void zoomNoAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
         int w = img.getWidth();
         int h = img.getHeight();
-        int [] tab = new int[h*w];
+        int[] tab = new int[h * w];
         img.getPixels(tab, 0, w, 0, 0, w, h);
 
-        int w_new = (int)(w * zoom);
-        int h_new = (int)(h * zoom);
-        int new_size = w_new*h_new;
-        int [] tab_new = new int [new_size];
+        int w_new = (int) (w * zoom);
+        int h_new = (int) (h * zoom);
+        int new_size = w_new * h_new;
+        int[] tab_new = new int[new_size];
 
-        float [] offsets = {-0.5f, 0.5f};
+        float[] offsets = {-0.5f, 0.5f};
 
         for (int k = 0; k < new_size; ++k) {
-                int i = k % w_new;
-                int j = k / w_new;
-                float new_i = (i + 0.5f) / zoom;
-                float new_j = (j + 0.5f) / zoom;
-                int center_i = (int)(new_i + 0.5f);
-                int center_j = (int)(new_j + 0.5f);
-                double red = 0.0;
-                double green = 0.0;
-                double blue = 0.0;
-                for (float offset_i : offsets) {
-                    for (float offset_j : offsets) {
-                        float corner_i = new_i + offset_i;
-                        float corner_j = new_j + offset_j;
-                        try {
-                            int corner_color = tab[ (int) (corner_j) * w + (int) (corner_i) ];
-                            float area = Math.abs(corner_i - center_i) * Math.abs(corner_j - center_j);
-                            float proportion = (area == 0) ? 0 : area;
-                            blue += (corner_color & 0x000000FF) * proportion;
-                            green += ((corner_color & 0x0000FF00) >> 8) * proportion;
-                            red += ((corner_color & 0x00FF0000) >> 16) * proportion;
-                        } catch (Exception e) {
-                            System.err.print(e.getMessage());
-                        }
+            int i = k % w_new;
+            int j = k / w_new;
+            float new_i = (i + 0.5f) / zoom;
+            float new_j = (j + 0.5f) / zoom;
+            int center_i = (int) (new_i + 0.5f);
+            int center_j = (int) (new_j + 0.5f);
+            double red = 0.0;
+            double green = 0.0;
+            double blue = 0.0;
+            for (float offset_i : offsets) {
+                for (float offset_j : offsets) {
+                    float corner_i = new_i + offset_i;
+                    float corner_j = new_j + offset_j;
+                    try {
+                        int corner_color = tab[(int) (corner_j) * w + (int) (corner_i)];
+                        float area = Math.abs(corner_i - center_i) * Math.abs(corner_j - center_j);
+                        float proportion = (area == 0) ? 0 : area;
+                        blue += (corner_color & 0x000000FF) * proportion;
+                        green += ((corner_color & 0x0000FF00) >> 8) * proportion;
+                        red += ((corner_color & 0x00FF0000) >> 16) * proportion;
+                    } catch (Exception e) {
+                        System.err.print(e.getMessage());
                     }
                 }
-                int color = 0xFF000000 | ((int)red << 16) | ((int)green << 8) | (int)blue;
-                tab_new[k] = color;
             }
+            int color = 0xFF000000 | ((int) red << 16) | ((int) green << 8) | (int) blue;
+            tab_new[k] = color;
+        }
 
         Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);//Creating a new well sized bitmap
         tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);//with the zoomed pixels
@@ -370,7 +365,7 @@ public class Algorithms {
         source.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
-    private static float find_closest_value (float [] tab, float e) {
+    private static float find_closest_value(float[] tab, float e) {
         float closest = tab[0];
         float d_min = Math.abs(closest - e);
         for (int i = 1; i < tab.length; i++) {
@@ -385,7 +380,9 @@ public class Algorithms {
 
     private static int HSVtoRGB(float h, float s, float v) {
         float r, g, b, f, p, q, t;
-        r = 0.0f; b = 0.0f; g = 0.0f;
+        r = 0.0f;
+        b = 0.0f;
+        g = 0.0f;
         int i;
         i = (int) Math.floor(h * 6);
         f = h * 6 - i;
@@ -393,53 +390,75 @@ public class Algorithms {
         q = v * (1 - f * s);
         t = v * (1 - (1 - f) * s);
         switch (i % 6) {
-            case 0: r = v; g = t; b = p; break;
-            case 1: r = q; g = v; b = p; break;
-            case 2: r = p; g = v; b = t; break;
-            case 3: r = p; g = q; b = v; break;
-            case 4: r = t; g = p; b = v; break;
-            case 5: r = v; g = p; b = q; break;
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+            case 5:
+                r = v;
+                g = p;
+                b = q;
+                break;
         }
-        return 0xFF000000 |(Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
+        return 0xFF000000 | (Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
     }
 
-    static float [] RGBtoHSV(int r, int g, int b) {
-        int max = Math.max(Math.max(r, g),b), min = Math.min(Math.min(r, g), b), d = max - min;
+    static float[] RGBtoHSV(int r, int g, int b) {
+        int max = Math.max(Math.max(r, g), b), min = Math.min(Math.min(r, g), b), d = max - min;
         float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
 
 
         if (max == min)
             h = 0;
         else if (max == r) {
-            h = (g - b) + d * (g < b ? 6: 0);
+            h = (g - b) + d * (g < b ? 6 : 0);
             h /= 6 * d;
-        }
-        else if (max == g) {
+        } else if (max == g) {
             h = (b - r) + d * 2;
             h /= 6 * d;
-        }
-        else {
+        } else {
             h = (r - g) + d * 4;
             h /= 6 * d;
         }
-        float [] hsv = {h, s, v};
+        float[] hsv = {h, s, v};
         return hsv;
     }
 
-    public static void cartoonize (Image img, int n) {
+    public static void cartoonize(Image img, int n) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
-        int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
         // For the discrete space of HSV values we choose the roots of the nth Chebychev's polynomial (
 
         int j = 0;
-        float [] hValues = new float [n/2];
-        float [] sValues = new float [n/2];
-        float [] vValues = new float [n/2];
+        float[] hValues = new float[n / 2];
+        float[] sValues = new float[n / 2];
+        float[] vValues = new float[n / 2];
         for (int k = 1; k <= n; k++) {
-            float root = (float) Math.cos((2*k-1)*Math.PI/(2*n)); // Chebychev's polynomials roots
+            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * n)); // Chebychev's polynomials roots
             if (root > 0) { // they are symmetrical so we take only the positive ones
                 hValues[j] = root;
                 sValues[j] = root;
@@ -455,7 +474,7 @@ public class Algorithms {
             int green = (tmp & 0x0000FF00) >> 8;//same for the green component
             int red = (tmp & 0x00FF0000) >> 16;//same for the red component
 
-            float [] hsv = RGBtoHSV(red, green, blue);
+            float[] hsv = RGBtoHSV(red, green, blue);
 
             hsv[0] = Algorithms.find_closest_value(hValues, hsv[0]);
             hsv[1] = Algorithms.find_closest_value(sValues, hsv[1]);
@@ -467,22 +486,22 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
-    public static void hough_transform (Image img) {
+    public static void hough_transform(Image img) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
-        int [] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
         double rho = 10.0; // The resolution of the rho's discretisation in the Hough space
         double theta = 10.0; // The resolution of the theta's discretisation in the Hough space
 
-        int Ntheta = (int) (180.0/theta); // In [0;pi] the normal parameters for a line are unique
-        int Nrho = (int) Math.floor(Math.sqrt(w*w+h*h)); // The number of steps needed to describe the whole Hough space
+        int Ntheta = (int) (180.0 / theta); // In [0;pi] the normal parameters for a line are unique
+        int Nrho = (int) Math.floor(Math.sqrt(w * w + h * h)); // The number of steps needed to describe the whole Hough space
 
-        double drho = Math.floor(Math.sqrt(w*w+h*h))/Nrho; // The size of a single step for rho
-        double dtheta = Math.PI/Ntheta; // The size of a single step for theta
+        double drho = Math.floor(Math.sqrt(w * w + h * h)) / Nrho; // The size of a single step for rho
+        double dtheta = Math.PI / Ntheta; // The size of a single step for theta
 
-        int [][] acc = new int [Ntheta][Nrho];
+        int[][] acc = new int[Ntheta][Nrho];
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
@@ -490,11 +509,11 @@ public class Algorithms {
                 if ((pixel & 0x000000FF) > 200) {
                     for (int i_theta = 0; i_theta < Ntheta; i++) {
                         double ith_theta = i_theta * dtheta;
-                        double ith_rho = j * Math.cos(ith_theta) + (h-i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plane
-                        int j_rho = (int) (ith_rho/drho); // We find out the corresponding rho step
+                        double ith_rho = j * Math.cos(ith_theta) + (h - i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plane
+                        int j_rho = (int) (ith_rho / drho); // We find out the corresponding rho step
                         if (j_rho > 0 && j_rho < Nrho) // If it fits in our Hough plane
                             acc[i_theta][j_rho] += 1; // We increment all the pixels the discrete sinusoidal curve passes through
-            }
+                    }
 
                 }
             }
@@ -509,26 +528,24 @@ public class Algorithms {
         for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
             for (int j_rho = 0; j_rho < Nrho; j_rho++) {
                 if (acc[i_theta][j_rho] > threshold) {
-                    double theta0 = i_theta*dtheta;
-                    double rho0 = j_rho*drho;
+                    double theta0 = i_theta * dtheta;
+                    double rho0 = j_rho * drho;
                     // We are now trying to find the corresponding line y = a*x + b of the line rho0 = x * cos(theta0) + y * sin(theta0)
 
                     Double a, b;
 
-                    if (Math.abs(theta0 - Math.PI/2.0) < 0.1) { // The cosine is almost equal to zero (horizontal line)
+                    if (Math.abs(theta0 - Math.PI / 2.0) < 0.1) { // The cosine is almost equal to zero (horizontal line)
                         a = 0.0;
                         b = rho0 / Math.sin(theta0);
-                    }
-                    else if (Math.abs(theta0 - Math.PI) < 0.1 || Math.abs(theta0) < 0.1) { // The sine is almost equal to zero (vertical line)
+                    } else if (Math.abs(theta0 - Math.PI) < 0.1 || Math.abs(theta0) < 0.1) { // The sine is almost equal to zero (vertical line)
                         a = Double.NaN; // Convention for vertical lines
                         b = rho0 / Math.cos(theta0);
-                    }
-                    else { // classic line
+                    } else { // classic line
                         a = (-1.0) * Math.cos(theta0) / Math.sin(theta0);
                         b = rho0 / Math.sin(theta0);
                     }
 
-                    Double [] line = {a, b};
+                    Double[] line = {a, b};
                     lines.add(line);
                 }
             }
@@ -541,10 +558,11 @@ public class Algorithms {
             for (int j = 0; j < w; j++) {
                 boolean on_a_line = false;
                 for (int k = 0; k < n_lines; k++) {
-                    Double [] t = lines.get(k); // t = {a, b} the coefficients of the line
+                    Double[] t = lines.get(k); // t = {a, b} the coefficients of the line
 
                 }
             }
         }
 
+    }
 }
