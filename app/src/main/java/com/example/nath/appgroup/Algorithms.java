@@ -521,7 +521,7 @@ public class Algorithms {
 
         // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plane
 
-        ArrayList<Double[]> lines; // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
+        ArrayList<Double[]> lines = new ArrayList<>(); // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
 
         int threshold = 100;
 
@@ -559,10 +559,16 @@ public class Algorithms {
                 boolean on_a_line = false;
                 for (int k = 0; k < n_lines; k++) {
                     Double[] t = lines.get(k); // t = {a, b} the coefficients of the line
-
+                    if (t[0].equals(Double.NaN)) // If the line is vertical
+                        on_a_line = (j == t[1].intValue());
+                    else
+                        on_a_line = ((int) ((h-i) - t[0]*j - t[1])) == 0; // Testing if the point is on the line ie if y - ax - b = 0
+                    if (on_a_line)
+                        tab[i*w+h] = 0xFFFF0000; // Drawing the (red) line
                 }
             }
         }
 
+        img.setPixels(tab, 0, 0, w, h); // Replaces the pixel array by the new one
     }
 }
