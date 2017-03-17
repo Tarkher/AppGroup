@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.art);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -112,186 +112,21 @@ public class MainActivity extends AppCompatActivity {
                 seekBar.setVisibility(View.VISIBLE);
                 break;
             case R.id.sobel:
-                Algorithms.toGray(imageToProcess);
-
-                float[][] Gx = new float[3][3];
-                Gx[0][0] = -1;
-                Gx[0][1] = 0;
-                Gx[0][2] = 1;
-
-                Gx[1][0] = -2;
-                Gx[1][1] = 0;
-                Gx[1][2] = 2;
-
-                Gx[2][0] = -1;
-                Gx[2][1] = 0;
-                Gx[2][2] = 1;
-
-                float[][] Gy = new float[3][3];
-                Gy[0][0] = -1;
-                Gy[0][1] = -2;
-                Gy[0][2] = -1;
-
-                Gy[1][0] = 0;
-                Gy[1][1] = 0;
-                Gy[1][2] = 0;
-
-                Gy[2][0] = 1;
-                Gy[2][1] = 2;
-                Gy[2][2] = 1;
-
-                Image imgGx = imageToProcess.clone();
-                Image imgGy = imageToProcess.clone();
-
-                Algorithms.convolution(imgGx, Gx);
-                Algorithms.convolution(imgGy, Gy);
-
-                int[] imgGxPixels = imgGx.getPixels(0, 0, imgGx.getWidth(), imgGx.getHeight());
-                int[] imgGyPixels = imgGy.getPixels(0, 0, imgGy.getWidth(), imgGy.getHeight());
-
-                int[] output = new int[imageToProcess.getHeight() * imageToProcess.getWidth()];
-
-                for (int i = 0; i < imageToProcess.getHeight(); ++i) {
-                    for (int j = 0; j < imageToProcess.getWidth(); ++j) {
-                        int valGx = Color.red(imgGxPixels[i * imageToProcess.getWidth() + j]);
-                        int valGy = Color.red(imgGyPixels[i * imageToProcess.getWidth() + j]);
-
-                        int val = (int)Math.sqrt(valGx * valGx + valGy * valGy);
-                        output[i * imageToProcess.getWidth() + j] = Color.rgb(val, val, val);
-                    }
-                }
-
-                imageToProcess.setPixels(output, 0, 0, imageToProcess.getWidth(), imageToProcess.getHeight());
+                Algorithms.sobelEdgeDetector(imageToProcess);
                 break;
             case R.id.moyenneur:
-                Algorithms.toGray(imageToProcess);
-
-                float matrixMoyenneur[][] = new float[3][3];
-                matrixMoyenneur[0][0] = 1f/9f;
-                matrixMoyenneur[0][1] = 1f/9f;
-                matrixMoyenneur[0][2] = 1f/9f;
-
-                matrixMoyenneur[1][0] = 1f/9f;
-                matrixMoyenneur[1][1] = 1f/9f;
-                matrixMoyenneur[1][2] = 1f/9f;
-
-                matrixMoyenneur[2][0] = 1f/9f;
-                matrixMoyenneur[2][1] = 1f/9f;
-                matrixMoyenneur[2][2] = 1f/9f;
-
-                Algorithms.convolution(imageToProcess, matrixMoyenneur);
+                Algorithms.meanFilter(imageToProcess);
                 break;
             case R.id.gaussien:
-                Algorithms.toGray(imageToProcess);
-
-                float[][] matrixGaussien = new float[5][5];
-                matrixGaussien[0][0] = 1f/98f;
-                matrixGaussien[0][1] = 2f/98f;
-                matrixGaussien[0][2] = 3f/98f;
-                matrixGaussien[0][3] = 2f/98f;
-                matrixGaussien[0][4] = 1f/98f;
-
-                matrixGaussien[1][0] = 2f/98f;
-                matrixGaussien[1][1] = 6f/98f;
-                matrixGaussien[1][2] = 8f/98f;
-                matrixGaussien[1][3] = 6f/98f;
-                matrixGaussien[1][4] = 2f/98f;
-
-                matrixGaussien[2][0] = 3f/98f;
-                matrixGaussien[2][1] = 8f/98f;
-                matrixGaussien[2][2] = 10f/98f;
-                matrixGaussien[2][3] = 8f/98f;
-                matrixGaussien[2][4] = 3f/98f;
-
-                matrixGaussien[3][0] = 2f/98f;
-                matrixGaussien[3][1] = 6f/98f;
-                matrixGaussien[3][2] = 8f/98f;
-                matrixGaussien[3][3] = 6f/98f;
-                matrixGaussien[3][4] = 2f/98f;
-
-                matrixGaussien[4][0] = 1f/98f;
-                matrixGaussien[4][1] = 2f/98f;
-                matrixGaussien[4][2] = 3f/98f;
-                matrixGaussien[4][3] = 2f/98f;
-                matrixGaussien[4][4] = 1f/98f;
-
-                Algorithms.convolution(imageToProcess, matrixGaussien);
+                Algorithms.gaussianFilter(imageToProcess);
                 break;
             case R.id.laplacien:
-                Algorithms.toGray(imageToProcess);
-
-                float matrixLaplacien[][] = new float[3][3];
-                matrixLaplacien[0][0] = 0;
-                matrixLaplacien[0][1] = -1;
-                matrixLaplacien[0][2] = 0;
-
-                matrixLaplacien[1][0] = -1;
-                matrixLaplacien[1][1] = 4;
-                matrixLaplacien[1][2] = -1;
-
-                matrixLaplacien[2][0] = 0;
-                matrixLaplacien[2][1] = -1;
-                matrixLaplacien[2][2] = 0;
-
-                Algorithms.convolution(imageToProcess, matrixLaplacien);
+                Algorithms.laplacien(imageToProcess);
                 break;
             case R.id.cartoonize:
                 Image trace_edges = imageToProcess.clone();
                 Algorithms.cartoonize(imageToProcess, 12); // SEEKBAR STP
-
-
-                Algorithms.toGray(trace_edges);
-
-                float[][] Gx_trace = new float[3][3];
-                Gx_trace[0][0] = -1;
-                Gx_trace[0][1] = 0;
-                Gx_trace[0][2] = 1;
-
-                Gx_trace[1][0] = -2;
-                Gx_trace[1][1] = 0;
-                Gx_trace[1][2] = 2;
-
-                Gx_trace[2][0] = -1;
-                Gx_trace[2][1] = 0;
-                Gx_trace[2][2] = 1;
-
-                float[][] Gy_trace = new float[3][3];
-                Gy_trace[0][0] = -1;
-                Gy_trace[0][1] = -2;
-                Gy_trace[0][2] = -1;
-
-                Gy_trace[1][0] = 0;
-                Gy_trace[1][1] = 0;
-                Gy_trace[1][2] = 0;
-
-                Gy_trace[2][0] = 1;
-                Gy_trace[2][1] = 2;
-                Gy_trace[2][2] = 1;
-
-                Image imgGx_trace = trace_edges.clone();
-                Image imgGy_trace = trace_edges.clone();
-
-                Algorithms.convolution(imgGx_trace, Gx_trace);
-                Algorithms.convolution(imgGy_trace, Gy_trace);
-
-                int[] imgGxPixels_trace = imgGx_trace.getPixels(0, 0, imgGx_trace.getWidth(), imgGx_trace.getHeight());
-                int[] imgGyPixels_trace = imgGy_trace.getPixels(0, 0, imgGy_trace.getWidth(), imgGy_trace.getHeight());
-
-                int[] output_trace = new int[trace_edges.getHeight() * trace_edges.getWidth()];
-
-                for (int i = 0; i < trace_edges.getHeight(); ++i) {
-                    for (int j = 0; j < trace_edges.getWidth(); ++j) {
-                        int valGx_trace = Color.red(imgGxPixels_trace[i * trace_edges.getWidth() + j]);
-                        int valGy_trace = Color.red(imgGyPixels_trace[i * trace_edges.getWidth() + j]);
-
-                        int val = (int)Math.sqrt(valGx_trace * valGx_trace + valGy_trace * valGy_trace);
-                        output_trace[i * trace_edges.getWidth() + j] = Color.rgb(val, val, val);
-                    }
-                }
-
-                trace_edges.setPixels(output_trace, 0, 0, trace_edges.getWidth(), trace_edges.getHeight());
-
-
+                Algorithms.sobelEdgeDetector(trace_edges);
                 // LA FONCTION TRACE DOIT AVOIR UNE SEEKBAR DE 0 A 255 MAIS UNIQUEMENT TRACE
                 Algorithms.trace(imageToProcess, trace_edges, 255);
                 break;

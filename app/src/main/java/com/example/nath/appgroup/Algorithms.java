@@ -2,6 +2,7 @@ package com.example.nath.appgroup;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -242,20 +243,33 @@ public class Algorithms {
         int pixels[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
         int output[] = new int[width * height];
 
+        float max_value = 0;
+        float min_value = 0;
+        for(int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j] >= 0)
+                    max_value += matrix[i][j] * 255;
+                else
+                    min_value += matrix[i][j] * 255;
+            }
+        }
+
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 int value = 0;
 
-                for (int i = 0; i < matrix.length; ++i) {
-                    for (int j = 0; j < matrix.length; ++j) {
+                for (int i = 0; i < matrix.length; i++) {
+                    for (int j = 0; j < matrix.length; j++) {
                         int yPrime = floorMod(y + i - (matrix.length - 1) / 2, height);
                         int xPrime = floorMod(x + j - (matrix.length - 1) / 2, width);
-                        value += Color.red(pixels[yPrime * width + xPrime]) * matrix[i][j];
+                        value += (0x000000FF & pixels[yPrime * width + xPrime]) * matrix[i][j];
                     }
                 }
 
-                value = Math.abs(value);
-                output[y * width + x] = Color.rgb(value, value, value);
+                if (value > 255 || value < 0) {
+                    value = (int) ((value - min_value)/(max_value - min_value)) * 255;
+                }
+                output[y * width + x] = 0xFF000000 | (value << 16) | (value << 8) | value;
             }
         }
 
@@ -570,5 +584,63 @@ public class Algorithms {
         }
 
         img.setPixels(tab, 0, 0, w, h); // Replaces the pixel array by the new one
+    }
+
+
+    /* -------------- Algorithms using convolutions ---------------- */
+
+    public static void meanFilter (Image img) {
+        Algorithms.toGray(img);
+        float matrixMoyenneur[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
+        Algorithms.convolution(img, matrixMoyenneur);
+    }
+
+    public static void gaussianFilter (Image img) { // Do it with any size of filter (n)
+        Algorithms.toGray(img);
+        float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
+                {3f/98f, 8f/98f, 10f/98f, 8f/98f, 3f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
+                {1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}};
+        Algorithms.convolution(img, matrixGaussien);
+    }
+
+    public static void laplacien (Image img) {
+        Algorithms.toGray(img);
+        float matrixLaplacien[][] = {{0,-1,0}, {-1,4,-1}, {0,-1,0}};
+        Algorithms.convolution(img, matrixLaplacien);
+    }
+
+    public static void sobelEdgeDetector (Image img) {
+        Algorithms.toGray(img);
+
+        float[][] Gx = {{-1,0,1}, {-2,0,2}, {-1,0,1}};
+        float[][] Gy = {{-1,-2,-1}, {0,0,0}, {1,2,1}};
+
+        Image imgGx = img.clone();
+        Image imgGy = img.clone();
+
+        Algorithms.convolution(imgGx, Gx);
+        Algorithms.convolution(imgGy, Gy);
+
+        int[] imgGxPixels = imgGx.getPixels(0, 0, imgGx.getWidth(), imgGx.getHeight());
+        int[] imgGyPixels = imgGy.getPixels(0, 0, imgGy.getWidth(), imgGy.getHeight());
+
+        int[] output = new int[img.getHeight() * img.getWidth()];
+
+        for (int i = 0; i < img.getHeight(); ++i) {
+            for (int j = 0; j < img.getWidth(); ++j) {
+                int valGx = 0x000000FF & (imgGxPixels[i * img.getWidth() + j]);
+                int valGy = 0x000000FF & (imgGyPixels[i * img.getWidth() + j]);
+
+                int value = 0;
+                double val = Math.sqrt(valGx * valGx + valGy * valGy);
+                if (val > 255.0)
+                    value = (int) (val/(Math.sqrt(2) * 4 * 255));
+                else
+                    value = (int) val;
+                output[i * img.getWidth() + j] = 0xFF000000 | (value << 16) | (value << 8) | value;
+            }
+        }
+
+        img.setPixels(output, 0, 0, img.getWidth(), img.getHeight());
     }
 }
