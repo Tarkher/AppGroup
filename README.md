@@ -4,6 +4,8 @@
 
 Réparer le laplacien
 
+Filtre Gaussien de taille quelconque
+
 
 # Done
 
