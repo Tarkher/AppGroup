@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 Algorithms.trace(imageToProcess, trace_edges, 255);
                 break;
             case R.id.houghtransform:
-                Algorithms.hough_transform(imageToProcess);
+                Algorithms.hough_transform(imageToProcess, 1.0, 5.0, 50);
                 break;
             case R.id.reset:
                 customImageView.setImage(customImageView.getImageBackup(), false);
