@@ -486,14 +486,14 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
     }
 
-    public static void hough_transform(Image img) {
+    public static void hough_transform(Image img, double rho, double theta, int threshold) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        double rho = 1.0; // The resolution of the rho's discretisation in the Hough space
-        double theta = 5.0; // The resolution of the theta's discretisation in the Hough space
+        // The resolution of the rho's discretisation in the Hough space is rho
+        // The resolution of the theta's discretisation in the Hough space is theta
 
         int Ntheta = (int) (180.0 / theta); // In [0;pi] the normal parameters for a line are unique
         int Nrho = (int) Math.floor(Math.sqrt(w * w + h * h)); // The number of steps needed to describe the whole Hough space
@@ -522,8 +522,6 @@ public class Algorithms {
         // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plane
 
         ArrayList<Double[]> lines = new ArrayList<>(); // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
-
-        int threshold = 40;
 
         for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
             for (int j_rho = 0; j_rho < Nrho; j_rho++) {
