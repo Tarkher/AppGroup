@@ -8,8 +8,25 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
-
+/**
+ * <b>Algorithms contains all the algorithms used for image processing</b>
+ * <p>
+ * Furthermore, this class only contains public static method that are called in the MainActivity
+ * and their private counterparts used for diverse tasks in the algorithms.
+ * </p>
+ *
+ * @author Maxime Roméas Nathan Castets Aziz Fouché
+ * @version 3.0
+ */
 public class Algorithms {
+    /**
+     * Turns a RGB image into a gray level one using an hexadecimal filtering.
+     *
+     * @param img
+     * The image we work on
+     *
+     * @since 1.0
+     */
     public static void toGray(Image img) {//Transforms a bitmap image into a gray level one using its pixels' array
         int w = img.getWidth();
         int h = img.getHeight();
@@ -22,6 +39,35 @@ public class Algorithms {
             int red = (int) (((tmp & 0x00FF0000) >> 16) * 0.3);//same for the red component
             int color_custom = blue + green + red;//The pixel's gray level
             int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;//Makes an integer matching the Color's formatting
+            tab[i] = final_pix;//Stores the pixel's gray level to find its new value in the LUT later
+        }
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
+    }
+
+    /**
+     * Turns a RGB image into a gray level one using the Color class.
+     *
+     * @param img
+     * The image we work on
+     *
+     * @deprecated Since 1.0 because it's way slower than toGray.
+     *
+     * @see Algorithms#toGray
+     *
+     * @since 1.0
+     */
+    public static void toGrayOld(Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+
+        for (int i = 0; i < w * h; i++) {
+            int tmp = tab[i];//tmp is the ith argb pixel
+            int blue = (int) (Color.red(tmp) * 0.11);//Gets the blue component and weights it
+            int green = (int) (Color.green(tmp) * 0.59);//same for the green component
+            int red = (int) (Color.red(tmp) * 0.3);//same for the red component
+            int color_custom = blue + green + red;//The pixel's gray level
+            int final_pix = Color.rgb(color_custom, color_custom, color_custom);
             tab[i] = final_pix;//Stores the pixel's gray level to find its new value in the LUT later
         }
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
