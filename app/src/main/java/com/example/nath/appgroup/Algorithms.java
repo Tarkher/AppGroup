@@ -73,10 +73,25 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
     }
 
+    /**
+     * Increase or decrease the luminosity of an Image with a translation of factor lum.
+     *
+     * @param img
+     * The image we work on
+     *
+     * @param lum
+     * The translation's factor.
+     * If lum equals 0 then the image remains unchanged.
+     * If lum equals 255 (respectively -255) then the image becomes white (respectively black)
+     *
+     * @since 2.0
+     */
     public static void luminosity(Image img, int lum) {//Translates the histogram of an image to increase/decrease the luminosity
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, w, h);
+
+        lum = lum > 255 ? 255 : (lum < -255 ? -255 : lum);
 
         for (int i = 0; i < w * h; i++) {
             int tmp = tab[i];//tmp is the ith argb pixel
@@ -96,10 +111,33 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);//Replaces the bitmap's pixels array by the gray one
     }
 
-    private static int[] lookUpTable(int a, int b, int c, int d) {//Generates the Look Up Table for linear histogram extension from [min,max] to [c,d]
+    /**
+     * Generates the look up table used for the linear histogram extension that sends a gray level in
+     * [minSource , maxSource] to an other gray level in the target interval [minTarget , maxTarget].
+     *
+     * @param minSource
+     * The minimum value of the source interval.
+     *
+     * @param maxSource
+     * The maximum value of the source interval.
+     *
+     * @param minTarget
+     * The minimum value of the target interval.
+     *
+     * @param maxTarget
+     * The maximum value of the target interval.
+     *
+     * @return The corresponding look up table which is an integer array.
+     *
+     * @see Algorithms#dynamicExtensionColor
+     *
+     * @since 1.0
+     */
+    private static int[] lookUpTable(int minSource, int maxSource, int minTarget, int maxTarget) {
         int[] tab = new int[256];
-        for (int gray_lvl = a; gray_lvl < b + 1; gray_lvl++) {
-            tab[gray_lvl] = (int) (((d - c) * (((gray_lvl - a) / (double) (b - a)))) + c);//bijection from [min,max] to [c,d]
+        for (int gray_lvl = minSource; gray_lvl < maxSource + 1; gray_lvl++) {
+            tab[gray_lvl] = (int) (((maxTarget - minTarget) *
+                    (((gray_lvl - minSource) / (double) (maxSource - minSource)))) + minTarget);
         }
         return tab;
     }
@@ -112,7 +150,20 @@ public class Algorithms {
         return tab;
     }
 
-    private static int[] histo(int[] tab) {//grayhistogram
+    /**
+     * Generates the gray level histogram for a gray level image which is useful to calculate its
+     * cumulative histogram with cumulativeHistogram.
+     *
+     * @param tab
+     * The pixels array of the image.
+     *
+     * @return The gray level histogram of the image which is an int array of size 256.
+     *
+     * @see Algorithms#cumulativeHistogram
+     *
+     * @since 2.0
+     */
+    private static int[] histogram(int[] tab) {
         int n = tab.length;
         int[] h = new int[256];
 
@@ -122,8 +173,21 @@ public class Algorithms {
         return h;
     }
 
-    private static int[] histo_c(int[] tab1) {//cumulative histogram in RGB
-        int[] tab = histo(tab1);
+    /**
+     * Generates the gray level cumulative histogram for a gray level image which is useful to perform
+     * the contrast equalization algorithm with constrastEqualization.
+     *
+     * @param tab1
+     * The pixels array of the image.
+     *
+     * @return The gray level cumulative histogram of the image which is an int array of size 256.
+     *
+     * @see Algorithms#contrastEqualization
+     *
+     * @since 2.0
+     */
+    private static int[] cumulativeHistogram(int[] tab1) {
+        int[] tab = histogram(tab1);
         int[] h = new int[256];
 
         h[0] = tab[0];
@@ -196,7 +260,7 @@ public class Algorithms {
             val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);//the max of the R/G/B values (value field in HSV)
         }
 
-        int[] h = histo_c(val);
+        int[] h = cumulativeHistogram(val);
         int min = size;
 
         for (int i = 0; i < 256; i++) {//We get the min and max of pixels below a i level of value
