@@ -27,21 +27,27 @@ public class Algorithms {
      *
      * @since 1.0
      */
-    public static void toGray(Image img) {//Transforms a bitmap image into a gray level one using its pixels' array
+    public static void toGray(Image img) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
         for (int i = 0; i < w * h; i++) {
-            int tmp = tab[i];//tmp is the ith argb pixel
-            int blue = (int) ((tmp & 0x000000FF) * 0.11);//Gets the blue component of the pixel by filtering the Color integer and weights it
-            int green = (int) (((tmp & 0x0000FF00) >> 8) * 0.59);//same for the green component
-            int red = (int) (((tmp & 0x00FF0000) >> 16) * 0.3);//same for the red component
-            int color_custom = blue + green + red;//The pixel's gray level
-            int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;//Makes an integer matching the Color's formatting
-            tab[i] = final_pix;//Stores the pixel's gray level to find its new value in the LUT later
+            // Gets the ith argb pixel of the image
+            int tmp = tab[i];
+            // Gets each RGB components of the pixel by filtering the Color integer and weights them to turn the image in gray level
+            int blue = (int) ((tmp & 0x000000FF) * 0.11);
+            int green = (int) (((tmp & 0x0000FF00) >> 8) * 0.59);
+            int red = (int) (((tmp & 0x00FF0000) >> 16) * 0.3);
+            // Contains the pixel's gray level
+            int color_custom = blue + green + red;
+            // Makes an integer matching the Color's formatting
+            int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;
+            // Replaces the pixel by the new (gray) one in the pixel array
+            tab[i] = final_pix;
         }
-        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
+        // Replaces the bitmap's pixels array by the gray one
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
     /**
@@ -62,15 +68,15 @@ public class Algorithms {
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
         for (int i = 0; i < w * h; i++) {
-            int tmp = tab[i];//tmp is the ith argb pixel
-            int blue = (int) (Color.red(tmp) * 0.11);//Gets the blue component and weights it
-            int green = (int) (Color.green(tmp) * 0.59);//same for the green component
-            int red = (int) (Color.red(tmp) * 0.3);//same for the red component
-            int color_custom = blue + green + red;//The pixel's gray level
+            int tmp = tab[i];
+            int blue = (int) (Color.red(tmp) * 0.11);
+            int green = (int) (Color.green(tmp) * 0.59);
+            int red = (int) (Color.red(tmp) * 0.3);
+            int color_custom = blue + green + red;
             int final_pix = Color.rgb(color_custom, color_custom, color_custom);
-            tab[i] = final_pix;//Stores the pixel's gray level to find its new value in the LUT later
+            tab[i] = final_pix;
         }
-        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
     /**
@@ -86,7 +92,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public static void luminosity(Image img, int lum) {//Translates the histogram of an image to increase/decrease the luminosity
+    public static void luminosity(Image img, int lum) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, w, h);
@@ -199,7 +205,18 @@ public class Algorithms {
         return h;
     }
 
-    public static void dynamicExtensionColor(Image img) {//Performs the linear dynamic extension algorithm on a RGB image
+    /**
+     * Increases the contrast of an RGB image with the linear dynamic extension algorithm performed
+     * on the canal value of the HSV representation to preserve the coherence of the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#lookUpTable
+     *
+     * @since 1.0
+     */
+    public static void dynamicExtensionColor(Image img) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
@@ -207,14 +224,16 @@ public class Algorithms {
         int[] val = new int[size];
 
         for (int i = 0; i < size; i++) {
-            int tmp = tab[i];//tmp is the ith argb pixel
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
+            int tmp = tab[i];
+            int blue = tmp & 0x000000FF;
+            int green = (tmp & 0x0000FF00) >> 8;
+            int red = (tmp & 0x00FF0000) >> 16;
 
-            val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);//the max of the R/G/B values (value field in HSV)
+            // Calculates the max of the R/G/B values (value field in HSV)
+            val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
         }
 
+        // Calculates the minimum and the maximum value (the V field in HSV) of the pixels
         int min = 255;
         int max = 0;
 
@@ -223,13 +242,15 @@ public class Algorithms {
             min = val[i] < min ? val[i] : min;
         }
 
-        int[] LUT = lookUpTable(min, max, 0, 255);//Generates the appropriate look up table for the red component
+        // Generates the appropriate look up table for the value component
+        int[] LUT = lookUpTable(min, max, 0, 255);
 
+        // Replaces the value (HSV wise) of each pixel by the appropriate value in the look up table.
         for (int i = 0; i < w * h; i++) {
             int tmp = tab[i];
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
+            int blue = tmp & 0x000000FF;
+            int green = (tmp & 0x0000FF00) >> 8;
+            int red = (tmp & 0x00FF0000) >> 16;
 
             float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
@@ -239,11 +260,12 @@ public class Algorithms {
             hsv[2] = new_value;
             tmp = Color.HSVToColor(hsv);
 
-            tab[i] = tmp;//Replaces the pixel in the array
+            tab[i] = tmp;
         }
-        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
+    
     public static void contrastEqualization(Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
         int w = img.getWidth();
         int hei = img.getHeight();
