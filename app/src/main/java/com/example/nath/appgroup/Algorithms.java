@@ -408,10 +408,10 @@ public class Algorithms {
      * The mask used to calculate its convolution with the image.
      *
      * @see Algorithms#sobelEdgeDetector
-     *      Algorithms#gaussianFilter
-     *      Algorithms#meanFilter
-     *      Algorithms#laplacien
-     *      Algorithms#floorMod
+     * @see Algorithms#gaussianFilter
+     * @see Algorithms#meanFilter
+     * @see Algorithms#laplacien
+     * @see Algorithms#floorMod
      *
      * @since 2.0
      */
