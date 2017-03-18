@@ -50,6 +50,26 @@ public class Image implements Cloneable {
     */
     private int width;
 
+    /**
+     * Image constructor.
+     * <p>
+     * When an Image is created, the array pixels is created with a size width*height then
+     * its values are the one of the array pixels.
+     * </p>
+     * 
+     * @param pixels
+     * The one-dimensional array the pixels are stored into.
+     * 
+     * @param height
+     * The height of the image.
+     *
+     * @param width
+     * The width of the image.
+     * 
+     * @see Image#pixels
+     * @see Image#height
+     * @see Image#width
+     */
     public Image(int[] pixels, int height, int width) {
         this.pixels = new int[height * width];
 
