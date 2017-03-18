@@ -530,15 +530,15 @@ public class Algorithms {
      * @param float
      * The zoom factor. It can be less than 1 to unzoom.
      *
-     *
      * @since 2.0
      */
-    public void zoomNoAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
+    public void zoomNoAliasing(Bitmap img, ImageView image, float zoom) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = new int[h * w];
         img.getPixels(tab, 0, w, 0, 0, w, h);
 
+        // Calculates the dimension of the zoomed image
         int w_new = (int) (w * zoom);
         int h_new = (int) (h * zoom);
         int new_size = w_new * h_new;
@@ -547,65 +547,117 @@ public class Algorithms {
         float[] offsets = {-0.5f, 0.5f};
 
         for (int k = 0; k < new_size; ++k) {
+            // Calculates the corresponding pixel in the new image
             int i = k % w_new;
             int j = k / w_new;
+            
+            // Calculates the coordinates of the center of the pixel in the old image
             float new_i = (i + 0.5f) / zoom;
             float new_j = (j + 0.5f) / zoom;
+            
+            // Calculates the nearest center with integer coordinates of
+            // the square of corner (new_i,new_j) in the old image
             int center_i = (int) (new_i + 0.5f);
             int center_j = (int) (new_j + 0.5f);
+            
             double red = 0.0;
             double green = 0.0;
             double blue = 0.0;
+            
+            // Goes through the four corners
             for (float offset_i : offsets) {
                 for (float offset_j : offsets) {
                     float corner_i = new_i + offset_i;
                     float corner_j = new_j + offset_j;
                     int corner_color = tab[(int) (corner_j) * w + (int) (corner_i)];
                     float area = Math.abs(corner_i - center_i) * Math.abs(corner_j - center_j);
-                    float proportion = (area == 0) ? 0 : area;
-                    blue += (corner_color & 0x000000FF) * proportion;
-                    green += ((corner_color & 0x0000FF00) >> 8) * proportion;
-                    red += ((corner_color & 0x00FF0000) >> 16) * proportion;
+                    blue += (corner_color & 0x000000FF) * area;
+                    green += ((corner_color & 0x0000FF00) >> 8) * area;
+                    red += ((corner_color & 0x00FF0000) >> 16) * area;
                 }
             }
             int color = 0xFF000000 | ((int) red << 16) | ((int) green << 8) | (int) blue;
             tab_new[k] = color;
         }
 
-        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);//Creating a new well sized bitmap
-        tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);//with the zoomed pixels
-        image.setImageBitmap(tmp);//to put in the image view
+        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);
+        tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);
+        image.setImageBitmap(tmp);
     }
 
-    public static void trace(Image source, Image draw, int threshold) { // Trace the draw gray image on the source image
+    /**
+     * Trace a gray level image on a source image by thresholding the pixels in fonction
+     * of their gray levels.
+     *
+     * @param source
+     * The image to trace on.
+     *
+     * @param draw
+     * The trace.
+     *
+     * @param threshold
+     * The gray levels superior to this will be traced on the image source.
+     *
+     * @see Algorithms#cartoonize
+     *
+     * @since 3.0
+     */
+    public static void trace(Image source, Image draw, int threshold) {
         int w = source.getWidth();
         int h = source.getHeight();
         int size = w * h;
+        
+        // The source image
         int[] tab = source.getPixels(0, 0, source.getWidth(), source.getHeight());
-        int[] tab2 = draw.getPixels(0, 0, source.getWidth(), source.getHeight());
+        // The trace
+        int[] tab2 = draw.getPixels(0, 0, draw.getWidth(), draw.getHeight());
 
         for (int i = 0; i < size; i++) {
+            // The pixels of the source image
             int tmp = tab[i];
-
+            // The pixels of the trace
             int tmp2 = tab2[i];
-            int gray = tmp2 & 0x000000FF; //Gets the gray level of the image to trace
+            
+            // Gets the gray level of the image to trace
+            int gray = tmp2 & 0x000000FF;
 
             int pixel;
-            if (gray > threshold) // if we are on an edge we set the color to black
+            // If we are on a pixel to trace onto the source we set the color to black
+            // Otherwise we keep the pixel of the source as it is
+            if (gray > threshold)
                 pixel = 0xFF000000;
             else
                 pixel = tmp;
             tab[i] = pixel;
         }
 
-        source.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
+        source.setPixels(tab, 0, 0, w, h);
     }
 
+    /**
+     * Find the closest value of a given one in a given array.
+     *
+     * @param tab
+     * The array of all the possible values.
+     * 
+     * @param e
+     * The value for which we seek the closest value in the array.
+     * 
+     * @return The closest float value found in the array.
+     * 
+     * @see Algorithms#cartoonize
+     * 
+     * @since 3.0
+     */
     private static float find_closest_value(float[] tab, float e) {
         float closest = tab[0];
+        
+        // The current minimal distance between the value of reference and the elements of the array
         float d_min = Math.abs(closest - e);
+        
         for (int i = 1; i < tab.length; i++) {
             float d = Math.abs(tab[i] - e);
+            // Updates the distance if it finds a closer element
             if (d < d_min) {
                 d_min = d;
                 closest = tab[i];
@@ -614,6 +666,24 @@ public class Algorithms {
         return closest;
     }
 
+    /**
+     * Calculates the HSV to RGB conversion with values in the interval [0,1]
+     *
+     * @param h
+     * The hue of the pixel.
+     * 
+     * @param s
+     * The saturation of the pixel.
+     * 
+     * @param v
+     * The value of the pixel
+     *
+     * @return The red, green and blue associated values in the interval [0,255]
+     * 
+     * @see Algorithms#cartoonize
+     *
+     * @since 3.0
+     */
     private static int HSVtoRGB(float h, float s, float v) {
         float r, g, b, f, p, q, t;
         r = 0.0f;
@@ -660,10 +730,27 @@ public class Algorithms {
         return 0xFF000000 | (Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
     }
 
+    /**
+     * Calculates the RGB to HSV conversion.
+     *
+     * @param r
+     * The red component of a pixel.
+     * 
+     * @param g
+     * The green component of a pixel.
+     * 
+     * @param b
+     * The blue component of a pixel.
+     * 
+     * @return The hue, value and saturation in a float array of values within the interval [0,1]
+     *
+     * @see Algorithms#cartoonize
+     *
+     * @since 3.0
+     */
     static float[] RGBtoHSV(int r, int g, int b) {
         int max = Math.max(Math.max(r, g), b), min = Math.min(Math.min(r, g), b), d = max - min;
         float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
-
 
         if (max == min)
             h = 0;
@@ -681,21 +768,41 @@ public class Algorithms {
         return hsv;
     }
 
+    /**
+     * Gives to an image a cartoonlike effect by discretisying the HSV values of the pixels
+     * and tracing the edges of the image onto itself.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param n
+     * The number of values used to discretize the interval [0,1] of the HSV values
+     * with the roots of the 2nth Chebychev's polynomial. FIX IT AND ADD TRACE TO IT!!!!!
+     *
+     * @see Algorithms#trace
+     * @see Algorithms#RGBtoHSV
+     * @see Algorithms#HSVtoRGB
+     *
+     * @since 1.0
+     */
     public static void cartoonize(Image img, int n) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        // For the discrete space of HSV values we choose the roots of the nth Chebychev's polynomial (
+        // For the discrete space of HSV values we choose the roots of the nth Chebychev's polynomial
+        // because of our testing beforehand.
 
         int j = 0;
         float[] hValues = new float[n / 2];
         float[] sValues = new float[n / 2];
         float[] vValues = new float[n / 2];
         for (int k = 1; k <= n; k++) {
-            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * n)); // Chebychev's polynomials roots
-            if (root > 0) { // they are symmetrical so we take only the positive ones
+            // Chebychev's polynomials roots
+            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * n));
+            // they are symmetrical so we only take the positive ones
+            if (root > 0) {
                 hValues[j] = root;
                 sValues[j] = root;
                 vValues[j] = root;
@@ -706,12 +813,13 @@ public class Algorithms {
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
 
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
+            int blue = tmp & 0x000000FF;
+            int green = (tmp & 0x0000FF00) >> 8;
+            int red = (tmp & 0x00FF0000) >> 16;
 
             float[] hsv = RGBtoHSV(red, green, blue);
 
+            // Discretization of the HSV values
             hsv[0] = Algorithms.find_closest_value(hValues, hsv[0]);
             hsv[1] = Algorithms.find_closest_value(sValues, hsv[1]);
             hsv[2] = Algorithms.find_closest_value(vValues, hsv[2]);
@@ -719,9 +827,28 @@ public class Algorithms {
             tab[i] = HSVtoRGB(hsv[0], hsv[1], hsv[2]);
         }
 
-        img.setPixels(tab, 0, 0, w, h);//Replaces the pixel array by the new one
+        img.setPixels(tab, 0, 0, w, h);
     }
-
+    
+    /**
+     * Uses the Hough transformation to detect the lines lying in a binary image by sending the pixels
+     * from the (x,y) plane to the (rho,theta) one to transform the problem of finding colinear points
+     * to the one of finding concurrent sinusoidal curves.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param rho
+     * The resolution of the rho's discretization.
+     * 
+     * @param theta
+     * The resolution of the theta's discretization.
+     * 
+     * @param threshold
+     * The threshold above which an intersection point corresponds to a line in the image.
+     * 
+     * @since 3.0
+     */
     public static void hough_transform(Image img, double rho, double theta, int threshold) {
         int w = img.getWidth();
         int h = img.getHeight();
@@ -731,12 +858,17 @@ public class Algorithms {
         // The resolution of the rho's discretisation in the Hough space is rho
         // The resolution of the theta's discretisation in the Hough space is theta
 
-        int Ntheta = (int) (180.0 / theta); // In [0;pi] the normal parameters for a line are unique
-        int Nrho = (int) Math.floor(Math.sqrt(w * w + h * h)); // The number of steps needed to describe the whole Hough space
+        // In [0;pi] the normal parameters for a line are unique
+        int Ntheta = (int) (180.0 / theta);
+        // The number of steps needed to describe the whole Hough space
+        int Nrho = (int) Math.floor(Math.sqrt(w * w + h * h));
 
-        double drho = Math.floor(Math.sqrt(w * w + h * h)) / Nrho; // The size of a single step for rho
-        double dtheta = Math.PI / Ntheta; // The size of a single step for theta
+        // The size of a single step for rho
+        double drho = Math.floor(Math.sqrt(w * w + h * h)) / Nrho;
+        // The size of a single step for theta
+        double dtheta = Math.PI / Ntheta;
 
+        // The accumulator used to count the intersection point
         int[][] acc = new int[Ntheta][Nrho];
 
         for (int i = 0; i < h; i++) {
@@ -746,10 +878,14 @@ public class Algorithms {
                 if (gray > 200) {
                     for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
                         double ith_theta = i_theta * dtheta;
-                        double ith_rho = j * Math.cos(ith_theta) + (h - i) * Math.sin(ith_theta); // Parametrization of the line in the (x,y) plane
-                        int j_rho = (int) (ith_rho / drho); // We find out the corresponding rho step
-                        if (j_rho > 0 && j_rho < Nrho) // If it fits in our Hough plane
-                            acc[i_theta][j_rho] += 1; // We increment all the pixels the discrete sinusoidal curve passes through
+                        // Parametrization of the line in the (x,y) plane
+                        double ith_rho = j * Math.cos(ith_theta) + (h - i) * Math.sin(ith_theta);
+                        // We find out the corresponding rho step
+                        int j_rho = (int) (ith_rho / drho);
+                        // If it fits in our Hough plane we increment all the pixels for which the
+                        // discrete sinusoidal curve passes through
+                        if (j_rho > 0 && j_rho < Nrho)
+                            acc[i_theta][j_rho] += 1;
                     }
                 }
             }
@@ -757,18 +893,21 @@ public class Algorithms {
 
         // Now the accumulator is set and we can find the lines in the image in the (rho, theta) plane
 
-        ArrayList<Double[]> lines = new ArrayList<>(); // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
+        // Will contain the lines in the (x, y) plane after a conversion of the ones from the (rho, theta) plane
+        ArrayList<Double[]> lines = new ArrayList<>();
 
         for (int i_theta = 0; i_theta < Ntheta; i_theta++) {
             for (int j_rho = 0; j_rho < Nrho; j_rho++) {
                 if (acc[i_theta][j_rho] > threshold) {
                     double theta0 = i_theta * dtheta;
                     double rho0 = j_rho * drho;
-                    // We are now trying to find the corresponding line y = a*x + b of the line rho0 = x * cos(theta0) + y * sin(theta0)
+                    // We are now trying to find the corresponding line y = a*x + b of the 
+                    // line rho0 = x * cos(theta0) + y * sin(theta0)
 
                     Double a, b;
 
-                    if (Math.abs(theta0 - Math.PI / 2.0) < 0.1) { // The cosine is almost equal to zero (horizontal line)
+                    // The cosine is almost equal to zero (horizontal line)
+                    if (Math.abs(theta0 - Math.PI / 2.0) < 0.1) { 
                         a = 0.0;
                         b = rho0 / Math.sin(theta0);
                     } else if (Math.abs(theta0 - Math.PI) < 0.1 || Math.abs(theta0) < 0.1) { // The sine is almost equal to zero (vertical line)
@@ -786,31 +925,45 @@ public class Algorithms {
         }
 
         // Now we go back into the (x, y) plane and trace the lines onto the image
-        int n_lines = lines.size(); // the number of lines we found in the image
+        // The number of lines we found in the image
+        int n_lines = lines.size();
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 int on_a_line;
                 for (int k = 0; k < n_lines; k++) {
-                    Double[] t = lines.get(k); // t = {a, b} the coefficients of the line
-                    if (t[0].equals(Double.NaN)) // If the line is vertical
+                    // t = {a, b} the coefficients of the line
+                    Double[] t = lines.get(k); 
+                    // If the line is vertical
+                    if (t[0].equals(Double.NaN)) 
                         on_a_line = j - t[1].intValue();
                     else
                         on_a_line = (int) ((h - i) - t[0] * j - t[1]); // Testing if the point is on the line ie if y - ax - b = 0
 
+                    // If a line is detected, draws it in red
                     if (on_a_line == 0) {
-                        tab[i * w + j] = 0xFFFF0000; // Drawing the (red) line
+                        tab[i * w + j] = 0xFFFF0000;
                     }
                 }
             }
         }
 
-        img.setPixels(tab, 0, 0, w, h); // Replaces the pixel array by the new one
+        img.setPixels(tab, 0, 0, w, h);
     }
 
 
     /* -------------- Algorithms using convolutions ---------------- */
 
+    /**
+     * Calculates the convolution with a 3x3 mask that computes the mean of the pixels.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
     public static void meanFilter (Image img) {
         Algorithms.toGray(img);
         float matrixMoyenneur[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
