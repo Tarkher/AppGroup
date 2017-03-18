@@ -100,21 +100,26 @@ public class Algorithms {
         lum = lum > 255 ? 255 : (lum < -255 ? -255 : lum);
 
         for (int i = 0; i < w * h; i++) {
-            int tmp = tab[i];//tmp is the ith argb pixel
-            int blue = (tmp & 0x000000FF) + lum;//Gets the blue component of the pixel and translates it with a factor lum
-            int green = ((tmp & 0x0000FF00) >> 8) + lum;//same for the green component
-            int red = ((tmp & 0x00FF0000) >> 16) + lum;//same for the red component
+            int tmp = tab[i];
+            
+            //Gets the RGB values of the pixel and translates each of them by a factor lum
+            int blue = (tmp & 0x000000FF) + lum;
+            int green = ((tmp & 0x0000FF00) >> 8) + lum;
+            int red = ((tmp & 0x00FF0000) >> 16) + lum;
             int alpha = ((tmp & 0xFF000000) >> 24);
+            
+            // Makes sure that the values don't leave the interval [0,255] by thresholding
             blue = blue > 255 ? 255 : blue;
             red = red > 255 ? 255 : red;
             green = green > 255 ? 255 : green;
             blue = blue < 0 ? 0 : blue;
             red = red < 0 ? 0 : red;
             green = green < 0 ? 0 : green;
-            int final_pix = (alpha << 24) | (red << 16) | (green << 8) | blue;//Makes an integer matching the Color's formatting
-            tab[i] = final_pix;//Stores the pixel's gray level to find its new value in the LUT later
+            
+            int final_pix = (alpha << 24) | (red << 16) | (green << 8) | blue;
+            tab[i] = final_pix;
         }
-        img.setPixels(tab, 0, 0, w, h);//Replaces the bitmap's pixels array by the gray one
+        img.setPixels(tab, 0, 0, w, h);
     }
 
     /**
@@ -171,6 +176,7 @@ public class Algorithms {
      */
     private static int[] histogram(int[] tab) {
         int n = tab.length;
+        // Creates an accumulator indexed on the possible gray levels of an image
         int[] h = new int[256];
 
         for (int tmp : tab) {
@@ -275,39 +281,58 @@ public class Algorithms {
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
+            int blue = tmp & 0x000000FF;
+            int green = (tmp & 0x0000FF00) >> 8;
+            int red = (tmp & 0x00FF0000) >> 16;
 
-            val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);//the max of the R/G/B values (value field in HSV)
+            // Calculates the value (HSV) of the pixel which is the max of the RGB canals
+            val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
         }
 
         int[] h = cumulativeHistogram(val);
-        int min = size;
+        int min = h[0];
 
+        /*
         for (int i = 0; i < 256; i++) {//We get the min and max of pixels below a i level of value
             min = h[i] < min ? h[i] : min;
         }
-
+        */
 
         //Send the values of the cumulative histogram in [0,255], max is always size by definition
         int[] LUT_value = norm_h(min, size, 0, goal, h);
 
         for (int i = 0; i < size; i++) {
             int tmp = tab[i];
-            int blue = tmp & 0x000000FF;//Gets the blue component of the pixel by filtering the Color integer
-            int green = (tmp & 0x0000FF00) >> 8;//same for the green component
-            int red = (tmp & 0x00FF0000) >> 16;//same for the red component
+            int blue = tmp & 0x000000FF;
+            int green = (tmp & 0x0000FF00) >> 8;
+            int red = (tmp & 0x00FF0000) >> 16;
+            
+            // REFAIRE CA MANUELLEMENT
             float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
+            
             float new_value = LUT_value[val[i]] / 255.0f;
             hsv[2] = new_value;
+            
             tmp = Color.HSVToColor(hsv);
-            tab[i] = tmp;//Replaces the pixel in the array
+            tab[i] = tmp;
         }
-        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the bitmap's pixels array by the gray one
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
+    /**
+     * Modifies the bitmap's hue.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param hue
+     * The new hue of the image which is a double in the interval [0,360[
+     *
+     * @see Algorithms#lookUpTable
+     *
+     * @since 1.0
+     */
     public static void colorize(Image img, double hue) {//Modifies the bitmap's hue with a self made hsv to rgb translator
         int w = img.getWidth();
         int h = img.getHeight();
@@ -316,25 +341,27 @@ public class Algorithms {
 
         for (int i = 0; i < w * h; i++) {
             int tmp = tab[i];
-            /* RGB to HSV conversion (the hue is already given so we are not calculating it) */
+            
+            // RGB to HSV conversion (the hue is already given so we are not calculating it)
             double blue = (tmp & 0x000000FF) / 255.0;
             double green = ((tmp & 0x0000FF00) >> 8) / 255.0;
             double red = ((tmp & 0x00FF0000) >> 16) / 255.0;
-
-            double color_max = blue >= green ? (blue >= red ? blue : red) : (green >= red ? green : red);//max of the R/G/B values
-            double color_min = blue <= green ? (blue <= red ? blue : red) : (green <= red ? green : red);//min of the R/G/B values
+            
+            // Calculates the maximum and the minimum of the RGB values
+            double color_max = blue >= green ? (blue >= red ? blue : red) : (green >= red ? green : red);
+            double color_min = blue <= green ? (blue <= red ? blue : red) : (green <= red ? green : red);
             double delta = color_max - color_min;
 
             double saturation = color_max == 0.0 ? 0.0 : delta / color_max;
             double value = color_max;
-            /* -------------------------------------------------- */
 
-            /* HSV to RGB conversion */
+            // HSV to RGB conversion
             double c = value * saturation;
             double x = c * (1 - Math.abs((hue / 60.0) % 2 - 1));
             double m = value - c;
 
-            if (0 <= hue & hue < 60) {//Checks the angle of the hue on the R/G/B color circle
+            // Checks the angle of the hue on the R/G/B color circle
+            if (0 <= hue & hue < 60) {
                 red = c;
                 green = x;
                 blue = 0;
@@ -362,19 +389,39 @@ public class Algorithms {
             int red_new = (int) ((red + m) * 255);
             int green_new = (int) ((green + m) * 255);
             int blue_new = (int) ((blue + m) * 255);
-
-            int final_pix = 0xFF000000 | (red_new << 16) | (green_new << 8) | blue_new;//Formats the new pixel
-            tab[i] = final_pix;//Adds the new pixel to the array
+            
+            // Formats the new pixel
+            int final_pix = 0xFF000000 | (red_new << 16) | (green_new << 8) | blue_new;
+            tab[i] = final_pix;
         }
-        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());//Replaces the pixel array by the new one
+        img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
+    /**
+     * Calculates the convolution between the image and a generic mask. For specific usage of
+     * the convolution operator see below.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param matrix
+     * The mask used to calculate its convolution with the image.
+     *
+     * @see Algorithms#sobelEdgeDetector
+     *      Algorithms#gaussianFilter
+     *      Algorithms#meanFilter
+     *      Algorithms#laplacien
+     *      Algorithms#floorMod
+     *
+     * @since 2.0
+     */
     public static void convolution(Image img, float[][] matrix) {
         int height = img.getHeight();
         int width = img.getWidth();
         int pixels[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
         int output[] = new int[width * height];
 
+        // Calculates the maximum and minimum output of the convolution with the given mask
         float max_value = 0;
         float min_value = 0;
         for(int i = 0; i < matrix.length; i++) {
@@ -386,8 +433,8 @@ public class Algorithms {
             }
         }
 
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 int value = 0;
 
                 for (int i = 0; i < matrix.length; i++) {
@@ -398,6 +445,7 @@ public class Algorithms {
                     }
                 }
 
+                // Checks if the output is not in [0,255] and uses the appropriate bijection to fix it
                 if (value > 255 || value < 0) {
                     value = (int) ((value - min_value)/(max_value - min_value)) * 255;
                 }
@@ -408,37 +456,83 @@ public class Algorithms {
         img.setPixels(output, 0, 0, width, height);
     }
 
-    private static int floorMod(int a, int m) {
-        int b = a % m;
-        if (b < 0)
-            b += m;
-        return b;
+    /**
+     * Modulo with an always positive result.
+     *
+     * @param a
+     * The integer for which we want to calculate its remainder in an euclidean division.
+     *
+     * @param b
+     * The divisor of the euclidean division.
+     *
+     * @return The remainder r of the euclidean division of a by b which verifies 0 <= r < |b| 
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
+    private static int floorMod(int a, int b) {
+        int r = a % b;
+        if (r < 0)
+            r += b;
+        return r;
     }
 
     //TODO: ZOOM------------------------------------------------------------------------------------
 
+    /**
+     * Calculates the zoomed image with aliasing for a given zoom factor
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param zoom
+     * The zoom factor. It can be less than 1 to unzoom.
+     *
+     * @see Algorithms#zoomNoAliasing
+     *
+     * @since 2.0
+     */
     public void zoomAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = new int[h * w];
         img.getPixels(tab, 0, w, 0, 0, w, h);
 
+        // Calculates the dimension of the new image
         int w_new = (int) (w * zoom);
         int h_new = (int) (h * zoom);
         int new_size = w_new * h_new;
         int[] tab_new = new int[new_size];
 
-        for (int k = 0; k < new_size; ++k) {//j is the number of the line
+        // Goes through the new image
+        for (int k = 0; k < new_size; k++) {
+            // Calculates the corresponding lines and columns in the new image
             int i = k % w_new;
             int j = k / w_new;
-            tab_new[j * w_new + i] = tab[(int) (j / zoom) * w + (int) (i / zoom)];//Managing the scales in the new and old image
+            // Managing the difference of scale between the new and old image
+            tab_new[j * w_new + i] = tab[(int) (j / zoom) * w + (int) (i / zoom)];
         }
 
-        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);//Creating a new well sized bitmap
-        tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);//with the zoomed pixels
-        image.setImageBitmap(tmp);//to put in the image view
+        // Creates a new bitmap with the appropriate size with the new pixels
+        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.ARGB_8888);
+        tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);
+        image.setImageBitmap(tmp);
     }
 
+    /**
+     * Calculates the zoomed image with no aliasing with a given zoom factor by weighting each pixels
+     * by the area it occupies on the surface defined by the coordinates of the old pixels.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param float
+     * The zoom factor. It can be less than 1 to unzoom.
+     *
+     *
+     * @since 2.0
+     */
     public void zoomNoAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
         int w = img.getWidth();
         int h = img.getHeight();
@@ -466,16 +560,12 @@ public class Algorithms {
                 for (float offset_j : offsets) {
                     float corner_i = new_i + offset_i;
                     float corner_j = new_j + offset_j;
-                    try {
-                        int corner_color = tab[(int) (corner_j) * w + (int) (corner_i)];
-                        float area = Math.abs(corner_i - center_i) * Math.abs(corner_j - center_j);
-                        float proportion = (area == 0) ? 0 : area;
-                        blue += (corner_color & 0x000000FF) * proportion;
-                        green += ((corner_color & 0x0000FF00) >> 8) * proportion;
-                        red += ((corner_color & 0x00FF0000) >> 16) * proportion;
-                    } catch (Exception e) {
-                        System.err.print(e.getMessage());
-                    }
+                    int corner_color = tab[(int) (corner_j) * w + (int) (corner_i)];
+                    float area = Math.abs(corner_i - center_i) * Math.abs(corner_j - center_j);
+                    float proportion = (area == 0) ? 0 : area;
+                    blue += (corner_color & 0x000000FF) * proportion;
+                    green += ((corner_color & 0x0000FF00) >> 8) * proportion;
+                    red += ((corner_color & 0x00FF0000) >> 16) * proportion;
                 }
             }
             int color = 0xFF000000 | ((int) red << 16) | ((int) green << 8) | (int) blue;
