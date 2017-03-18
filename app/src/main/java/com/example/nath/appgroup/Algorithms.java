@@ -970,6 +970,22 @@ public class Algorithms {
         Algorithms.convolution(img, matrixMoyenneur);
     }
 
+    /**
+     * Calculates the convolution with a gaussian mask of arbitrary size and standard deviation.
+     *
+     * @param img
+     * The image we work on.
+     * 
+     * @param n
+     * The number of rows ans columns of the gaussian mask.
+     *
+     * @param sigma
+     * The standard deviation used to calculate the gaussian.
+     * 
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
     public static void gaussianFilter (Image img) { // Do it with any size of filter (n)
         Algorithms.toGray(img);
         float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
@@ -978,12 +994,33 @@ public class Algorithms {
         Algorithms.convolution(img, matrixGaussien);
     }
 
+    /**
+     * Calculates the convolution with a 3x3 laplacian mask to detect the edges in an image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
     public static void laplacien (Image img) {
         Algorithms.toGray(img);
         float matrixLaplacien[][] = {{0,-1,0}, {-1,4,-1}, {0,-1,0}};
         Algorithms.convolution(img, matrixLaplacien);
     }
 
+    /**
+     * Calculates two convolutions with the two 3x3 sobel masks and uses the gradient's
+     * norm to detect the edges in the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
     public static void sobelEdgeDetector (Image img) {
         Algorithms.toGray(img);
 
