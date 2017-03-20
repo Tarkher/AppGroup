@@ -123,6 +123,47 @@ public class Algorithms {
     }
 
     /**
+     * Increase or decrease the "luminosity" of an Image with a multiplication of factor lum.
+     *
+     * @param img
+     * The image we work on
+     *
+     * @param lum
+     * The multiplication's factor.
+     * If lum equals 0 then the image becomes black.
+     * If lum equals 1 then the image remains unchanged.
+     *
+     * @since 2.0
+     */
+    public static void multiplicativeLuminosity(Image img, double lum) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+
+        lum = lum > 255 ? 255 : (lum < 0 ? 0 : lum);
+
+        for (int i = 0; i < w * h; i++) {
+            int tmp = tab[i];
+
+            //Gets the RGB values of the pixel and multiplies each of them by a factor lum
+            int blue = (int) ((tmp & 0x000000FF) * lum);
+            int green = (int) (((tmp & 0x0000FF00) >> 8) * lum);
+            int red = (int) (((tmp & 0x00FF0000) >> 16) * lum);
+            int alpha = ((tmp & 0xFF000000) >> 24);
+
+            // Makes sure that the values don't leave the interval [0,255] by thresholding
+            // The values can be less than zero so ne tests are needed for that
+            blue = blue > 255 ? 255 : blue;
+            red = red > 255 ? 255 : red;
+            green = green > 255 ? 255 : green;
+
+            int final_pix = (alpha << 24) | (red << 16) | (green << 8) | blue;
+            tab[i] = final_pix;
+        }
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
      * Generates the look up table used for the linear histogram extension that sends a gray level in
      * [minSource , maxSource] to an other gray level in the target interval [minTarget , maxTarget].
      *
@@ -1041,10 +1082,7 @@ public class Algorithms {
 
                 int value = 0;
                 double val = Math.sqrt(valGx * valGx + valGy * valGy);
-                if (val > 255.0)
-                    value = (int) (val/(Math.sqrt(2) * 255));
-                else
-                    value = (int) val;
+                value = (int) (val/Math.sqrt(2));
                 output[i * img.getWidth() + j] = 0xFF000000 | (value << 16) | (value << 8) | value;
             }
         }

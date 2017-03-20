@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -51,6 +51,13 @@ public class MainActivity extends AppCompatActivity {
         seekBarLuminosity.setVisibility(View.INVISIBLE);
         seekBarLuminosity.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LUMINOSITY));
+
+        SeekBar seekBarFlash = (SeekBar)findViewById(R.id.seekBarFlash);
+        seekBarFlash.setMax(265);
+        seekBarFlash.setProgress(10);
+        seekBarFlash.setVisibility(View.INVISIBLE);
+        seekBarFlash.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_FLASH));
 
         SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
         seekBarHoughTheta.setMax(59);
@@ -88,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
         seekBarColorize.setVisibility(View.INVISIBLE);
         SeekBar seekBarLuminosity = (SeekBar)findViewById(R.id.seekBarLuminosity);
         seekBarLuminosity.setVisibility(View.INVISIBLE);
+        SeekBar seekBarFlash= (SeekBar)findViewById(R.id.seekBarFlash);
+        seekBarFlash.setVisibility(View.INVISIBLE);
         SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
         seekBarHoughTheta.setVisibility(View.INVISIBLE);
         SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
@@ -134,6 +143,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.luminosity:
                 customImageView.saveImageTemporary();
                 seekBarLuminosity.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.flash:
+                customImageView.saveImageTemporary();
+                seekBarFlash.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.sobel:

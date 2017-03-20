@@ -7,6 +7,7 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_CONTRAST_EQUALIZATION = 1;
     final static int ALGORITHM_COLORIZE = 2;
     final static int ALGORITHM_LUMINOSITY = 3;
+    final static int ALGORITHM_FLASH = 4;
     final static int ALGORITHM_HOUGH_THETA = 5;
     final static int ALGORITHM_HOUGH_THRESHOLD = 6;
 
@@ -47,6 +48,19 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 break;
             case ALGORITHM_LUMINOSITY:
                 Algorithms.luminosity(imageToProcess, seekBar.getProgress() - 255);
+                break;
+            case ALGORITHM_FLASH:
+                int prog = seekBar.getProgress();
+                double val;
+                if (prog == 0)
+                    val = 0.0;
+                else if (prog < 10)
+                    val = 1.0 - 1.0/prog;
+                else if (prog == 10)
+                    val = 1.0;
+                else
+                    val = 1.0 + (prog - 10) * 0.05;
+                Algorithms.multiplicativeLuminosity(imageToProcess, val);
                 break;
             case ALGORITHM_HOUGH_THETA:
                 Algorithms.hough_transform(imageToProcess,
