@@ -24,7 +24,7 @@ public class CustomImageView extends ImageView {
         this.img = img.clone();
 
         if (freshImage) {
-            imgTmp = null;
+            imgTmp = img.clone();
             this.imgBackup = img.clone(); // We change the backup accordingly
             left = 0; // We display all the image
             top = 0;

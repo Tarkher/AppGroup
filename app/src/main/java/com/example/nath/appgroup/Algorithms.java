@@ -835,9 +835,6 @@ public class Algorithms {
      *
      * @param img
      * The image we work on.
-     *
-     * @param rho
-     * The resolution of the rho's discretization.
      * 
      * @param theta
      * The resolution of the theta's discretization.
@@ -847,13 +844,14 @@ public class Algorithms {
      * 
      * @since 3.0
      */
-    public static void hough_transform(Image img, double rho, double theta, int threshold) {
+    public static void hough_transform(Image img, double theta, int threshold) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
-        // The resolution of the rho's discretisation in the Hough space is rho
+        // The resolution of the rho's discretisation in the Hough space is always 1 (personal
+        // choice for simpler usage)
         // The resolution of the theta's discretisation in the Hough space is theta
 
         // In [0;pi] the normal parameters for a line are unique

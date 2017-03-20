@@ -52,20 +52,16 @@ public class MainActivity extends AppCompatActivity {
         seekBarLuminosity.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LUMINOSITY));
 
-        SeekBar seekBarHoughRho = (SeekBar)findViewById(R.id.seekBarHoughRho);
-        seekBarHoughRho.setMax(499);
-        seekBarHoughRho.setVisibility(View.INVISIBLE);
-        seekBarHoughRho.setOnSeekBarChangeListener(
-                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_RHO));
-
         SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
-        seekBarHoughTheta.setMax(179);
+        seekBarHoughTheta.setMax(59);
+        seekBarHoughTheta.setProgress(4);
         seekBarHoughTheta.setVisibility(View.INVISIBLE);
         seekBarHoughTheta.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THETA));
 
         SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
-        seekBarHoughThreshold.setMax(110);
+        seekBarHoughThreshold.setMax(99);
+        seekBarHoughThreshold.setProgress(40);
         seekBarHoughThreshold.setVisibility(View.INVISIBLE);
         seekBarHoughThreshold.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THRESHOLD));
@@ -92,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
         seekBarColorize.setVisibility(View.INVISIBLE);
         SeekBar seekBarLuminosity = (SeekBar)findViewById(R.id.seekBarLuminosity);
         seekBarLuminosity.setVisibility(View.INVISIBLE);
-        SeekBar seekBarHoughRho = (SeekBar)findViewById(R.id.seekBarHoughRho);
-        seekBarHoughRho.setVisibility(View.INVISIBLE);
         SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
         seekBarHoughTheta.setVisibility(View.INVISIBLE);
         SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
@@ -159,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.houghtransform:
-                seekBarHoughRho.setVisibility(View.VISIBLE);
                 seekBarHoughTheta.setVisibility(View.VISIBLE);
                 seekBarHoughThreshold.setVisibility(View.VISIBLE);
                 break;

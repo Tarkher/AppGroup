@@ -7,7 +7,6 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_CONTRAST_EQUALIZATION = 1;
     final static int ALGORITHM_COLORIZE = 2;
     final static int ALGORITHM_LUMINOSITY = 3;
-    final static int ALGORITHM_HOUGH_RHO = 4;
     final static int ALGORITHM_HOUGH_THETA = 5;
     final static int ALGORITHM_HOUGH_THRESHOLD = 6;
 
@@ -37,7 +36,6 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
         SeekBar seekBarTheta = (SeekBar)activity.findViewById(R.id.seekBarHoughTheta);
         SeekBar seekBarThreshold = (SeekBar)activity.findViewById(R.id.seekBarHoughThreshold);
-        SeekBar seekBarRho = (SeekBar)activity.findViewById(R.id.seekBarHoughRho);
 
 
         switch (algorithm) {
@@ -50,17 +48,13 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             case ALGORITHM_LUMINOSITY:
                 Algorithms.luminosity(imageToProcess, seekBar.getProgress() - 255);
                 break;
-            case ALGORITHM_HOUGH_RHO:
-                Algorithms.hough_transform(imageToProcess, (seekBarTheta.getProgress() + 1.0) * 1.0,
-                        (seekBar.getProgress() + 1.0) * 1.0, seekBarThreshold.getProgress() + 10);
-                break;
             case ALGORITHM_HOUGH_THETA:
-                Algorithms.hough_transform(imageToProcess, (seekBar.getProgress() + 1.0) * 1.0,
-                        (seekBarRho.getProgress() + 1.0) * 1.0, seekBarThreshold.getProgress() + 10);
+                Algorithms.hough_transform(imageToProcess,
+                        (seekBarTheta.getProgress() + 1.0) * 1.0, seekBarThreshold.getProgress() + 1);
                 break;
             case ALGORITHM_HOUGH_THRESHOLD:
-                Algorithms.hough_transform(imageToProcess, (seekBarTheta.getProgress() + 1.0) * 1.0,
-                        (seekBarRho.getProgress() + 1.0) * 1.0, seekBar.getProgress() + 10);
+                Algorithms.hough_transform(imageToProcess,
+                        (seekBarTheta.getProgress() + 1.0) * 1.0, seekBar.getProgress() + 1);
                 break;
 
         }
