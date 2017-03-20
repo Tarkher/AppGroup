@@ -102,7 +102,7 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
                 break;
         }
 
-        view.setImageMatrix(matrix); // display the transformation on screen
+        view.setImageMatrix(matrix); // display the transformations on screen
 
         return true; // indicate event was handled
     }
