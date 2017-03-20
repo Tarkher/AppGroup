@@ -74,9 +74,7 @@ public class Image implements Cloneable {
         this.pixels = new int[height * width];
 
         for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                this.pixels[i * width + j] = pixels[i * width + j];
-            }
+                this.pixels[i] = pixels[i];
         }
 
         this.height = height;
@@ -91,9 +89,7 @@ public class Image implements Cloneable {
             int[] newPixels = new int[height * width];
 
             for (int i = 0; i < height; ++i) {
-                for (int j = 0; j < width; ++j) {
-                    newPixels[i * width + j] = pixels[i * width + j];
-                }
+                    newPixels[i] = pixels[i];
             }
 
             img.pixels = newPixels;

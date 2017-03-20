@@ -14,8 +14,7 @@
         android:id="@+id/customImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-     />
+        android:layout_centerInParent="true" />
 
     <SeekBar
         style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -26,6 +25,61 @@
         android:visibility="invisible"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/seekBar" />
+        android:id="@+id/seekBarContrastEqualization" />
+
+    <SeekBar
+        android:id="@+id/seekBarColorize"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarLuminosity"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarHoughRho"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible" />
+
+    <SeekBar
+        android:id="@+id/seekBarHoughTheta"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarContrastEqualization"
+        android:layout_alignParentStart="true"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible" />
+
+    <SeekBar
+        android:id="@+id/seekBarHoughThreshold"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_above="@+id/seekBarHoughTheta"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

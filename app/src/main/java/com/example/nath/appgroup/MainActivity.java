@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -15,23 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 
-/*
-Image : Classe personnalisée pour représenter une image. Elle contient un tableau à 1 dimension de int.
-Ce tableau est le même tableau que dans Bitmap. La classe contient aussi les attribut height pour la hauteur
-et width pour la largeur. Toutes les méthodes sont justes des setter/getter sauf getBitmap qui renvoit
-le Bitmap généré à partir du tableau pixels.
-
-CustomImageView : Classe personnalisée qui extends du ImageView d'Android.
-Elle contient tout d'abord un attribut Image img qui est l'image affiché à l'écran, Image imgBackup
-est l'image telle qu'elle était la première fois qu'elle a été chargée et permet donc de faire un reset,
-Image imgTmp est utilisé pour certains algorithmes(luminosity, contrastEqualization et colorize). Ces
-algorithmes font varier certains paramètres toujours à partir des données de l'image de départ. Pour ne pas
-modifier en permanence l'image et donc pouvoir voir la différence sur l'image selon certains paramètre,
-on change en permanence img mais pas imgTmp que l'on utilise pour faire les calculs. Ces 3 algorithmes ne
-mettent jamais à jour imgTmp mais les autres le font.
- */
-
 public class MainActivity extends AppCompatActivity {
+    final int SAVE_GALLERY = 100;
+    final int GET_PHOTO = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +32,43 @@ public class MainActivity extends AppCompatActivity {
 
         CustomImageView customImageView = (CustomImageView)findViewById(R.id.customImageView);
         customImageView.setImage(img, true);
+        customImageView.setOnTouchListener(new CustomOnTouchListener());
 
-        SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
-        seekBar.setOnSeekBarChangeListener(new SeekBarListener(customImageView));
+        SeekBar seekBarContrastEqualization = (SeekBar)findViewById(R.id.seekBarContrastEqualization);
+        seekBarContrastEqualization.setMax(255);
+        seekBarContrastEqualization.setVisibility(View.INVISIBLE);
+        seekBarContrastEqualization.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CONTRAST_EQUALIZATION));
+
+        SeekBar seekBarColorize = (SeekBar)findViewById(R.id.seekBarColorize);
+        seekBarColorize.setMax(360);
+        seekBarColorize.setVisibility(View.INVISIBLE);
+        seekBarColorize.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_COLORIZE));
+
+        SeekBar seekBarLuminosity = (SeekBar)findViewById(R.id.seekBarLuminosity);
+        seekBarLuminosity.setMax(510);
+        seekBarLuminosity.setVisibility(View.INVISIBLE);
+        seekBarLuminosity.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LUMINOSITY));
+
+        SeekBar seekBarHoughRho = (SeekBar)findViewById(R.id.seekBarHoughRho);
+        seekBarHoughRho.setMax(499);
+        seekBarHoughRho.setVisibility(View.INVISIBLE);
+        seekBarHoughRho.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_RHO));
+
+        SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
+        seekBarHoughTheta.setMax(179);
+        seekBarHoughTheta.setVisibility(View.INVISIBLE);
+        seekBarHoughTheta.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THETA));
+
+        SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
+        seekBarHoughThreshold.setMax(110);
+        seekBarHoughThreshold.setVisibility(View.INVISIBLE);
+        seekBarHoughThreshold.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THRESHOLD));
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -65,16 +84,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         CustomImageView customImageView = (CustomImageView)findViewById(R.id.customImageView);
-        SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
-
         Image imageToProcess = customImageView.getImage();
-        seekBar.setVisibility(View.INVISIBLE);
+
+        SeekBar seekBarContrastEqualization = (SeekBar)findViewById(R.id.seekBarContrastEqualization);
+        seekBarContrastEqualization.setVisibility(View.INVISIBLE);
+        SeekBar seekBarColorize = (SeekBar)findViewById(R.id.seekBarColorize);
+        seekBarColorize.setVisibility(View.INVISIBLE);
+        SeekBar seekBarLuminosity = (SeekBar)findViewById(R.id.seekBarLuminosity);
+        seekBarLuminosity.setVisibility(View.INVISIBLE);
+        SeekBar seekBarHoughRho = (SeekBar)findViewById(R.id.seekBarHoughRho);
+        seekBarHoughRho.setVisibility(View.INVISIBLE);
+        SeekBar seekBarHoughTheta = (SeekBar)findViewById(R.id.seekBarHoughTheta);
+        seekBarHoughTheta.setVisibility(View.INVISIBLE);
+        SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
+        seekBarHoughThreshold.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
                 Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intentCamera.putExtra("return-data", true);
-                startActivityForResult(intentCamera, 101);
+                startActivityForResult(intentCamera, GET_PHOTO);
                 break;
 
             //Code from coderzheaven.com
@@ -82,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentGallery = new Intent();
                 intentGallery.setType("image/*");
                 intentGallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intentGallery, "Select Picture"), 100);
+                startActivityForResult(Intent.createChooser(intentGallery, "Select Picture"), SAVE_GALLERY);
                 break;
 
             case R.id.save:
@@ -93,46 +122,48 @@ public class MainActivity extends AppCompatActivity {
             case R.id.toGray:
                 Algorithms.toGray(imageToProcess);
                 break;
+
             case R.id.dynamicExtensionColor:
                 Algorithms.dynamicExtensionColor(imageToProcess);
                 break;
+
             case R.id.contrastEqualization:
                 customImageView.saveImageTemporary();
-                seekBar.setMax(255);
-                seekBar.setVisibility(View.VISIBLE);
+                seekBarContrastEqualization.setVisibility(View.VISIBLE);
                 break;
+
             case R.id.colorize:
                 customImageView.saveImageTemporary();
-                seekBar.setMax(360);
-                seekBar.setVisibility(View.VISIBLE);
+                seekBarColorize.setVisibility(View.VISIBLE);
                 break;
+
             case R.id.luminosity:
                 customImageView.saveImageTemporary();
-                seekBar.setMax(510);
-                seekBar.setVisibility(View.VISIBLE);
+                seekBarLuminosity.setVisibility(View.VISIBLE);
                 break;
+
             case R.id.sobel:
                 Algorithms.sobelEdgeDetector(imageToProcess);
                 break;
+
             case R.id.moyenneur:
                 Algorithms.meanFilter(imageToProcess);
                 break;
+
             case R.id.gaussien:
-                Algorithms.gaussianFilter(imageToProcess);
+                Algorithms.gaussianFilter(imageToProcess, 1, 1.0);
                 break;
+
             case R.id.laplacien:
                 Algorithms.laplacien(imageToProcess);
                 break;
-            case R.id.cartoonize:
-                Image trace_edges = imageToProcess.clone();
-                Algorithms.cartoonize(imageToProcess, 12); // SEEKBAR STP
-                Algorithms.sobelEdgeDetector(trace_edges);
-                // LA FONCTION TRACE DOIT AVOIR UNE SEEKBAR DE 0 A 255 MAIS UNIQUEMENT TRACE
-                Algorithms.trace(imageToProcess, trace_edges, 255);
-                break;
+
             case R.id.houghtransform:
-                Algorithms.hough_transform(imageToProcess, 1.0, 5.0, 50);
+                seekBarHoughRho.setVisibility(View.VISIBLE);
+                seekBarHoughTheta.setVisibility(View.VISIBLE);
+                seekBarHoughThreshold.setVisibility(View.VISIBLE);
                 break;
+
             case R.id.reset:
                 customImageView.setImage(customImageView.getImageBackup(), false);
                 return true;
@@ -145,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     //Code from coderzheaven.com
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == 100) {
+            if (requestCode == SAVE_GALLERY) {
 
                 Uri selectedImageUri = data.getData();
                 if (null != selectedImageUri) {
@@ -166,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            if (requestCode == 101) {
+            if (requestCode == GET_PHOTO) {
                 try {
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     int height = bitmap.getHeight();

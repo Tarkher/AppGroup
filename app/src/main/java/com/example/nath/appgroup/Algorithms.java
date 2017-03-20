@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * and their private counterparts used for diverse tasks in the algorithms.
  * </p>
  *
- * @author Maxime Roméas Nathan Castets Aziz Fouché
+ * @author Maxime Romeas Nathan Castets Aziz Fouche
  * @version 3.0
  */
 public class Algorithms {
@@ -478,8 +478,6 @@ public class Algorithms {
         return r;
     }
 
-    //TODO: ZOOM------------------------------------------------------------------------------------
-
     /**
      * Calculates the zoomed image with aliasing for a given zoom factor
      *
@@ -527,7 +525,7 @@ public class Algorithms {
      * @param img
      * The image we work on.
      *
-     * @param float
+     * @param zoom
      * The zoom factor. It can be less than 1 to unzoom.
      *
      * @since 2.0
@@ -580,7 +578,7 @@ public class Algorithms {
             tab_new[k] = color;
         }
 
-        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.RGB_565);
+        Bitmap tmp = Bitmap.createBitmap(w_new, h_new, Bitmap.Config.ARGB_8888);
         tmp.setPixels(tab_new, 0, w_new, 0, 0, w_new, h_new);
         image.setImageBitmap(tmp);
     }
@@ -986,7 +984,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public static void gaussianFilter (Image img) { // Do it with any size of filter (n)
+    public static void gaussianFilter (Image img, int n, double sigma) { // Do it with any size of filter (n)
         Algorithms.toGray(img);
         float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
                 {3f/98f, 8f/98f, 10f/98f, 8f/98f, 3f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
@@ -1011,7 +1009,7 @@ public class Algorithms {
     }
 
     /**
-     * Calculates two convolutions with the two 3x3 sobel masks and uses the gradient's
+     * Calculates two convolutions with the two 3x3 Sobel masks and uses the gradient's
      * norm to detect the edges in the image.
      *
      * @param img
@@ -1046,7 +1044,7 @@ public class Algorithms {
                 int value = 0;
                 double val = Math.sqrt(valGx * valGx + valGy * valGy);
                 if (val > 255.0)
-                    value = (int) (val/(Math.sqrt(2) * 4 * 255));
+                    value = (int) (val/(Math.sqrt(2) * 255));
                 else
                     value = (int) val;
                 output[i * img.getWidth() + j] = 0xFF000000 | (value << 16) | (value << 8) | value;
