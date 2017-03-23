@@ -1032,9 +1032,6 @@ public class Algorithms {
         for (int x = -coord; x <= coord; x++)
             for (int y = -coord; y <= coord; y++)
                 matrixGaussien[x+coord][y+coord] = (float) (1/(2*Math.PI*sigma*sigma) * Math.exp(-(x*x+y*y)/(2*sigma*sigma)));
-        /*float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
-                {3f/98f, 8f/98f, 10f/98f, 8f/98f, 3f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
-                {1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}};*/
         Algorithms.convolution(img, matrixGaussien);
     }
 
