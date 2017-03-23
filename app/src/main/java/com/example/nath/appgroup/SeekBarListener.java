@@ -10,6 +10,7 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_FLASH = 4;
     final static int ALGORITHM_HOUGH_THETA = 5;
     final static int ALGORITHM_HOUGH_THRESHOLD = 6;
+    final static int AlGORITHM_SPHERES = 7;
 
     private CustomImageView customImageView;
     private int algorithm;
@@ -69,6 +70,9 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             case ALGORITHM_HOUGH_THRESHOLD:
                 Algorithms.hough_transform(imageToProcess,
                         (seekBarTheta.getProgress() + 1.0) * 1.0, seekBar.getProgress() + 1);
+                break;
+            case AlGORITHM_SPHERES:
+                Algorithms.spheres(imageToProcess, (seekBar.getProgress() + 2) * 2 + 1);
                 break;
 
         }

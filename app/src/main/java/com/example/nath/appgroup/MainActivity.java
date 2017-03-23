@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -73,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
         seekBarHoughThreshold.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THRESHOLD));
 
+        SeekBar seekBarSpheres = (SeekBar)findViewById(R.id.seekBarSpheres);
+        seekBarSpheres.setMax(10);
+        seekBarSpheres.setProgress(1);
+        seekBarSpheres.setVisibility(View.INVISIBLE);
+        seekBarSpheres.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.AlGORITHM_SPHERES));
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
@@ -101,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         seekBarHoughTheta.setVisibility(View.INVISIBLE);
         SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
         seekBarHoughThreshold.setVisibility(View.INVISIBLE);
+        SeekBar seekBarSpheres = (SeekBar) findViewById(R.id.seekBarSpheres);
+        seekBarSpheres.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -167,8 +176,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.houghtransform:
+                customImageView.saveImageTemporary();
                 seekBarHoughTheta.setVisibility(View.VISIBLE);
                 seekBarHoughThreshold.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.spheres:
+                customImageView.saveImageTemporary();
+                seekBarSpheres.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.rotation:
+                Algorithms.rotate(imageToProcess);
                 break;
 
             case R.id.reset:

@@ -1021,7 +1021,7 @@ public class Algorithms {
      * 
      * @see Algorithms#convolution
      *
-     * @since 2.0
+     * @since 4.0
      */
     public static void gaussianFilter (Image img, int n, double sigma) {
         // size 3 sigma 0.8 are good values for lenna
@@ -1092,5 +1092,69 @@ public class Algorithms {
         }
 
         img.setPixels(output, 0, 0, img.getWidth(), img.getHeight());
+    }
+
+    /**
+     * Represents the image as a patchwork of spheres of a given radius.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param radius
+     * The radius of the spheres.
+     *
+     * @see Sphere
+     *
+     * @since 4.0
+     */
+    public static void spheres (Image img, int radius) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int size = w * h;
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+
+        ArrayList<Sphere> spheresList = new ArrayList<>();
+
+        // Stocks all the spheres within the image for later
+        for (int x = radius; x < h; x += 2*radius)
+            for (int y = radius; y < w; y += 2*radius)
+                spheresList.add(new Sphere(x, y, radius, tab[x * w + y]));
+
+        // Erases the image
+        for (int i = 0; i < size; i++)
+            tab[i] = 0xFFFFFFFF;
+
+        for (int i = 0; i < spheresList.size(); i++) {
+            Sphere tmp = spheresList.get(i);
+            for(int x = Math.max(0, tmp.getCenterX() - radius); x < Math.min(h, tmp.getCenterX() + radius); x++)
+                for(int y = Math.max(0, tmp.getCenterY() - radius); y < Math.min(w, tmp.getCenterY() + radius); y++)
+                    // Checks if a point is in the sphere and draws it if it is
+                    if (Math.sqrt(Math.pow((x - tmp.getCenterX()),2) + Math.pow((y - tmp.getCenterY()),2)) < radius)
+                        tab[x * w + y] = tmp.getColor();
+        }
+
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
+     * Rotates the image by 90 degrees.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @since 4.0
+     */
+    public static void rotate (Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int size = w * h;
+        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] newTab = new int[size];
+
+        for (int i = 0; i < h; i++)
+            for (int j = 0; j < w; j++)
+                newTab[j * h + i] = tab[i * w + j];
+
+        img.setPixels(newTab, 0, 0, h, w);
     }
 }

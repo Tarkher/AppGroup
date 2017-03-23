@@ -65,6 +65,14 @@
         android:title="Hough transform"
         app:showAsAction="never" />
     <item
+        android:id="@+id/spheres"
+        android:title="spheres"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/rotation"
+        android:title="rotation"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/reset"
         android:title="reset"
         app:showAsAction="never" />
