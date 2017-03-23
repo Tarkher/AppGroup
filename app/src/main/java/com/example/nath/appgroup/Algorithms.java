@@ -1014,7 +1014,7 @@ public class Algorithms {
      * The image we work on.
      * 
      * @param n
-     * The number of rows ans columns of the gaussian mask.
+     * The number of rows ans columns of the gaussian mask, it must be odd.
      *
      * @param sigma
      * The standard deviation used to calculate the gaussian.
@@ -1023,11 +1023,18 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public static void gaussianFilter (Image img, int n, double sigma) { // Do it with any size of filter (n)
+    public static void gaussianFilter (Image img, int n, double sigma) {
+        // size 3 sigma 0.8 are good values for lenna
+        // size 5 sigma 1.25 too
         Algorithms.toGray(img);
-        float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
+        float[][] matrixGaussien = new float[n][n];
+        int coord = (n-1)/2;
+        for (int x = -coord; x <= coord; x++)
+            for (int y = -coord; y <= coord; y++)
+                matrixGaussien[x+coord][y+coord] = (float) (1/(2*Math.PI*sigma*sigma) * Math.exp(-(x*x+y*y)/(2*sigma*sigma)));
+        /*float[][] matrixGaussien = {{1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
                 {3f/98f, 8f/98f, 10f/98f, 8f/98f, 3f/98f}, {2f/98f, 6f/98f, 8f/98f, 6f/98f, 2f/98f},
-                {1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}};
+                {1f/98f, 2f/98f, 3f/98f, 2f/98f, 1f/98f}};*/
         Algorithms.convolution(img, matrixGaussien);
     }
 
