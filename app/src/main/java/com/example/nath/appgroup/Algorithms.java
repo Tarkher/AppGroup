@@ -1153,7 +1153,7 @@ public class Algorithms {
 
         for (int i = 0; i < h; i++)
             for (int j = 0; j < w; j++)
-                newTab[j * h + i] = tab[i * w + j];
+                newTab[j * h + (h-1-i)] = tab[i * w + j];
 
         img.setPixels(newTab, 0, 0, h, w);
     }
