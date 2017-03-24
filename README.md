@@ -2,6 +2,4 @@
 
 # TO DO
 
-Réparer le laplacien
-
-Fonction qui ne garde qu'une certaine teinte
+Plus de bonus
