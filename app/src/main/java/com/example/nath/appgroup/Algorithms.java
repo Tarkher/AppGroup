@@ -656,23 +656,20 @@ public class Algorithms {
     }
 
     /**
-     * Trace a gray level image on a source image by thresholding the pixels in fonction
-     * of their gray levels.
+     * Trace a binary image on a source image by inverting the pixels of the binary trace and drawing
+     * the black ones onto the source.
      *
      * @param source
      * The image to trace on.
      *
      * @param draw
-     * The trace.
-     *
-     * @param threshold
-     * The gray levels superior to this will be traced on the image source.
+     * The trace (usually the edges detected with the canny edge detector
      *
      * @see Algorithms#cartoonize
      *
      * @since 3.0
      */
-    public static void trace(Image source, Image draw, int threshold) {
+    public static void trace(Image source, Image draw) {
         int w = source.getWidth();
         int h = source.getHeight();
         int size = w * h;
@@ -694,7 +691,7 @@ public class Algorithms {
             int pixel;
             // If we are on a pixel to trace onto the source we set the color to black
             // Otherwise we keep the pixel of the source as it is
-            if (gray > threshold)
+            if (gray == 255)
                 pixel = 0xFF000000;
             else
                 pixel = tmp;
@@ -847,7 +844,7 @@ public class Algorithms {
      *
      * @param n
      * The number of values used to discretize the interval [0,1] of the HSV values
-     * with the roots of the 2nth Chebychev's polynomial. FIX IT AND ADD TRACE TO IT!!!!!
+     * with the roots of the 2nth Chebychev's polynomial.
      *
      * @see Algorithms#trace
      * @see Algorithms#RGBtoHSV
@@ -865,12 +862,12 @@ public class Algorithms {
         // because of our testing beforehand.
 
         int j = 0;
-        float[] hValues = new float[n / 2];
-        float[] sValues = new float[n / 2];
-        float[] vValues = new float[n / 2];
-        for (int k = 1; k <= n; k++) {
-            // Chebychev's polynomials roots
-            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * n));
+        float[] hValues = new float[n];
+        float[] sValues = new float[n];
+        float[] vValues = new float[n];
+        for (int k = 1; k <= 2*n; k++) {
+            // Chebyshev's polynomials roots
+            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * 2*n));
             // they are symmetrical so we only take the positive ones
             if (root > 0) {
                 hValues[j] = root;

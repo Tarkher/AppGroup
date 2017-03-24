@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_HOUGH_THETA));
 
         SeekBar seekBarHoughThreshold = (SeekBar)findViewById(R.id.seekBarHoughThreshold);
-        seekBarHoughThreshold.setMax(99);
+        seekBarHoughThreshold.setMax(200);
         seekBarHoughThreshold.setProgress(40);
         seekBarHoughThreshold.setVisibility(View.INVISIBLE);
         seekBarHoughThreshold.setOnSeekBarChangeListener(
@@ -177,6 +177,13 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.laplacien:
                 Algorithms.laplacien(imageToProcess);
+                break;
+
+            case R.id.cartoonize:
+                Image trace = imageToProcess.clone();
+                Algorithms.cannyEdgeDetector(trace, 0.08, 0.15);
+                Algorithms.cartoonize(imageToProcess, 8);
+                Algorithms.trace(imageToProcess, trace);
                 break;
 
             case R.id.houghtransform:
