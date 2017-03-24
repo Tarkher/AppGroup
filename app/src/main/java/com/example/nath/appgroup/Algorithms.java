@@ -122,6 +122,39 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 
+    public static void colorFilter(Image img, int degree) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+
+        for (int i = 0; i < h; ++i) {
+            for (int j = 0; j < w; ++j) {
+                int pixel = tab[i * w + j];
+
+                // Gets each RGB components of the pixel by filtering the Color integer and weights them to turn the image in gray level
+                int blue = pixel & 0x000000FF;
+                int green = (pixel & 0x0000FF00) >> 8;
+                int red = (pixel & 0x00FF0000) >> 16;
+
+                float hsv[] = new float[3];
+                Color.RGBToHSV(red, green, blue, hsv);
+
+                int low = floorMod(degree - 10, 360);
+                int high = floorMod(degree + 10, 360);
+
+                if (hsv[0] <= low && hsv[0] >= high) {
+                    // Contains the pixel's gray level
+                    int color_custom = (int)(blue * 0.11) + (int)(green * 0.59) + (int)(red * 0.3);
+                    // Makes an integer matching the Color's formatting
+                    int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;
+                    tab[i * w + j] = final_pix;
+                }
+            }
+        }
+
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
     /**
      * Increase or decrease the "luminosity" of an Image with a multiplication of factor lum.
      *

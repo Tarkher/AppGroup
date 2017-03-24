@@ -3,22 +3,17 @@ package com.example.nath.appgroup;
 import android.app.Activity;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 
-//code from Stackoverflow
 public class CustomOnTouchListener extends Activity implements OnTouchListener
 {
-    private static final String TAG = "Touch";
-
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
-    Matrix savedMatrix = new Matrix();
+    Matrix previousMatrix = new Matrix();
 
     // The 3 states (events) which the user is trying to perform
     static final int NONE = 0;
@@ -31,16 +26,6 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
     PointF mid = new PointF();
     float oldDist = 1f;
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ImageView view = (ImageView) findViewById(R.id.customImageView);
-        view.setOnTouchListener(this);
-    }
-
     @Override
     public boolean onTouch(View v, MotionEvent event)
     {
@@ -51,9 +36,8 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
         switch (event.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:   // first finger down only
-                savedMatrix.set(matrix);
+                previousMatrix.set(matrix);
                 start.set(event.getX(), event.getY());
-                Log.d(TAG, "mode=DRAG"); // write to LogCat
                 mode = DRAG;
                 break;
 
@@ -62,18 +46,15 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
             case MotionEvent.ACTION_POINTER_UP: // second finger lifted
 
                 mode = NONE;
-                Log.d(TAG, "mode=NONE");
                 break;
 
             case MotionEvent.ACTION_POINTER_DOWN: // first and second finger down
 
                 oldDist = spacing(event);
-                Log.d(TAG, "oldDist=" + oldDist);
                 if (oldDist > 5f) {
-                    savedMatrix.set(matrix);
+                    previousMatrix.set(matrix);
                     midPoint(mid, event);
                     mode = ZOOM;
-                    Log.d(TAG, "mode=ZOOM");
                 }
                 break;
 
@@ -81,17 +62,16 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
 
                 if (mode == DRAG)
                 {
-                    matrix.set(savedMatrix);
+                    matrix.set(previousMatrix);
                     matrix.postTranslate(event.getX() - start.x, event.getY() - start.y); // create the transformation in the matrix  of points
                 }
                 else if (mode == ZOOM)
                 {
                     // pinch zooming
                     float newDist = spacing(event);
-                    Log.d(TAG, "newDist=" + newDist);
                     if (newDist > 5f)
                     {
-                        matrix.set(savedMatrix);
+                        matrix.set(previousMatrix);
                         scale = newDist / oldDist; // setting the scaling of the
                         // matrix...if scale > 1 means
                         // zoom in...if scale < 1 means
@@ -102,7 +82,7 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
                 break;
         }
 
-        view.setImageMatrix(matrix); // display the transformations on screen
+        view.setImageMatrix(matrix); // display the transformation on screen
 
         return true; // indicate event was handled
     }

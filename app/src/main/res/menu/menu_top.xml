@@ -37,6 +37,10 @@
         android:title="luminosity"
         app:showAsAction="never" />
     <item
+        android:id="@+id/colorFilter"
+        android:title="colorFilter"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/flash"
         android:title="flash"
         app:showAsAction="never" />
