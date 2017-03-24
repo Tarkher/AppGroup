@@ -171,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
                 Algorithms.meanFilter(imageToProcess);
                 break;
 
+            case R.id.sharpens:
+                Algorithms.shapens(imageToProcess);
+                break;
+
             case R.id.gaussien:
                 Algorithms.gaussianFilter(imageToProcess, 3, 0.8);
                 break;

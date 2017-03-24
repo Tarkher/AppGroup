@@ -520,13 +520,92 @@ public class Algorithms {
                         value += (0x000000FF & pixels[yPrime * width + xPrime]) * matrix[i][j];
                     }
                 }
-                int alpha = (pixels[y * width + x] & 0xFF000000);
+                int alpha = (pixels[y * width + x] & 0xFF000000) >> 24;
 
                 // Checks if the output is not in [0,255] and uses the appropriate bijection to fix it
                 if (value > 255 || value < 0)
                     value = (int) ((value - min_value)/(max_value - min_value)) * 255;
 
-                output[y * width + x] = (alpha << 24) | (value << 16) | (value << 8) | value;
+                output[y * width + x] = (alpha << 24) | (value << 16) | ( value << 8) | value;
+            }
+        }
+
+        img.setPixels(output, 0, 0, width, height);
+    }
+
+    /**
+     * Calculates the convolution between the ARGB image and a generic mask on the HSV's value canal
+     * to preserve the image's coherence.
+     * For specific usage of the convolution operator see below.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param matrix
+     * The mask used to calculate its convolution with the image.
+     *
+     * @see Algorithms#shapens
+     *
+     * @since 4.0
+     */
+    public static void convolutionColor(Image img, float[][] matrix) {
+        int height = img.getHeight();
+        int width = img.getWidth();
+        int pixels[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int output[] = new int[width * height];
+
+        // Calculates the maximum and minimum output of the convolution with the given mask
+        float max_value = 0;
+        float min_value = 0;
+        for(int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j] >= 0)
+                    max_value += matrix[i][j] * 255;
+                else
+                    min_value += matrix[i][j] * 255;
+            }
+        }
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                float result = 0;
+
+                for (int i = 0; i < matrix.length; i++) {
+                    for (int j = 0; j < matrix.length; j++) {
+                        int yPrime = floorMod(y + i - (matrix.length - 1) / 2, height);
+                        int xPrime = floorMod(x + j - (matrix.length - 1) / 2, width);
+
+                        int tmp = pixels[yPrime * width + xPrime];
+
+                        int value = 0;
+
+                        int blue = tmp & 0x000000FF;
+                        int green = (tmp & 0x0000FF00) >> 8;
+                        int red = (tmp & 0x00FF0000) >> 16;
+
+                        // Calculates the value (HSV) of the pixel which is the max of the RGB canals
+                        value = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
+
+                        result += value * matrix[i][j];
+                    }
+                }
+
+                if (result > 255)
+                    result = 255.0f;
+                else if (result < 0)
+                    result = 0.0f;
+
+                float [] hsv = new float[3];
+                int tmp = pixels[y * width + x];
+
+                int blue = tmp & 0x000000FF;
+                int green = (tmp & 0x0000FF00) >> 8;
+                int red = (tmp & 0x00FF0000) >> 16;
+                int alpha = (tmp & 0xFF000000) >> 24;
+
+                Color.RGBToHSV(red, green, blue, hsv);
+                hsv[2] = result/255.0f;
+                output[y * width + x] = Color.HSVToColor(alpha, hsv);
             }
         }
 
@@ -1036,8 +1115,23 @@ public class Algorithms {
      */
     public static void meanFilter (Image img) {
         Algorithms.toGray(img);
-        float matrixMoyenneur[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
-        Algorithms.convolution(img, matrixMoyenneur);
+        float matrixMean[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
+        Algorithms.convolutionColor(img, matrixMean);
+    }
+
+    /**
+     * Calculates the convolution with a 3x3 mask that sharpens the edges of an ARGB image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolutionColor
+     *
+     * @since 4.0
+     */
+    public static void shapens (Image img) {
+        float matrixMoyenneur[][] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
+        Algorithms.convolutionColor(img, matrixMoyenneur);
     }
 
     /**

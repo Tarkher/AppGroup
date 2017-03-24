@@ -77,6 +77,10 @@
         android:title="rotation"
         app:showAsAction="never" />
     <item
+        android:id="@+id/sharpens"
+        android:title="sharpness"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/reset"
         android:title="reset"
         app:showAsAction="never" />
