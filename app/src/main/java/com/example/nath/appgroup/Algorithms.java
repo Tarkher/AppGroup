@@ -1129,9 +1129,24 @@ public class Algorithms {
      *
      * @since 4.0
      */
-    public static void shapens (Image img) {
+    public static void sharpens (Image img) {
         float matrixMoyenneur[][] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
         Algorithms.convolutionColor(img, matrixMoyenneur);
+    }
+
+    /**
+     * Calculates the convolution with a 3x3 mask that sharpens the edges of an ARGB image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolutionColor
+     *
+     * @since 4.0
+     */
+    public static void contrastFilter (Image img) {
+        float matrixContrast[][] = {{1, -3, 1}, {-3, 9, -3}, {1, -3, 1}};
+        Algorithms.convolutionColor(img, matrixContrast);
     }
 
     /**
@@ -1238,7 +1253,7 @@ public class Algorithms {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
-        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] tab = img.getPixels(0, 0, w, h);
 
         ArrayList<Sphere> spheresList = new ArrayList<>();
 

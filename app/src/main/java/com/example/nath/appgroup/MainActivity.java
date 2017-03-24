@@ -172,7 +172,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.sharpens:
-                Algorithms.shapens(imageToProcess);
+                Algorithms.sharpens(imageToProcess);
+                break;
+
+            case R.id.sharpens2:
+                Algorithms.contrastFilter(imageToProcess);
                 break;
 
             case R.id.gaussien:
