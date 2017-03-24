@@ -544,7 +544,8 @@ public class Algorithms {
      * @param matrix
      * The mask used to calculate its convolution with the image.
      *
-     * @see Algorithms#shapens
+     * @see Algorithms#sharpens
+     * @see Algorithms#contrastFilter
      *
      * @since 4.0
      */
