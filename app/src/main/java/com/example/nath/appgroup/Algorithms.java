@@ -1047,7 +1047,7 @@ public class Algorithms {
      */
     public static void laplacien (Image img) {
         Algorithms.toGray(img);
-        float matrixLaplacien[][] = {{0,-1,0}, {-1,4,-1}, {0,-1,0}};
+        float matrixLaplacien[][] = {{-1,-1,-1}, {-1,8,-1}, {-1,-1,-1}};
         Algorithms.convolution(img, matrixLaplacien);
     }
 
@@ -1155,6 +1155,6 @@ public class Algorithms {
             for (int j = 0; j < w; j++)
                 newTab[j * h + (h-1-i)] = tab[i * w + j];
 
-        img.setPixels(newTab, 0, 0, h, w);
+        img.setPixels(newTab, 0, 0, w, h);
     }
 }
