@@ -45,6 +45,10 @@
         android:title="sobel"
         app:showAsAction="never" />
     <item
+        android:id="@+id/canny"
+        android:title="canny"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/moyenneur"
         android:title="moyenneur"
         app:showAsAction="never" />

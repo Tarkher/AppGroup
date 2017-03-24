@@ -50,7 +50,7 @@ public class CustomOnTouchListener extends Activity implements OnTouchListener
 
         switch (event.getAction() & MotionEvent.ACTION_MASK)
         {
-            case MotionEvent.ACTION_DOWN:   // first finger down only
+            case MotionEvent.ACTION_DOWN: // first finger down only
                 savedMatrix.set(matrix);
                 start.set(event.getX(), event.getY());
                 Log.d(TAG, "mode=DRAG"); // write to LogCat

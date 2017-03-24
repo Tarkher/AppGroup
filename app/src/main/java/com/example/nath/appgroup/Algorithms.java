@@ -194,10 +194,34 @@ public class Algorithms {
         return tab;
     }
 
-    private static int[] norm_h(int a, int b, int c, int d, int[] h) {//Normalize the cumulative histogram
+    /**
+     * Generates the look up table used for the contrast equalization that sends a gray level in
+     * [minSource , maxSource] to its corresponding gray level in the target interval [minTarget , maxTarget].
+     * To understand, if x % of the gray levels are below the gray level n then the gray level n will be sent to x % of maxTarget.
+     *
+     * @param minSource
+     * The minimum value of the source interval.
+     *
+     * @param maxSource
+     * The maximum value of the source interval.
+     *
+     * @param minTarget
+     * The minimum value of the target interval.
+     *
+     * @param maxTarget
+     * The maximum value of the target interval.
+     *
+     * @return The corresponding look up table which is an integer array.
+     *
+     * @see Algorithms#dynamicExtensionColor
+     *
+     * @since 1.0
+     */
+    private static int[] norm_h(int minSource, int maxSource, int minTarget, int maxTarget, int[] h) {
         int[] tab = new int[256];
         for (int gray_lvl = 0; gray_lvl < 256; gray_lvl++) {
-            tab[gray_lvl] = (int) (((d - c) * (((h[gray_lvl] - a) / (double) (b - a)))) + c);//bijection from [min,max] to [c,d]
+            tab[gray_lvl] = (int) (((maxTarget - minTarget) * (((h[gray_lvl] - minSource) /
+                    (double) (maxSource - minSource)))) + minTarget);
         }
         return tab;
     }
@@ -216,13 +240,12 @@ public class Algorithms {
      * @since 2.0
      */
     private static int[] histogram(int[] tab) {
-        int n = tab.length;
         // Creates an accumulator indexed on the possible gray levels of an image
         int[] h = new int[256];
 
-        for (int tmp : tab) {
+        for (int tmp : tab)
             h[tmp] += 1;
-        }
+
         return h;
     }
 
@@ -245,9 +268,8 @@ public class Algorithms {
 
         h[0] = tab[0];
 
-        for (int i = 1; i < 256; i++) {
+        for (int i = 1; i < 256; i++)
             h[i] = h[i - 1] + tab[i];
-        }
 
         return h;
     }
@@ -312,7 +334,21 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
-    
+    /**
+     * Increases the contrast of an RGB image with the contrast equalization algorithm performed
+     * on the canal value of the HSV representation to preserve the coherence of the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param goal
+     * The new maximum color value of the image's pixels.
+     *
+     * @see Algorithms#norm_h
+     * @see Algorithms#cumulativeHistogram
+     *
+     * @since 2.0
+     */
     public static void contrastEqualization(Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
         int w = img.getWidth();
         int hei = img.getHeight();
@@ -330,16 +366,11 @@ public class Algorithms {
             val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
         }
 
+        // Gets the cumulative histogram
         int[] h = cumulativeHistogram(val);
         int min = h[0];
 
-        /*
-        for (int i = 0; i < 256; i++) {//We get the min and max of pixels below a i level of value
-            min = h[i] < min ? h[i] : min;
-        }
-        */
-
-        //Send the values of the cumulative histogram in [0,255], max is always size by definition
+        // Sends the values of the cumulative histogram in [0,255], max is always size by definition
         int[] LUT_value = norm_h(min, size, 0, goal, h);
 
         for (int i = 0; i < size; i++) {
@@ -347,11 +378,11 @@ public class Algorithms {
             int blue = tmp & 0x000000FF;
             int green = (tmp & 0x0000FF00) >> 8;
             int red = (tmp & 0x00FF0000) >> 16;
-            
-            // REFAIRE CA MANUELLEMENT
+
             float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
-            
+
+            // Modifies the value of the pixel thanks to the look up table
             float new_value = LUT_value[val[i]] / 255.0f;
             hsv[2] = new_value;
             
@@ -1142,6 +1173,9 @@ public class Algorithms {
      * @param img
      * The image we work on.
      *
+     * @param imView
+     * The image view in which the image is displayed.
+     *
      * @since 4.0
      */
     public static void rotate (Image img, CustomImageView imView) {
@@ -1159,5 +1193,150 @@ public class Algorithms {
         img.setWidth(h);
         img.setHeight(w);
         imView.setCoord(0, 0, h, w);
+    }
+
+    /**
+     * Calculates two convolutions with the two 3x3 Sobel masks, then calculates the local maximums of the gradient obtained,
+     * then uses a double threshold and finally tracks the edges by hysteresis to find the edges in the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param lowThresh
+     * The lowest threshold used during the double threshold step.
+     *
+     * @param highThresh
+     * The highest threshold used during the double threshold step.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 4.0
+     */
+    public static void cannyEdgeDetector (Image img, double lowThresh, double highThresh) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int size = w*h;
+
+        Algorithms.toGray(img);
+
+        float[][] Gx = {{-1,0,1}, {-2,0,2}, {-1,0,1}};
+        float[][] Gy = {{-1,-2,-1}, {0,0,0}, {1,2,1}};
+
+        Image imgGx = img.clone();
+        Image imgGy = img.clone();
+
+        Algorithms.convolution(imgGx, Gx);
+        Algorithms.convolution(imgGy, Gy);
+
+        int[] imgGxPixels = imgGx.getPixels(0, 0, w, h);
+        int[] imgGyPixels = imgGy.getPixels(0, 0, w, h);
+
+        int[] imgGxPixelsNorm = new int[size];
+        int[] imgGyPixelsNorm = new int[size];
+
+        // Normalization of the gradients
+        for (int i = 0; i < size; i++) {
+            int valGx = 0x000000FF & (imgGxPixels[i]);
+            int valGy = 0x000000FF & (imgGyPixels[i]);
+            double norm = Math.sqrt(valGx * valGx + valGy * valGy);
+            imgGxPixelsNorm[i] = (int) (valGx/norm);
+            imgGyPixelsNorm[i] = (int) (valGy/norm);
+        }
+
+        int[] output = new int[size];
+        int maxGray = 0;
+
+        // Calculates the norm of the gradient's image
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int valGx = 0x000000FF & (imgGxPixels[i * w + j]);
+                int valGy = 0x000000FF & (imgGyPixels[i * w + j]);
+
+                int value = 0;
+                double val = Math.sqrt(valGx * valGx + valGy * valGy);
+                value = (int) (val/Math.sqrt(2));
+                //value = (int) val;
+
+                if (value > maxGray)
+                    maxGray = value;
+
+                output[i * w + j] = 0xFF000000 | (value << 16) | (value << 8) | value;
+            }
+        }
+
+        // Seeks the local maximums of the gradient
+        for (int i = 1; i < h - 1; i++) {
+            for (int j = 1; j < w - 1; j++) {
+                int valGxNorm = (imgGxPixelsNorm[i * w + j]);
+                int valGyNorm = (imgGyPixelsNorm[i * w + j]);
+                double angle = Math.atan2(valGyNorm, valGxNorm);
+
+                if (angle < Math.PI/6 && angle > -Math.PI/6) {
+                    if (output[i * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < Math.PI/3 && angle > 0) {
+                    if (output[(i-1) * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < 2 * Math.PI/3 && angle > 0) {
+                    if (output[(i-1) * w + j] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < 5 * Math.PI/6 && angle > 0) {
+                    if (output[(i-1) * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if ((angle < Math.PI && angle > 0) || (angle < -5 * Math.PI/6)) {
+                    if (output[i * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < -2 * Math.PI/3) {
+                    if (output[(i+1) * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < -Math.PI/3) {
+                    if (output[(i+1) * w + j] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else {
+                    if (output[(i+1) * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+            }
+        }
+
+        // High threshold
+        double highThreshold = highThresh * maxGray;
+        double lowThreshold = lowThresh * maxGray;
+
+        // Thresholding
+        for (int i = 0; i < size; i++) {
+            if ((0x000000FF & output[i]) > highThreshold)
+                output[i] = 0xFFFFFFFF;
+            else if ((0x000000FF & output[i]) < lowThreshold)
+                output[i] = 0xFF000000;
+        }
+
+        // Hysteresis
+        boolean hasNeighbour = true;
+        while (hasNeighbour) {
+            hasNeighbour = false;
+            for (int i = 1; i < h-1; i++) {
+                for (int j = 1; j < w-1; j++) {
+                    int gray = 0x000000FF & output[i * w + j];
+                    if (gray > lowThreshold && gray < highThreshold)
+                        for (int x = -1; x < 2; x++)
+                            for (int y = -1; y < 2; y++)
+                                if (output[(i + x) * w + (j + y)] == 0xFFFFFFFF) {
+                                    output[i * w + j] = 0xFFFFFFFF;
+                                    hasNeighbour = true;
+                                    break;
+                                }
+                }
+            }
+        }
+
+        img.setPixels(output, 0, 0, img.getWidth(), img.getHeight());
     }
 }

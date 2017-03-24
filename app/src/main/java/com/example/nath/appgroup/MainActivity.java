@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -161,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.sobel:
                 Algorithms.sobelEdgeDetector(imageToProcess);
+                break;
+
+            case R.id.canny:
+                Algorithms.cannyEdgeDetector(imageToProcess, 0.08, 0.15);
                 break;
 
             case R.id.moyenneur:
