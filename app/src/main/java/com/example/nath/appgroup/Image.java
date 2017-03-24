@@ -134,6 +134,24 @@ public class Image implements Cloneable {
     }
 
     /**
+     * Modifies the width of the image.
+     *
+     * @param width
+     * The new width of the image.
+     */
+    public void setWidth(int width) { this.width = width; }
+
+    /**
+     * Modifies the height of the image.
+     *
+     * @param height
+     * The new height of the image.
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
      * Return the height of the image.
      *
      * @return The height of the image

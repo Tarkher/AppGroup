@@ -58,4 +58,11 @@ public class CustomImageView extends ImageView {
         Bitmap bitmap = Bitmap.createBitmap(pixelsBitmap, widthTmp, heightTmp, Bitmap.Config.ARGB_8888);
         setImageBitmap(bitmap);
     }
+
+    public void setCoord (int left, int top, int right, int bottom) {
+        this.left = left;
+        this.right = right;
+        this.top = top;
+        this.bottom = bottom;
+    }
 }

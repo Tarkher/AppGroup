@@ -487,9 +487,9 @@ public class Algorithms {
                 }
 
                 // Checks if the output is not in [0,255] and uses the appropriate bijection to fix it
-                if (value > 255 || value < 0) {
+                if (value > 255 || value < 0)
                     value = (int) ((value - min_value)/(max_value - min_value)) * 255;
-                }
+
                 output[y * width + x] = 0xFF000000 | (value << 16) | (value << 8) | value;
             }
         }
@@ -1144,7 +1144,7 @@ public class Algorithms {
      *
      * @since 4.0
      */
-    public static void rotate (Image img) {
+    public static void rotate (Image img, CustomImageView imView) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
@@ -1156,5 +1156,8 @@ public class Algorithms {
                 newTab[j * h + (h-1-i)] = tab[i * w + j];
 
         img.setPixels(newTab, 0, 0, w, h);
+        img.setWidth(h);
+        img.setHeight(w);
+        imView.setCoord(0, 0, h, w);
     }
 }

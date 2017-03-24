@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.gaussien:
-                Algorithms.gaussianFilter(imageToProcess, 5, 1.25);
+                Algorithms.gaussianFilter(imageToProcess, 3, 0.8);
                 break;
 
             case R.id.laplacien:
@@ -187,11 +187,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.rotation:
-                Algorithms.rotate(imageToProcess);
+                Algorithms.rotate(imageToProcess, customImageView);
                 break;
 
             case R.id.reset:
-                customImageView.setImage(customImageView.getImageBackup(), false);
+                customImageView.setImage(customImageView.getImageBackup(), true);
                 return true;
         }
 
