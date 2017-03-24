@@ -35,14 +35,16 @@ public class Algorithms {
         for (int i = 0; i < w * h; i++) {
             // Gets the ith argb pixel of the image
             int tmp = tab[i];
-            // Gets each RGB components of the pixel by filtering the Color integer and weights them to turn the image in gray level
+            // Gets each RGB components of the pixel by filtering the Color integer and weights
+            // them to turn the image in gray level
             int blue = (int) ((tmp & 0x000000FF) * 0.11);
             int green = (int) (((tmp & 0x0000FF00) >> 8) * 0.59);
             int red = (int) (((tmp & 0x00FF0000) >> 16) * 0.3);
+            int alpha = (tmp & 0xFF000000) >> 24;
             // Contains the pixel's gray level
             int color_custom = blue + green + red;
             // Makes an integer matching the Color's formatting
-            int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;
+            int final_pix = (alpha << 24) | (color_custom << 16) | (color_custom << 8) | color_custom;
             // Replaces the pixel by the new (gray) one in the pixel array
             tab[i] = final_pix;
         }
@@ -197,7 +199,8 @@ public class Algorithms {
     /**
      * Generates the look up table used for the contrast equalization that sends a gray level in
      * [minSource , maxSource] to its corresponding gray level in the target interval [minTarget , maxTarget].
-     * To understand, if x % of the gray levels are below the gray level n then the gray level n will be sent to x % of maxTarget.
+     * To understand, if x % of the gray levels are below the gray level n then the gray level n
+     * will be sent to x % of maxTarget.
      *
      * @param minSource
      * The minimum value of the source interval.
@@ -349,7 +352,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public static void contrastEqualization(Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
+    public static void contrastEqualization(Image img, int goal) {
         int w = img.getWidth();
         int hei = img.getHeight();
         int size = w * hei;
@@ -405,7 +408,7 @@ public class Algorithms {
      *
      * @since 1.0
      */
-    public static void colorize(Image img, double hue) {//Modifies the bitmap's hue with a self made hsv to rgb translator
+    public static void colorize(Image img, double hue) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
@@ -418,6 +421,7 @@ public class Algorithms {
             double blue = (tmp & 0x000000FF) / 255.0;
             double green = ((tmp & 0x0000FF00) >> 8) / 255.0;
             double red = ((tmp & 0x00FF0000) >> 16) / 255.0;
+            int alpha = (tmp & 0xFF000000) >> 24;
             
             // Calculates the maximum and the minimum of the RGB values
             double color_max = blue >= green ? (blue >= red ? blue : red) : (green >= red ? green : red);
@@ -463,7 +467,7 @@ public class Algorithms {
             int blue_new = (int) ((blue + m) * 255);
             
             // Formats the new pixel
-            int final_pix = 0xFF000000 | (red_new << 16) | (green_new << 8) | blue_new;
+            int final_pix = (alpha << 24) | (red_new << 16) | (green_new << 8) | blue_new;
             tab[i] = final_pix;
         }
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
@@ -516,12 +520,13 @@ public class Algorithms {
                         value += (0x000000FF & pixels[yPrime * width + xPrime]) * matrix[i][j];
                     }
                 }
+                int alpha = (pixels[y * width + x] & 0xFF000000);
 
                 // Checks if the output is not in [0,255] and uses the appropriate bijection to fix it
                 if (value > 255 || value < 0)
                     value = (int) ((value - min_value)/(max_value - min_value)) * 255;
 
-                output[y * width + x] = 0xFF000000 | (value << 16) | (value << 8) | value;
+                output[y * width + x] = (alpha << 24) | (value << 16) | (value << 8) | value;
             }
         }
 
@@ -563,7 +568,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public void zoomAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
+    public void zoomAliasing(Bitmap img, ImageView image, float zoom) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = new int[h * w];

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ocean);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
