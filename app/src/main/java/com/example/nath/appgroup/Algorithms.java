@@ -1455,6 +1455,12 @@ public class Algorithms {
 
     /**
      * Uses the Voronoi's cells to apply a mosaic effect on the image thanks to Voronoi's diagram.
+     * This methods provides a tessellation of the plan because :
+     * <p>If we call Voronoi's cell associated with the Voronoi's germ p (p in the plan and
+     * in the set S of all the Voronoi's cells), then the set : </p>
+     * <center> Vor_S(p) = {x in R^2 | Forall q in S, d(x, p) <= d(x, q)}</center>
+     * Is such as all the points belong to at least one of these sets, and the ones that belongs to two
+     * or more are exactly the frontiers of the polygons of the tessellation.
      *
      * @param img
      * The image we work on.
