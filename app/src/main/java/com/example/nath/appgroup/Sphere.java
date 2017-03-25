@@ -54,7 +54,7 @@ public class Sphere {
     }
 
     /**
-     * Return the x coordinate of the sphere's center.
+     * Returns the x coordinate of the sphere's center.
      *
      * @return The x coordinates of the sphere's center.
      */
@@ -63,7 +63,7 @@ public class Sphere {
     }
 
     /**
-     * Return the y coordinate of the sphere's center.
+     * Returns the y coordinate of the sphere's center.
      *
      * @return The y coordinates of the sphere's center.
      */
@@ -72,7 +72,7 @@ public class Sphere {
     }
 
     /**
-     * Return the radius of the sphere.
+     * Returns the radius of the sphere.
      *
      * @return The radius of the sphere.
      */
@@ -81,7 +81,7 @@ public class Sphere {
     }
 
     /**
-     * Return the ARGB color of the sphere.
+     * Returns the ARGB color of the sphere.
      *
      * @return The ARGB color of the sphere.
      */

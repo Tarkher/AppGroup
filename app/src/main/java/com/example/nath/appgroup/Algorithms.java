@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * <b>Algorithms contains all the algorithms used for image processing</b>
@@ -1450,5 +1451,49 @@ public class Algorithms {
         }
 
         img.setPixels(output, 0, 0, img.getWidth(), img.getHeight());
+    }
+
+    /**
+     * Uses the Voronoi's cells to apply a mosaic effect on the image thanks to Voronoi's diagram.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param n
+     * The number of Voronoi's seeds.
+     *
+     * @see VoronoiSeed
+     *
+     * @since 4.0
+     */
+    public static void mosaic (Image img, int n) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        ArrayList<VoronoiSeed> seeds = new ArrayList<>(0);
+        for (int i = 0; i < n; i++) {
+            double x = Math.random()*(h-1);
+            double y = Math.random()*(w-1);
+            seeds.add(new VoronoiSeed(x, y, tab[(int) x * w + (int) y]));
+        }
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double dmin = w*w*2;
+                for (int k = 0; k < seeds.size(); k++) {
+                    double dcurrent = seeds.get(k).distance(i, j);
+                    if (dcurrent - dmin < 0) {
+                        dmin = dcurrent;
+                        tab[i * w + j] = seeds.get(k).getColor();
+                    }
+                    else if (dcurrent == dmin) {
+                        tab[i + w + j] = 0xFF000000;
+                    }
+                }
+            }
+        }
+
+        img.setPixels(tab, 0, 0, w, h);
     }
 }

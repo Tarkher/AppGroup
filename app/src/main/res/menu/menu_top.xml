@@ -41,6 +41,10 @@
         android:title="flash"
         app:showAsAction="never" />
     <item
+        android:id="@+id/mosaic"
+        android:title="mosaic"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/sobel"
         android:title="sobel"
         app:showAsAction="never" />

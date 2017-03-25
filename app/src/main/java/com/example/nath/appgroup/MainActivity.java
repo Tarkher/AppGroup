@@ -171,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
                 Algorithms.meanFilter(imageToProcess);
                 break;
 
+            case R.id.mosaic:
+                Algorithms.mosaic(imageToProcess, 1000);
+                break;
+
             case R.id.sharpens:
                 Algorithms.sharpens(imageToProcess);
                 break;
