@@ -89,14 +89,14 @@ public class MainActivity extends AppCompatActivity {
 
         SeekBar seekBarCannyHigh = (SeekBar)findViewById(R.id.seekBarCannyHigh);
         seekBarCannyHigh.setMax(100);
-        seekBarCannyHigh.setProgress(15);
+        seekBarCannyHigh.setProgress(8);
         seekBarCannyHigh.setVisibility(View.INVISIBLE);
         seekBarCannyHigh.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_HIGH));
 
         SeekBar seekBarCannyLow = (SeekBar)findViewById(R.id.seekBarCannyLow);
         seekBarCannyLow.setMax(100);
-        seekBarCannyLow.setProgress(8);
+        seekBarCannyLow.setProgress(15);
         seekBarCannyLow.setVisibility(View.INVISIBLE);
         seekBarCannyLow.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_LOW));

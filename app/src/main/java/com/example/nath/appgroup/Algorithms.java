@@ -901,7 +901,7 @@ public class Algorithms {
      *
      * @since 3.0
      */
-    static float[] RGBtoHSV(int r, int g, int b) {
+    private static float[] RGBtoHSV(int r, int g, int b) {
         int max = Math.max(Math.max(r, g), b), min = Math.min(Math.min(r, g), b), d = max - min;
         float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
 
@@ -1134,8 +1134,8 @@ public class Algorithms {
      * @since 4.0
      */
     public static void sharpens (Image img) {
-        float matrixMoyenneur[][] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
-        Algorithms.convolutionColor(img, matrixMoyenneur);
+        float matrixSharp[][] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
+        Algorithms.convolutionColor(img, matrixSharp);
     }
 
     /**
