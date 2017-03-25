@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 Image trace = imageToProcess.clone();
                 Algorithms.cannyEdgeDetector(trace, 0.08, 0.15);
                 Algorithms.cartoonize(imageToProcess, 8);
-                Algorithms.trace(imageToProcess, trace);
+                Algorithms.traceEdges(imageToProcess, trace);
                 break;
 
             case R.id.houghtransform:

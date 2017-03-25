@@ -743,7 +743,7 @@ public class Algorithms {
 
     /**
      * Trace a binary image on a source image by inverting the pixels of the binary trace and drawing
-     * the black ones onto the source.
+     * the black ones onto the source to emphasize the edges.
      *
      * @param source
      * The image to trace on.
@@ -755,7 +755,7 @@ public class Algorithms {
      *
      * @since 3.0
      */
-    public static void trace(Image source, Image draw) {
+    public static void traceEdges(Image source, Image draw) {
         int w = source.getWidth();
         int h = source.getHeight();
         int size = w * h;
@@ -932,7 +932,7 @@ public class Algorithms {
      * The number of values used to discretize the interval [0,1] of the HSV values
      * with the roots of the 2nth Chebychev's polynomial.
      *
-     * @see Algorithms#trace
+     * @see Algorithms#traceEdges
      * @see Algorithms#RGBtoHSV
      * @see Algorithms#HSVtoRGB
      *
@@ -987,6 +987,8 @@ public class Algorithms {
      * Uses the Hough transformation to detect the lines lying in a binary image by sending the pixels
      * from the (x,y) plane to the (rho,theta) one to transform the problem of finding colinear points
      * to the one of finding concurrent sinusoidal curves.
+     * <p> Code written based on the paper "Use of the Hough Transformation To Detect Lines and
+     * Curves in Pictures" by Richard O. Duda and Peter E. Hart in January 1972.</p>
      *
      * @param img
      * The image we work on.
@@ -1502,4 +1504,20 @@ public class Algorithms {
 
         img.setPixels(tab, 0, 0, w, h);
     }
+
+    /*
+    // 1 / (1 + Math.exp(-2*x))
+
+    public static double [] fetchTexture (Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+        double [] light = new double[w*h];
+
+        for (int i = 0; i < w*h; i++)
+            light[i] = 1 / (1 + Math.exp(-2*(lightness((tab[i] & 0xFF0000FF) / 255))));
+
+        return light;
+    }
+    */
 }
