@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -78,7 +78,28 @@ public class MainActivity extends AppCompatActivity {
         seekBarSpheres.setProgress(1);
         seekBarSpheres.setVisibility(View.INVISIBLE);
         seekBarSpheres.setOnSeekBarChangeListener(
-                new SeekBarListener(this, customImageView, SeekBarListener.AlGORITHM_SPHERES));
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_SPHERES));
+
+        SeekBar seekBarMosaic = (SeekBar)findViewById(R.id.seekBarMosaic);
+        seekBarMosaic.setMax(1500);
+        seekBarMosaic.setProgress(500);
+        seekBarMosaic.setVisibility(View.INVISIBLE);
+        seekBarMosaic.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_MOSAIC));
+
+        SeekBar seekBarCannyHigh = (SeekBar)findViewById(R.id.seekBarCannyHigh);
+        seekBarCannyHigh.setMax(100);
+        seekBarCannyHigh.setProgress(15);
+        seekBarCannyHigh.setVisibility(View.INVISIBLE);
+        seekBarCannyHigh.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_HIGH));
+
+        SeekBar seekBarCannyLow = (SeekBar)findViewById(R.id.seekBarCannyLow);
+        seekBarCannyLow.setMax(100);
+        seekBarCannyLow.setProgress(8);
+        seekBarCannyLow.setVisibility(View.INVISIBLE);
+        seekBarCannyLow.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_LOW));
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -110,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
         seekBarHoughThreshold.setVisibility(View.INVISIBLE);
         SeekBar seekBarSpheres = (SeekBar) findViewById(R.id.seekBarSpheres);
         seekBarSpheres.setVisibility(View.INVISIBLE);
+        SeekBar seekBarMosaic = (SeekBar) findViewById(R.id.seekBarMosaic);
+        seekBarMosaic.setVisibility(View.INVISIBLE);
+        SeekBar seekBarCannyHigh = (SeekBar)findViewById(R.id.seekBarCannyHigh);
+        seekBarCannyHigh.setVisibility(View.INVISIBLE);
+        SeekBar seekBarCannyLow = (SeekBar)findViewById(R.id.seekBarCannyLow);
+        seekBarCannyLow.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -164,7 +191,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.canny:
-                Algorithms.cannyEdgeDetector(imageToProcess, 0.08, 0.15);
+                customImageView.saveImageTemporary();
+                seekBarCannyHigh.setVisibility(View.VISIBLE);
+                seekBarCannyLow.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.moyenneur:
@@ -172,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.mosaic:
-                Algorithms.mosaic(imageToProcess, 1000);
+                customImageView.saveImageTemporary();
+                seekBarMosaic.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.sharpens:
