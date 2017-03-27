@@ -536,7 +536,8 @@ public class Algorithms {
 
     /**
      * Calculates the convolution between the ARGB image and a generic mask on the HSV's value canal
-     * to preserve the image's coherence.
+     * to preserve the image's coherence and manages values out of range by thresholding (for the
+     * sharpness modifiers algorithms).
      * For specific usage of the convolution operator see below.
      *
      * @param img
@@ -555,18 +556,6 @@ public class Algorithms {
         int width = img.getWidth();
         int pixels[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
         int output[] = new int[width * height];
-
-        // Calculates the maximum and minimum output of the convolution with the given mask
-        float max_value = 0;
-        float min_value = 0;
-        for(int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                if (matrix[i][j] >= 0)
-                    max_value += matrix[i][j] * 255;
-                else
-                    min_value += matrix[i][j] * 255;
-            }
-        }
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -1113,13 +1102,20 @@ public class Algorithms {
      * @param img
      * The image we work on.
      *
+     * @param n
+     * The size of the mask will be n x n.
+     *
      * @see Algorithms#convolution
      *
      * @since 2.0
      */
-    public static void meanFilter (Image img) {
+    public static void meanFilter (Image img, int n) {
         Algorithms.toGray(img);
-        float matrixMean[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
+        float m = n*n;
+        float matrixMean[][] = new float [n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                matrixMean[i][j] = 1f/m;
         Algorithms.convolutionColor(img, matrixMean);
     }
 
@@ -1505,19 +1501,115 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 
-    /*
-    // 1 / (1 + Math.exp(-2*x))
-
-    public static double [] fetchTexture (Image img) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-        int [] tab = img.getPixels(0, 0, w, h);
+    /**
+     * Translates a texture into an array of ratios linked to the texture's pixels' values.
+     *
+     * @param texture
+     * The texture to tanslate.
+     *
+     * @return
+     * The array of values that have been smoothed by a sigmoid.
+     *
+     * @see Algorithms#applyTexture
+     *
+     * @since 4.0
+     */
+    private static double [] fetchTexture (Image texture) {
+        int w = texture.getWidth();
+        int h = texture.getHeight();
+        int [] tab = texture.getPixels(0, 0, w, h);
         double [] light = new double[w*h];
 
-        for (int i = 0; i < w*h; i++)
-            light[i] = 1 / (1 + Math.exp(-2*(lightness((tab[i] & 0xFF0000FF) / 255))));
+        for (int i = 0; i < w*h; i++) {
+            int tmp = tab[i];
+            int blue = 0x000000FF & tmp;
+            int green = (0x0000FF00 & tmp) >> 8;
+            int red = (0x00FF0000 & tmp) >> 16;
+            float [] hsv = new float[3];
+            Color.RGBToHSV(red, green, blue, hsv);
+
+            // The sigmoid we use to smooth the values.
+            light[i] = 1 / (1 + Math.exp(-2 * hsv[2]));
+        }
 
         return light;
     }
-    */
+
+    /**
+     * Applies the given texture onto the image.
+     *
+     * @param texture
+     * The texture to apply (can be bricks, wood, ...)
+     *
+     * @param source
+     * The image we work on.
+     *
+     * @see Algorithms#fetchTexture
+     *
+     * @since 4.0
+     */
+    public static void applyTexture (Image source, Image texture) {
+        int w = source.getWidth();
+        int h = source.getHeight();
+        int [] tab = source.getPixels(0, 0, w, h);
+
+        int wTex = texture.getWidth();
+        int hTex = texture.getHeight();
+
+        double [] tabTexture = fetchTexture(texture);
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int tmp = tab[i * w + j];
+                double ratio = tabTexture[(i % hTex) * wTex + (j % wTex)];
+                int blue = (int) ((tmp & 0x000000FF) * ratio);
+                int green = (int) (((tmp & 0x0000FF00) >> 8) * ratio);
+                int red = (int) (((tmp & 0x00FF0000) >> 16) * ratio);
+                int alpha = (tmp & 0xFF000000);
+                tab[i * w + j] = alpha | (red << 16) | (green << 8) | blue;
+            }
+        }
+        source.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
+     * Applies the given texture onto the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param radius
+     * The radius of the brush.
+     *
+     * @since 4.0
+     */
+    public static void brush (Image img, int radius) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        int Nx = w/radius;
+        int Ny = h/radius;
+
+        // For each square of edge radius
+        for (int i = 0; i < Nx; i++) {
+            for (int j = 0; j < Ny; j++) {
+                // For each pixel of this square
+                for (int x = 0; x < radius; x++) {
+                    for (int y = 0; y < radius; y++) {
+                        // We detect if we are above or under the unit circle, and we choose the most appropriate color.
+                        double relativeX = (x % radius) / radius;
+                        double relativeY = 1 - (y % radius) / radius;
+                        int color;
+                        if (relativeY > Math.sqrt(1 - (1 - relativeX) * (1 - relativeX)))
+                            color = tab[(i * radius +1) * w + (j * radius - 1)];
+                        else
+                            color = tab[(i * radius + radius) * w + (j * radius + radius)];
+                        tab[(i * radius + x) * w + (j * radius + y)] = color;
+                    }
+                }
+            }
+        }
+        img.setPixels(tab, 0, 0, w, h);
+    }
 }

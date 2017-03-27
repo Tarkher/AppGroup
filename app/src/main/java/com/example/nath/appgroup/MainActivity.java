@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -88,14 +88,14 @@ public class MainActivity extends AppCompatActivity {
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_MOSAIC));
 
         SeekBar seekBarCannyHigh = (SeekBar)findViewById(R.id.seekBarCannyHigh);
-        seekBarCannyHigh.setMax(100);
+        seekBarCannyHigh.setMax(50);
         seekBarCannyHigh.setProgress(8);
         seekBarCannyHigh.setVisibility(View.INVISIBLE);
         seekBarCannyHigh.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_HIGH));
 
         SeekBar seekBarCannyLow = (SeekBar)findViewById(R.id.seekBarCannyLow);
-        seekBarCannyLow.setMax(100);
+        seekBarCannyLow.setMax(50);
         seekBarCannyLow.setProgress(15);
         seekBarCannyLow.setVisibility(View.INVISIBLE);
         seekBarCannyLow.setOnSeekBarChangeListener(
@@ -197,7 +197,35 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                Algorithms.meanFilter(imageToProcess);
+                //Algorithms.meanFilter(imageToProcess, 13);
+                Algorithms.brush(imageToProcess, 10);
+                break;
+
+            case R.id.texture:
+                Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), R.drawable.briques);
+                int bitmapHeight = bitmapTmp.getHeight();
+                int bitmapWidth = bitmapTmp.getWidth();
+                int[] pixels = new int[bitmapHeight * bitmapWidth];
+                bitmapTmp.getPixels(pixels, 0, bitmapTmp.getWidth(), 0, 0, bitmapWidth, bitmapHeight);
+                Image texture = new Image(pixels, bitmapHeight, bitmapWidth);
+
+                Algorithms.applyTexture(imageToProcess, texture);
+                break;
+
+            case R.id.wallTag:
+                Bitmap bitmapTmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.briques);
+                int bitmapHeight2 = bitmapTmp2.getHeight();
+                int bitmapWidth2 = bitmapTmp2.getWidth();
+                int[] pixels2 = new int[bitmapHeight2 * bitmapWidth2];
+                bitmapTmp2.getPixels(pixels2, 0, bitmapTmp2.getWidth(), 0, 0, bitmapWidth2, bitmapHeight2);
+                Image texture2 = new Image(pixels2, bitmapHeight2, bitmapWidth2);
+
+                Algorithms.applyTexture(imageToProcess, texture2);
+
+                Image trace2 = imageToProcess.clone();
+                Algorithms.cannyEdgeDetector(trace2, 0.08, 0.15);
+                Algorithms.cartoonize(imageToProcess, 8);
+                Algorithms.traceEdges(imageToProcess, trace2);
                 break;
 
             case R.id.mosaic:

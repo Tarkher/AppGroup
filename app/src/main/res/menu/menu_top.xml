@@ -69,6 +69,14 @@
         android:title="cartoonize"
         app:showAsAction="never" />
     <item
+        android:id="@+id/texture"
+        android:title="texture"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/wallTag"
+        android:title="wall tag"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/houghtransform"
         android:title="Hough transform"
         app:showAsAction="never" />
