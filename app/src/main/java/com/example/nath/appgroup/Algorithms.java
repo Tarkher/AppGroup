@@ -1601,11 +1601,14 @@ public class Algorithms {
                         double relativeX = (x % radius) / radius;
                         double relativeY = 1 - (y % radius) / radius;
                         int color;
-                        if (relativeY > Math.sqrt(1 - (1 - relativeX) * (1 - relativeX)))
-                            color = tab[(i * radius +1) * w + (j * radius - 1)];
-                        else
-                            color = tab[(i * radius + radius) * w + (j * radius + radius)];
-                        tab[(i * radius + x) * w + (j * radius + y)] = color;
+                        try {
+                            if (relativeY > Math.sqrt(1 - (1 - relativeX) * (1 - relativeX)))
+                                color = tab[(i * radius + 1) * w + (j * radius - 1)];
+                            else
+                                color = tab[(i * radius + radius) * w + (j * radius + radius)];
+                            tab[(i * radius + x) * w + (j * radius + y)] = color;
+                        }
+                        catch (Exception e) {}
                     }
                 }
             }
@@ -1613,3 +1616,5 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 }
+
+// 0 <= i < h, 0 <= j < w, tab[ i * w + j]
