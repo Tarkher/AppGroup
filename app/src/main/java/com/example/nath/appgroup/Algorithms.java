@@ -1525,11 +1525,12 @@ public class Algorithms {
             int blue = 0x000000FF & tmp;
             int green = (0x0000FF00 & tmp) >> 8;
             int red = (0x00FF0000 & tmp) >> 16;
-            float [] hsv = new float[3];
-            Color.RGBToHSV(red, green, blue, hsv);
+
+            float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
+            value /= 255f;
 
             // The sigmoid we use to smooth the values.
-            light[i] = 1 / (1 + Math.exp(-2 * hsv[2]));
+            light[i] = 1 / (1 + Math.exp(-2 * value));
         }
 
         return light;
@@ -1611,6 +1612,37 @@ public class Algorithms {
                         catch (Exception e) {}
                     }
                 }
+            }
+        }
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    public static void labyrinth (Image img, int max) {
+        Algorithms.toGray(img);
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        // For each square of edge radius
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int tmp = tab[i * w + j];
+                int blue = (tmp & 0x000000FF);
+                int green = (tmp & 0x0000FF00) >> 8;
+                int red = (tmp & 0x00FF0000) >> 16;
+                int alpha = (tmp & 0xFF000000);
+
+                float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
+                value /= 255f;
+                int k = value/120f == 0 ? 0 : (int) Math.ceil((value/120f)/(1/(1.0 * max)));
+                double coin = Math.random();
+                int winner = coin < 0.5 ? i : j;
+
+                if (k !=0 && (k < max) && (winner % k == 0))
+                    tab[i * w + j] = alpha;
+                else
+                    tab[i * w + j] = alpha | 0x00FFFFFF;
             }
         }
         img.setPixels(tab, 0, 0, w, h);

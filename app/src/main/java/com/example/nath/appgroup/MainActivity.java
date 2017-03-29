@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campagne);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -198,7 +198,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.moyenneur:
                 //Algorithms.meanFilter(imageToProcess, 13);
-                Algorithms.brush(imageToProcess, 10);
+                //Algorithms.brush(imageToProcess, 10);
+                Algorithms.labyrinth(imageToProcess, 6);
                 break;
 
             case R.id.texture:
