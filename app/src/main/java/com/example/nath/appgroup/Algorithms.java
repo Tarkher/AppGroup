@@ -142,10 +142,41 @@ public class Algorithms {
                 float hsv[] = new float[3];
                 Color.RGBToHSV(red, green, blue, hsv);
 
-                int low = floorMod(degree - 10, 360);
-                int high = floorMod(degree + 10, 360);
+                int[] borne = new int[4];
+                int sizeBorne;
 
-                if (hsv[0] <= low && hsv[0] >= high) {
+                if (degree >= 350) {
+                    sizeBorne = 2;
+
+                    borne[0] = floorMod(degree - 10, 360);
+                    borne[1] = 360;
+                    borne[2] = 0;
+                    borne[3] = floorMod(degree + 10, 360);
+                }
+                else if (degree < 10) {
+                    sizeBorne = 2;
+
+                    borne[0] = floorMod(degree - 10, 360);
+                    borne[1] = 360;
+                    borne[2] = 0;
+                    borne[3] = floorMod(degree + 10, 360);
+                }
+                else {
+                    sizeBorne = 1;
+
+                    borne[0] = floorMod(degree - 10, 360);
+                    borne[1] = floorMod(degree + 10, 360);
+                }
+
+                boolean setToGray = true;
+                for (int k = 0; k < sizeBorne; ++k) {
+                    if (hsv[0] < borne[2 * k] || hsv[0] > borne[2 * k + 1])
+                        setToGray = false;
+                    else
+                        setToGray = true;
+                }
+
+                if (!setToGray) {
                     // Contains the pixel's gray level
                     int color_custom = (int)(blue * 0.11) + (int)(green * 0.59) + (int)(red * 0.3);
                     // Makes an integer matching the Color's formatting
