@@ -1681,7 +1681,21 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 
-    public static void labyrinth (Image img, int max, float threshold) {
+    /**
+     * Creates a randomly generated labyrinth pattern whose density depends on the pixels' lightness.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param max
+     * The number of possible spacings.
+     *
+     * @param ratio
+     * A higher ratio allows for more details. Belongs to [0,255]
+     *
+     * @since 4.0
+     */
+    public static void labyrinth (Image img, int max, float ratio) {
         int w = img.getWidth();
         int h = img.getHeight();
         int [] tab = img.getPixels(0, 0, w, h);
@@ -1696,7 +1710,7 @@ public class Algorithms {
                 int alpha = (tmp & 0xFF000000);
 
                 float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
-                int k = value/threshold == 0 ? 0 : (int) Math.ceil((value/threshold)/(1/(1.0 * max)));
+                int k = value/ratio == 0 ? 0 : (int) Math.ceil((value/ratio)/(1/(1.0 * max)));
                 double coin = Math.random();
                 int winner = coin < 0.5 ? i : j;
 

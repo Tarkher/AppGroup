@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.cartoonize:
                 Image trace = imageToProcess.clone();
                 Algorithms.cannyEdgeDetector(trace, 0.08, 0.15);
-                Algorithms.cartoonize(imageToProcess, 8);
+                Algorithms.cartoonize(imageToProcess, 11);
                 Algorithms.traceEdges(imageToProcess, trace);
                 break;
 
