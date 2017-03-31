@@ -2,6 +2,10 @@
 
 # TO DO
 
-Réparer le laplacien
+Appliquer une texture (toile, bois, brique, ...)
 
-Fonction qui ne garde qu'une certaine teinte
+Sobel en couleurs
+
+Pastel, crayon
+
+Seekbars manquantes avec valeur et champ descriptif

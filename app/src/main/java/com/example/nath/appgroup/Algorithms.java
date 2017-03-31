@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * <b>Algorithms contains all the algorithms used for image processing</b>
@@ -35,14 +36,16 @@ public class Algorithms {
         for (int i = 0; i < w * h; i++) {
             // Gets the ith argb pixel of the image
             int tmp = tab[i];
-            // Gets each RGB components of the pixel by filtering the Color integer and weights them to turn the image in gray level
+            // Gets each RGB components of the pixel by filtering the Color integer and weights
+            // them to turn the image in gray level
             int blue = (int) ((tmp & 0x000000FF) * 0.11);
             int green = (int) (((tmp & 0x0000FF00) >> 8) * 0.59);
             int red = (int) (((tmp & 0x00FF0000) >> 16) * 0.3);
+            int alpha = (tmp & 0xFF000000) >> 24;
             // Contains the pixel's gray level
             int color_custom = blue + green + red;
             // Makes an integer matching the Color's formatting
-            int final_pix = 0xFF000000 | (color_custom << 16) | (color_custom << 8) | color_custom;
+            int final_pix = (alpha << 24) | (color_custom << 16) | (color_custom << 8) | color_custom;
             // Replaces the pixel by the new (gray) one in the pixel array
             tab[i] = final_pix;
         }
@@ -227,10 +230,35 @@ public class Algorithms {
         return tab;
     }
 
-    private static int[] norm_h(int a, int b, int c, int d, int[] h) {//Normalize the cumulative histogram
+    /**
+     * Generates the look up table used for the contrast equalization that sends a gray level in
+     * [minSource , maxSource] to its corresponding gray level in the target interval [minTarget , maxTarget].
+     * To understand, if x % of the gray levels are below the gray level n then the gray level n
+     * will be sent to x % of maxTarget.
+     *
+     * @param minSource
+     * The minimum value of the source interval.
+     *
+     * @param maxSource
+     * The maximum value of the source interval.
+     *
+     * @param minTarget
+     * The minimum value of the target interval.
+     *
+     * @param maxTarget
+     * The maximum value of the target interval.
+     *
+     * @return The corresponding look up table which is an integer array.
+     *
+     * @see Algorithms#dynamicExtensionColor
+     *
+     * @since 1.0
+     */
+    private static int[] norm_h(int minSource, int maxSource, int minTarget, int maxTarget, int[] h) {
         int[] tab = new int[256];
         for (int gray_lvl = 0; gray_lvl < 256; gray_lvl++) {
-            tab[gray_lvl] = (int) (((d - c) * (((h[gray_lvl] - a) / (double) (b - a)))) + c);//bijection from [min,max] to [c,d]
+            tab[gray_lvl] = (int) (((maxTarget - minTarget) * (((h[gray_lvl] - minSource) /
+                    (double) (maxSource - minSource)))) + minTarget);
         }
         return tab;
     }
@@ -249,13 +277,12 @@ public class Algorithms {
      * @since 2.0
      */
     private static int[] histogram(int[] tab) {
-        int n = tab.length;
         // Creates an accumulator indexed on the possible gray levels of an image
         int[] h = new int[256];
 
-        for (int tmp : tab) {
+        for (int tmp : tab)
             h[tmp] += 1;
-        }
+
         return h;
     }
 
@@ -278,9 +305,8 @@ public class Algorithms {
 
         h[0] = tab[0];
 
-        for (int i = 1; i < 256; i++) {
+        for (int i = 1; i < 256; i++)
             h[i] = h[i - 1] + tab[i];
-        }
 
         return h;
     }
@@ -345,8 +371,22 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
     }
 
-    
-    public static void contrastEqualization(Image img, int goal) {//Equalize the values of the pixels with the cumulative histogram for a better contrast result on dark pictures
+    /**
+     * Increases the contrast of an RGB image with the contrast equalization algorithm performed
+     * on the canal value of the HSV representation to preserve the coherence of the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param goal
+     * The new maximum color value of the image's pixels.
+     *
+     * @see Algorithms#norm_h
+     * @see Algorithms#cumulativeHistogram
+     *
+     * @since 2.0
+     */
+    public static void contrastEqualization(Image img, int goal) {
         int w = img.getWidth();
         int hei = img.getHeight();
         int size = w * hei;
@@ -363,16 +403,11 @@ public class Algorithms {
             val[i] = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
         }
 
+        // Gets the cumulative histogram
         int[] h = cumulativeHistogram(val);
         int min = h[0];
 
-        /*
-        for (int i = 0; i < 256; i++) {//We get the min and max of pixels below a i level of value
-            min = h[i] < min ? h[i] : min;
-        }
-        */
-
-        //Send the values of the cumulative histogram in [0,255], max is always size by definition
+        // Sends the values of the cumulative histogram in [0,255], max is always size by definition
         int[] LUT_value = norm_h(min, size, 0, goal, h);
 
         for (int i = 0; i < size; i++) {
@@ -380,11 +415,11 @@ public class Algorithms {
             int blue = tmp & 0x000000FF;
             int green = (tmp & 0x0000FF00) >> 8;
             int red = (tmp & 0x00FF0000) >> 16;
-            
-            // REFAIRE CA MANUELLEMENT
+
             float[] hsv = new float[3];
             Color.RGBToHSV(red, green, blue, hsv);
-            
+
+            // Modifies the value of the pixel thanks to the look up table
             float new_value = LUT_value[val[i]] / 255.0f;
             hsv[2] = new_value;
             
@@ -407,7 +442,7 @@ public class Algorithms {
      *
      * @since 1.0
      */
-    public static void colorize(Image img, double hue) {//Modifies the bitmap's hue with a self made hsv to rgb translator
+    public static void colorize(Image img, double hue) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
@@ -420,6 +455,7 @@ public class Algorithms {
             double blue = (tmp & 0x000000FF) / 255.0;
             double green = ((tmp & 0x0000FF00) >> 8) / 255.0;
             double red = ((tmp & 0x00FF0000) >> 16) / 255.0;
+            int alpha = (tmp & 0xFF000000) >> 24;
             
             // Calculates the maximum and the minimum of the RGB values
             double color_max = blue >= green ? (blue >= red ? blue : red) : (green >= red ? green : red);
@@ -465,7 +501,7 @@ public class Algorithms {
             int blue_new = (int) ((blue + m) * 255);
             
             // Formats the new pixel
-            int final_pix = 0xFF000000 | (red_new << 16) | (green_new << 8) | blue_new;
+            int final_pix = (alpha << 24) | (red_new << 16) | (green_new << 8) | blue_new;
             tab[i] = final_pix;
         }
         img.setPixels(tab, 0, 0, img.getWidth(), img.getHeight());
@@ -518,12 +554,82 @@ public class Algorithms {
                         value += (0x000000FF & pixels[yPrime * width + xPrime]) * matrix[i][j];
                     }
                 }
+                int alpha = (pixels[y * width + x] & 0xFF000000) >> 24;
 
                 // Checks if the output is not in [0,255] and uses the appropriate bijection to fix it
-                if (value > 255 || value < 0) {
+                if (value > 255 || value < 0)
                     value = (int) ((value - min_value)/(max_value - min_value)) * 255;
+
+                output[y * width + x] = (alpha << 24) | (value << 16) | ( value << 8) | value;
+            }
+        }
+
+        img.setPixels(output, 0, 0, width, height);
+    }
+
+    /**
+     * Calculates the convolution between the ARGB image and a generic mask on the HSV's value canal
+     * to preserve the image's coherence and manages values out of range by thresholding (for the
+     * sharpness modifiers algorithms).
+     * For specific usage of the convolution operator see below.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param matrix
+     * The mask used to calculate its convolution with the image.
+     *
+     * @see Algorithms#sharpens
+     * @see Algorithms#contrastFilter
+     *
+     * @since 4.0
+     */
+    public static void convolutionColor(Image img, float[][] matrix) {
+        int height = img.getHeight();
+        int width = img.getWidth();
+        int pixels[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int output[] = new int[width * height];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                float result = 0;
+
+                for (int i = 0; i < matrix.length; i++) {
+                    for (int j = 0; j < matrix.length; j++) {
+                        int yPrime = floorMod(y + i - (matrix.length - 1) / 2, height);
+                        int xPrime = floorMod(x + j - (matrix.length - 1) / 2, width);
+
+                        int tmp = pixels[yPrime * width + xPrime];
+
+                        int value = 0;
+
+                        int blue = tmp & 0x000000FF;
+                        int green = (tmp & 0x0000FF00) >> 8;
+                        int red = (tmp & 0x00FF0000) >> 16;
+
+                        // Calculates the value (HSV) of the pixel which is the max of the RGB canals
+                        value = blue > red ? (blue > green ? blue : green) : (red > green ? red : green);
+
+                        result += value * matrix[i][j];
+                    }
                 }
-                output[y * width + x] = 0xFF000000 | (value << 16) | (value << 8) | value;
+
+                if (result > 255)
+                    result = 255.0f;
+                else if (result < 0)
+                    result = 0.0f;
+
+                float [] hsv = new float[3];
+                int tmp = pixels[y * width + x];
+
+                int blue = tmp & 0x000000FF;
+                int green = (tmp & 0x0000FF00) >> 8;
+                int red = (tmp & 0x00FF0000) >> 16;
+                int alpha = (tmp & 0xFF000000) >> 24;
+
+                Color.RGBToHSV(red, green, blue, hsv);
+                hsv[2] = result/255.0f;
+                output[y * width + x] = Color.HSVToColor(alpha, hsv);
             }
         }
 
@@ -565,7 +671,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    public void zoomAliasing(Bitmap img, ImageView image, float zoom) {//(x,y) is top left corner's pixel for the zoomed image
+    public void zoomAliasing(Bitmap img, ImageView image, float zoom) {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = new int[h * w];
@@ -658,23 +764,20 @@ public class Algorithms {
     }
 
     /**
-     * Trace a gray level image on a source image by thresholding the pixels in fonction
-     * of their gray levels.
+     * Trace a binary image on a source image by inverting the pixels of the binary trace and drawing
+     * the black ones onto the source to emphasize the edges.
      *
      * @param source
      * The image to trace on.
      *
      * @param draw
-     * The trace.
-     *
-     * @param threshold
-     * The gray levels superior to this will be traced on the image source.
+     * The trace (usually the edges detected with the canny edge detector
      *
      * @see Algorithms#cartoonize
      *
      * @since 3.0
      */
-    public static void trace(Image source, Image draw, int threshold) {
+    public static void traceEdges(Image source, Image draw) {
         int w = source.getWidth();
         int h = source.getHeight();
         int size = w * h;
@@ -696,7 +799,7 @@ public class Algorithms {
             int pixel;
             // If we are on a pixel to trace onto the source we set the color to black
             // Otherwise we keep the pixel of the source as it is
-            if (gray > threshold)
+            if (gray == 255)
                 pixel = 0xFF000000;
             else
                 pixel = tmp;
@@ -820,7 +923,7 @@ public class Algorithms {
      *
      * @since 3.0
      */
-    static float[] RGBtoHSV(int r, int g, int b) {
+    private static float[] RGBtoHSV(int r, int g, int b) {
         int max = Math.max(Math.max(r, g), b), min = Math.min(Math.min(r, g), b), d = max - min;
         float h, s = (max == 0 ? 0.0f : d / (1.0f * max)), v = max / 255.0f;
 
@@ -849,9 +952,9 @@ public class Algorithms {
      *
      * @param n
      * The number of values used to discretize the interval [0,1] of the HSV values
-     * with the roots of the 2nth Chebychev's polynomial. FIX IT AND ADD TRACE TO IT!!!!!
+     * with the roots of the 2nth Chebychev's polynomial.
      *
-     * @see Algorithms#trace
+     * @see Algorithms#traceEdges
      * @see Algorithms#RGBtoHSV
      * @see Algorithms#HSVtoRGB
      *
@@ -867,12 +970,12 @@ public class Algorithms {
         // because of our testing beforehand.
 
         int j = 0;
-        float[] hValues = new float[n / 2];
-        float[] sValues = new float[n / 2];
-        float[] vValues = new float[n / 2];
-        for (int k = 1; k <= n; k++) {
-            // Chebychev's polynomials roots
-            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * n));
+        float[] hValues = new float[n];
+        float[] sValues = new float[n];
+        float[] vValues = new float[n];
+        for (int k = 1; k <= 2*n; k++) {
+            // Chebyshev's polynomials roots
+            float root = (float) Math.cos((2 * k - 1) * Math.PI / (2 * 2*n));
             // they are symmetrical so we only take the positive ones
             if (root > 0) {
                 hValues[j] = root;
@@ -906,6 +1009,8 @@ public class Algorithms {
      * Uses the Hough transformation to detect the lines lying in a binary image by sending the pixels
      * from the (x,y) plane to the (rho,theta) one to transform the problem of finding colinear points
      * to the one of finding concurrent sinusoidal curves.
+     * <p> Code written based on the paper "Use of the Hough Transformation To Detect Lines and
+     * Curves in Pictures" by Richard O. Duda and Peter E. Hart in January 1972.</p>
      *
      * @param img
      * The image we work on.
@@ -1030,14 +1135,51 @@ public class Algorithms {
      * @param img
      * The image we work on.
      *
+     * @param n
+     * The size of the mask will be n x n.
+     *
      * @see Algorithms#convolution
      *
      * @since 2.0
      */
-    public static void meanFilter (Image img) {
+    public static void meanFilter (Image img, int n) {
         Algorithms.toGray(img);
-        float matrixMoyenneur[][] = {{1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}, {1f/9f, 1f/9f, 1f/9f}};
-        Algorithms.convolution(img, matrixMoyenneur);
+        float m = n*n;
+        float matrixMean[][] = new float [n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                matrixMean[i][j] = 1f/m;
+        Algorithms.convolutionColor(img, matrixMean);
+    }
+
+    /**
+     * Calculates the convolution with a 3x3 mask that sharpens the edges of an ARGB image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolutionColor
+     *
+     * @since 4.0
+     */
+    public static void sharpens (Image img) {
+        float matrixSharp[][] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
+        Algorithms.convolutionColor(img, matrixSharp);
+    }
+
+    /**
+     * Calculates the convolution with a 3x3 mask that sharpens the edges of an ARGB image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolutionColor
+     *
+     * @since 4.0
+     */
+    public static void contrastFilter (Image img) {
+        float matrixContrast[][] = {{1, -3, 1}, {-3, 9, -3}, {1, -3, 1}};
+        Algorithms.convolutionColor(img, matrixContrast);
     }
 
     /**
@@ -1080,7 +1222,7 @@ public class Algorithms {
      */
     public static void laplacien (Image img) {
         Algorithms.toGray(img);
-        float matrixLaplacien[][] = {{0,-1,0}, {-1,4,-1}, {0,-1,0}};
+        float matrixLaplacien[][] = {{-1,-1,-1}, {-1,8,-1}, {-1,-1,-1}};
         Algorithms.convolution(img, matrixLaplacien);
     }
 
@@ -1144,7 +1286,7 @@ public class Algorithms {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
-        int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+        int[] tab = img.getPixels(0, 0, w, h);
 
         ArrayList<Sphere> spheresList = new ArrayList<>();
 
@@ -1175,9 +1317,12 @@ public class Algorithms {
      * @param img
      * The image we work on.
      *
+     * @param imView
+     * The image view in which the image is displayed.
+     *
      * @since 4.0
      */
-    public static void rotate (Image img) {
+    public static void rotate (Image img, CustomImageView imView) {
         int w = img.getWidth();
         int h = img.getHeight();
         int size = w * h;
@@ -1188,6 +1333,353 @@ public class Algorithms {
             for (int j = 0; j < w; j++)
                 newTab[j * h + (h-1-i)] = tab[i * w + j];
 
-        img.setPixels(newTab, 0, 0, h, w);
+        img.setPixels(newTab, 0, 0, w, h);
+        img.setWidth(h);
+        img.setHeight(w);
+        imView.setCoord(0, 0, h, w);
+    }
+
+    /**
+     * Calculates two convolutions with the two 3x3 Sobel masks, then calculates the local maximums of the gradient obtained,
+     * then uses a double threshold and finally tracks the edges by hysteresis to find the edges in the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param lowThresh
+     * The lowest threshold used during the double threshold step.
+     *
+     * @param highThresh
+     * The highest threshold used during the double threshold step.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 4.0
+     */
+    public static void cannyEdgeDetector (Image img, double lowThresh, double highThresh) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int size = w*h;
+
+        Algorithms.toGray(img);
+
+        float[][] Gx = {{-1,0,1}, {-2,0,2}, {-1,0,1}};
+        float[][] Gy = {{-1,-2,-1}, {0,0,0}, {1,2,1}};
+
+        Image imgGx = img.clone();
+        Image imgGy = img.clone();
+
+        Algorithms.convolution(imgGx, Gx);
+        Algorithms.convolution(imgGy, Gy);
+
+        int[] imgGxPixels = imgGx.getPixels(0, 0, w, h);
+        int[] imgGyPixels = imgGy.getPixels(0, 0, w, h);
+
+        int[] imgGxPixelsNorm = new int[size];
+        int[] imgGyPixelsNorm = new int[size];
+
+        // Normalization of the gradients
+        for (int i = 0; i < size; i++) {
+            int valGx = 0x000000FF & (imgGxPixels[i]);
+            int valGy = 0x000000FF & (imgGyPixels[i]);
+            double norm = Math.sqrt(valGx * valGx + valGy * valGy);
+            imgGxPixelsNorm[i] = (int) (valGx/norm);
+            imgGyPixelsNorm[i] = (int) (valGy/norm);
+        }
+
+        int[] output = new int[size];
+        int maxGray = 0;
+
+        // Calculates the norm of the gradient's image
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int valGx = 0x000000FF & (imgGxPixels[i * w + j]);
+                int valGy = 0x000000FF & (imgGyPixels[i * w + j]);
+
+                int value = 0;
+                double val = Math.sqrt(valGx * valGx + valGy * valGy);
+                value = (int) (val/Math.sqrt(2));
+                //value = (int) val;
+
+                if (value > maxGray)
+                    maxGray = value;
+
+                output[i * w + j] = 0xFF000000 | (value << 16) | (value << 8) | value;
+            }
+        }
+
+        // Seeks the local maximums of the gradient
+        for (int i = 1; i < h - 1; i++) {
+            for (int j = 1; j < w - 1; j++) {
+                int valGxNorm = (imgGxPixelsNorm[i * w + j]);
+                int valGyNorm = (imgGyPixelsNorm[i * w + j]);
+                double angle = Math.atan2(valGyNorm, valGxNorm);
+
+                if (angle < Math.PI/6 && angle > -Math.PI/6) {
+                    if (output[i * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < Math.PI/3 && angle > 0) {
+                    if (output[(i-1) * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < 2 * Math.PI/3 && angle > 0) {
+                    if (output[(i-1) * w + j] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < 5 * Math.PI/6 && angle > 0) {
+                    if (output[(i-1) * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if ((angle < Math.PI && angle > 0) || (angle < -5 * Math.PI/6)) {
+                    if (output[i * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < -2 * Math.PI/3) {
+                    if (output[(i+1) * w + (j-1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else if (angle < -Math.PI/3) {
+                    if (output[(i+1) * w + j] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+                else {
+                    if (output[(i+1) * w + (j+1)] > output[i * w + j])
+                        output[i * w + j] = 0xFF000000;
+                }
+            }
+        }
+
+        // High threshold
+        double highThreshold = highThresh * maxGray;
+        double lowThreshold = lowThresh * maxGray;
+
+        // Thresholding
+        for (int i = 0; i < size; i++) {
+            if ((0x000000FF & output[i]) > highThreshold)
+                output[i] = 0xFFFFFFFF;
+            else if ((0x000000FF & output[i]) < lowThreshold)
+                output[i] = 0xFF000000;
+        }
+
+        // Hysteresis
+        boolean hasNeighbour = true;
+        while (hasNeighbour) {
+            hasNeighbour = false;
+            for (int i = 1; i < h-1; i++) {
+                for (int j = 1; j < w-1; j++) {
+                    int gray = 0x000000FF & output[i * w + j];
+                    if (gray > lowThreshold && gray < highThreshold)
+                        for (int x = -1; x < 2; x++)
+                            for (int y = -1; y < 2; y++)
+                                if (output[(i + x) * w + (j + y)] == 0xFFFFFFFF) {
+                                    output[i * w + j] = 0xFFFFFFFF;
+                                    hasNeighbour = true;
+                                    break;
+                                }
+                }
+            }
+        }
+
+        img.setPixels(output, 0, 0, img.getWidth(), img.getHeight());
+    }
+
+    /**
+     * Uses the Voronoi's cells to apply a mosaic effect on the image thanks to Voronoi's diagram.
+     * This methods provides a tessellation of the plan because :
+     * <p>If we call Voronoi's cell associated with the Voronoi's germ p (p in the plan and
+     * in the set S of all the Voronoi's cells), then the set : </p>
+     * <center> Vor_S(p) = {x in R^2 | Forall q in S, d(x, p) <= d(x, q)}</center>
+     * Is such as all the points belong to at least one of these sets, and the ones that belongs to two
+     * or more are exactly the frontiers of the polygons of the tessellation.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param n
+     * The number of Voronoi's seeds.
+     *
+     * @see VoronoiSeed
+     *
+     * @since 4.0
+     */
+    public static void mosaic (Image img, int n) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        ArrayList<VoronoiSeed> seeds = new ArrayList<>(0);
+        for (int i = 0; i < n; i++) {
+            double x = Math.random()*(h-1);
+            double y = Math.random()*(w-1);
+            seeds.add(new VoronoiSeed(x, y, tab[(int) x * w + (int) y]));
+        }
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double dmin = w*w*2;
+                for (int k = 0; k < seeds.size(); k++) {
+                    double dcurrent = seeds.get(k).distance(i, j);
+                    if (dcurrent - dmin < 0) {
+                        dmin = dcurrent;
+                        tab[i * w + j] = seeds.get(k).getColor();
+                    }
+                    else if (dcurrent == dmin) {
+                        tab[i + w + j] = 0xFF000000;
+                    }
+                }
+            }
+        }
+
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
+     * Translates a texture into an array of ratios linked to the texture's pixels' values.
+     *
+     * @param texture
+     * The texture to tanslate.
+     *
+     * @return
+     * The array of values that have been smoothed by a sigmoid.
+     *
+     * @see Algorithms#applyTexture
+     *
+     * @since 4.0
+     */
+    private static double [] fetchTexture (Image texture) {
+        int w = texture.getWidth();
+        int h = texture.getHeight();
+        int [] tab = texture.getPixels(0, 0, w, h);
+        double [] light = new double[w*h];
+
+        for (int i = 0; i < w*h; i++) {
+            int tmp = tab[i];
+            int blue = 0x000000FF & tmp;
+            int green = (0x0000FF00 & tmp) >> 8;
+            int red = (0x00FF0000 & tmp) >> 16;
+
+            float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
+            value /= 255f;
+
+            // The sigmoid we use to smooth the values.
+            light[i] = 1 / (1 + Math.exp(-2 * value));
+        }
+
+        return light;
+    }
+
+    /**
+     * Applies the given texture onto the image.
+     *
+     * @param texture
+     * The texture to apply (can be bricks, wood, ...)
+     *
+     * @param source
+     * The image we work on.
+     *
+     * @see Algorithms#fetchTexture
+     *
+     * @since 4.0
+     */
+    public static void applyTexture (Image source, Image texture) {
+        int w = source.getWidth();
+        int h = source.getHeight();
+        int [] tab = source.getPixels(0, 0, w, h);
+
+        int wTex = texture.getWidth();
+        int hTex = texture.getHeight();
+
+        double [] tabTexture = fetchTexture(texture);
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int tmp = tab[i * w + j];
+                double ratio = tabTexture[(i % hTex) * wTex + (j % wTex)];
+                int blue = (int) ((tmp & 0x000000FF) * ratio);
+                int green = (int) (((tmp & 0x0000FF00) >> 8) * ratio);
+                int red = (int) (((tmp & 0x00FF0000) >> 16) * ratio);
+                int alpha = (tmp & 0xFF000000);
+                tab[i * w + j] = alpha | (red << 16) | (green << 8) | blue;
+            }
+        }
+        source.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
+     * Applies the given texture onto the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param radius
+     * The radius of the brush.
+     *
+     * @since 4.0
+     */
+    public static void brush (Image img, int radius) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        int Nx = w/radius;
+        int Ny = h/radius;
+
+        // For each square of edge radius
+        for (int i = 0; i < Nx; i++) {
+            for (int j = 0; j < Ny; j++) {
+                // For each pixel of this square
+                for (int x = 0; x < radius; x++) {
+                    for (int y = 0; y < radius; y++) {
+                        // We detect if we are above or under the unit circle, and we choose the most appropriate color.
+                        double relativeX = (x % radius) / radius;
+                        double relativeY = 1 - (y % radius) / radius;
+                        int color;
+                        try {
+                            if (relativeY > Math.sqrt(1 - (1 - relativeX) * (1 - relativeX)))
+                                color = tab[(i * radius + 1) * w + (j * radius - 1)];
+                            else
+                                color = tab[(i * radius + radius) * w + (j * radius + radius)];
+                            tab[(i * radius + x) * w + (j * radius + y)] = color;
+                        }
+                        catch (Exception e) {}
+                    }
+                }
+            }
+        }
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    public static void labyrinth (Image img, int max) {
+        Algorithms.toGray(img);
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+
+        // For each square of edge radius
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int tmp = tab[i * w + j];
+                int blue = (tmp & 0x000000FF);
+                int green = (tmp & 0x0000FF00) >> 8;
+                int red = (tmp & 0x00FF0000) >> 16;
+                int alpha = (tmp & 0xFF000000);
+
+                float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
+                value /= 255f;
+                int k = value/120f == 0 ? 0 : (int) Math.ceil((value/120f)/(1/(1.0 * max)));
+                double coin = Math.random();
+                int winner = coin < 0.5 ? i : j;
+
+                if (k !=0 && (k < max) && (winner % k == 0))
+                    tab[i * w + j] = alpha;
+                else
+                    tab[i * w + j] = alpha | 0x00FFFFFF;
+            }
+        }
+        img.setPixels(tab, 0, 0, w, h);
     }
 }
+
+// 0 <= i < h, 0 <= j < w, tab[ i * w + j]

@@ -31,6 +31,21 @@ public class Sphere {
      */
     private int color;
 
+    /**
+     * Sphere constructor.
+     *
+     * @param centerX
+     * The x coordinate of the sphere's center.
+     *
+     * @param centerY
+     * The y coordinate of the sphere's center.
+     *
+     * @param radius
+     * The radius of the sphere.
+     *
+     * @param color
+     * The ARGB color of the sphere.
+     */
     public Sphere (int centerX, int centerY, int radius, int color) {
         this.centerX = centerX;
         this.centerY = centerY;
@@ -38,18 +53,38 @@ public class Sphere {
         this.color = color;
     }
 
+    /**
+     * Returns the x coordinate of the sphere's center.
+     *
+     * @return The x coordinates of the sphere's center.
+     */
     public int getCenterX () {
         return this.centerX;
     }
 
+    /**
+     * Returns the y coordinate of the sphere's center.
+     *
+     * @return The y coordinates of the sphere's center.
+     */
     public int getCenterY () {
         return this.centerY;
     }
 
+    /**
+     * Returns the radius of the sphere.
+     *
+     * @return The radius of the sphere.
+     */
     public int getRadius () {
         return this.radius;
     }
 
+    /**
+     * Returns the ARGB color of the sphere.
+     *
+     * @return The ARGB color of the sphere.
+     */
     public int getColor () {
         return this.color;
     }

@@ -45,8 +45,16 @@
         android:title="flash"
         app:showAsAction="never" />
     <item
+        android:id="@+id/mosaic"
+        android:title="mosaic"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/sobel"
         android:title="sobel"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/canny"
+        android:title="canny"
         app:showAsAction="never" />
     <item
         android:id="@+id/moyenneur"
@@ -65,6 +73,14 @@
         android:title="cartoonize"
         app:showAsAction="never" />
     <item
+        android:id="@+id/texture"
+        android:title="texture"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/wallTag"
+        android:title="wall tag"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/houghtransform"
         android:title="Hough transform"
         app:showAsAction="never" />
@@ -75,6 +91,14 @@
     <item
         android:id="@+id/rotation"
         android:title="rotation"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sharpens"
+        android:title="sharpness"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sharpens2"
+        android:title="sharpness2"
         app:showAsAction="never" />
     <item
         android:id="@+id/reset"
