@@ -69,6 +69,10 @@
         android:title="laplacien"
         app:showAsAction="never" />
     <item
+        android:id="@+id/labyrinthe"
+        android:title="labyrinthe"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/cartoonize"
         android:title="cartoonize"
         app:showAsAction="never" />
@@ -99,6 +103,10 @@
     <item
         android:id="@+id/sharpens2"
         android:title="sharpness2"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/resize"
+        android:title="resize"
         app:showAsAction="never" />
     <item
         android:id="@+id/reset"

@@ -1681,9 +1681,7 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 
-    public static void labyrinth (Image img, int max) {
-        Algorithms.toGray(img);
-
+    public static void labyrinth (Image img, int max, float threshold) {
         int w = img.getWidth();
         int h = img.getHeight();
         int [] tab = img.getPixels(0, 0, w, h);
@@ -1698,8 +1696,7 @@ public class Algorithms {
                 int alpha = (tmp & 0xFF000000);
 
                 float value = red > green ? (red > blue ? red : blue) : (green > blue ? green : blue);
-                value /= 255f;
-                int k = value/120f == 0 ? 0 : (int) Math.ceil((value/120f)/(1/(1.0 * max)));
+                int k = value/threshold == 0 ? 0 : (int) Math.ceil((value/threshold)/(1/(1.0 * max)));
                 double coin = Math.random();
                 int winner = coin < 0.5 ? i : j;
 

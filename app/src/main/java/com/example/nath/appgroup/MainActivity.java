@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.campagne);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -197,9 +198,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                //Algorithms.meanFilter(imageToProcess, 13);
+                Algorithms.meanFilter(imageToProcess, 13);
                 //Algorithms.brush(imageToProcess, 10);
-                Algorithms.labyrinth(imageToProcess, 6);
+                break;
+
+            case R.id.labyrinthe:
+                Algorithms.labyrinth(imageToProcess, 6, 200f);
                 break;
 
             case R.id.texture:
@@ -270,6 +274,10 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.rotation:
                 Algorithms.rotate(imageToProcess, customImageView);
+                break;
+
+            case R.id.resize:
+                customImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 break;
 
             case R.id.reset:
