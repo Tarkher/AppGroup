@@ -1713,9 +1713,7 @@ public class Algorithms {
                 double coin = Math.random();
                 int winner = coin < 0.5 ? i : j;
 
-                if (k !=0 && (k < max) && (winner % k == 0))
-                    tab[i * w + j] = alpha;
-                else
+                if (!(k !=0 && (k < max) && (winner % k == 0)))
                     tab[i * w + j] = alpha | 0x00FFFFFF;
             }
         }
