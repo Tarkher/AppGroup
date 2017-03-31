@@ -216,7 +216,7 @@ public class Image implements Cloneable {
 
         for (int i = 0; i < heightTmp; ++i) {
             for (int j = 0; j < widthTmp; ++j) {
-                this.pixels[i * widthTmp + j] = pixels[(top + i) * widthTmp + j];
+                this.pixels[(top + i) * width + (left + j)] = pixels[i * widthTmp + j];
             }
         }
     }

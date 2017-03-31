@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
+import com.example.nath.appgroup.AlgorithmThread.AlgorithmThreadToGray;
+
 public class MainActivity extends AppCompatActivity {
     final int SAVE_GALLERY = 100;
     final int GET_PHOTO = 101;
@@ -24,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.motorway);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.la);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -46,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         seekBarColorize.setVisibility(View.INVISIBLE);
         seekBarColorize.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_COLORIZE));
+
+        SeekBar seekBarColorFilter = (SeekBar)findViewById(R.id.seekBarColorFilter);
+        seekBarColorFilter.setMax(360);
+        seekBarColorFilter.setVisibility(View.INVISIBLE);
+        seekBarColorFilter.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_COLOR_FILTER));
 
         SeekBar seekBarLuminosity = (SeekBar)findViewById(R.id.seekBarLuminosity);
         seekBarLuminosity.setMax(510);
@@ -165,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
         seekBarLabyMax.setVisibility(View.INVISIBLE);
         SeekBar seekBarLabyRatio = (SeekBar)findViewById(R.id.seekBarLabyRatio);
         seekBarLabyRatio.setVisibility(View.INVISIBLE);
+        SeekBar seekBarColorFilter = (SeekBar)findViewById(R.id.seekBarColorFilter);
+        seekBarColorFilter.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -173,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intentCamera, GET_PHOTO);
                 break;
 
-            //Code from coderzheaven.com
             case R.id.gallery:
                 Intent intentGallery = new Intent();
                 intentGallery.setType("image/*");
@@ -184,6 +194,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.save:
                 Bitmap bitmap = customImageView.getImage().getBitmap();
                 MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "myBitmap", "myBitmap");
+                break;
+
+            case R.id.toGrayThread:
+                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess, 10, 0);
+                algorithmThread.run();
                 break;
 
             case R.id.toGray:
@@ -202,6 +217,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.colorize:
                 customImageView.saveImageTemporary();
                 seekBarColorize.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.colorFilter:
+                customImageView.saveImageTemporary();;
+                seekBarColorFilter.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.luminosity:

@@ -3,6 +3,8 @@ package com.example.nath.appgroup;
 import android.app.Activity;
 import android.widget.SeekBar;
 
+import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
+
 public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_CONTRAST_EQUALIZATION = 1;
     final static int ALGORITHM_COLORIZE = 2;
@@ -17,6 +19,7 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_PAINTING = 11;
     final static int ALGORITHM_LABYRINTH_MAX = 12;
     final static int ALGORITHM_LABYRINTH_RATIO = 13;
+    final static int ALGORITHM_COLOR_FILTER = 14;
 
     private CustomImageView customImageView;
     private int algorithm;
@@ -116,6 +119,11 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             case ALGORITHM_LABYRINTH_RATIO:
                 Algorithms.labyrinth(imageToProcess,
                         seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
+                break;
+            case ALGORITHM_COLOR_FILTER:
+                //Algorithms.colorFilter(imageToProcess, seekBar.getProgress());
+                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess, 11, seekBar.getProgress());
+                algorithmThread.run();
                 break;
         }
 

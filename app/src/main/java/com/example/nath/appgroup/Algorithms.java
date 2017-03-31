@@ -8,6 +8,10 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import static java.lang.Thread.sleep;
 
 /**
  * <b>Algorithms contains all the algorithms used for image processing</b>
@@ -682,7 +686,7 @@ public class Algorithms {
      *
      * @since 2.0
      */
-    private static int floorMod(int a, int b) {
+    public static int floorMod(int a, int b) {
         int r = a % b;
         if (r < 0)
             r += b;

@@ -17,6 +17,10 @@
         android:title=""
         app:showAsAction="always" />
     <item
+        android:id="@+id/toGrayThread"
+        android:title="toGrayThread"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/toGray"
         android:title="toGray"
         app:showAsAction="never" />
