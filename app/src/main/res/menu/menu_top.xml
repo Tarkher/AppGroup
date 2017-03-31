@@ -77,6 +77,10 @@
         android:title="cartoonize"
         app:showAsAction="never" />
     <item
+        android:id="@+id/painting"
+        android:title="painting"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/texture"
         android:title="texture"
         app:showAsAction="never" />

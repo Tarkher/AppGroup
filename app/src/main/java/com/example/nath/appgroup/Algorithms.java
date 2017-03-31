@@ -804,7 +804,6 @@ public class Algorithms {
      * @param draw
      * The trace (usually the edges detected with the canny edge detector
      *
-     * @see Algorithms#cartoonize
      *
      * @since 3.0
      */
@@ -1762,4 +1761,42 @@ public class Algorithms {
         img.setPixels(newTab, 0, 0, w, h);
     }
 
+    /**
+     * Gives a painting effect to the image by giving to each pixel the color of itself or one of its
+     * neighbours randomly.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param n
+     * The number of times we apply the effect.
+     *
+     * @since 4.0
+     */
+    public static void painting (Image img, int n) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+        int[] newTab = new int[w * h];
+
+        int [] coord = {-1, 0, 1};
+
+        for (int k = 0; k < n; k++) {
+            if (k != 0)
+                for (int x = 1; x < h-1; x++)
+                    for (int y = 1; y < w-1; y++)
+                        tab[x * w + y] = newTab[x * w + y];
+
+            for (int i = 1; i < h-1; i++) {
+                for (int j = 1; j < w-1; j++) {
+                    int coin1 = (int) (Math.random()*3);
+                    int coin2 = (int) (Math.random()*3);
+
+                    newTab[i * w + j] = tab[(i + coord[coin1]) * w + (j + coord[coin2])];
+                }
+            }
+        }
+
+        img.setPixels(newTab, 0, 0, w, h);
+    }
 }

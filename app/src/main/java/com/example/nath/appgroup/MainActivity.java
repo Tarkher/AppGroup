@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.motorway);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -102,6 +102,27 @@ public class MainActivity extends AppCompatActivity {
         seekBarCannyLow.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CANNY_LOW));
 
+        SeekBar seekBarPainting = (SeekBar)findViewById(R.id.seekBarPainting);
+        seekBarPainting.setMax(100);
+        seekBarPainting.setProgress(20);
+        seekBarPainting.setVisibility(View.INVISIBLE);
+        seekBarPainting.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_PAINTING));
+
+        SeekBar seekBarLabyMax = (SeekBar)findViewById(R.id.seekBarLabyMax);
+        seekBarLabyMax.setMax(15);
+        seekBarLabyMax.setProgress(6);
+        seekBarLabyMax.setVisibility(View.INVISIBLE);
+        seekBarLabyMax.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LABYRINTH_MAX));
+
+        SeekBar seekBarLabyRatio = (SeekBar)findViewById(R.id.seekBarLabyRatio);
+        seekBarLabyRatio.setMax(254);
+        seekBarLabyRatio.setProgress(179);
+        seekBarLabyRatio.setVisibility(View.INVISIBLE);
+        seekBarLabyRatio.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LABYRINTH_RATIO));
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
@@ -138,6 +159,12 @@ public class MainActivity extends AppCompatActivity {
         seekBarCannyHigh.setVisibility(View.INVISIBLE);
         SeekBar seekBarCannyLow = (SeekBar)findViewById(R.id.seekBarCannyLow);
         seekBarCannyLow.setVisibility(View.INVISIBLE);
+        SeekBar seekBarPainting = (SeekBar) findViewById(R.id.seekBarPainting);
+        seekBarPainting.setVisibility(View.INVISIBLE);
+        SeekBar seekBarLabyMax = (SeekBar)findViewById(R.id.seekBarLabyMax);
+        seekBarLabyMax.setVisibility(View.INVISIBLE);
+        SeekBar seekBarLabyRatio = (SeekBar)findViewById(R.id.seekBarLabyRatio);
+        seekBarLabyRatio.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -198,9 +225,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                //Algorithms.meanFilter(imageToProcess, 13);
+                Algorithms.meanFilter(imageToProcess, 13);
                 //Algorithms.brush(imageToProcess, 10);
-                Algorithms.duplicate(imageToProcess);
+                break;
+
+            case R.id.painting:
+                customImageView.saveImageTemporary();
+                seekBarPainting.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.duplicate:
@@ -208,11 +239,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.labyrinthe:
-                Algorithms.labyrinth(imageToProcess, 6, 200f);
+                customImageView.saveImageTemporary();
+                seekBarLabyMax.setVisibility(View.VISIBLE);
+                seekBarLabyRatio.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.texture:
-                Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), R.drawable.briques);
+                Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
                 int bitmapHeight = bitmapTmp.getHeight();
                 int bitmapWidth = bitmapTmp.getWidth();
                 int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -261,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.cartoonize:
                 Image trace = imageToProcess.clone();
+                Algorithms.gaussianFilter(trace, 3, 0.8);
                 Algorithms.cannyEdgeDetector(trace, 0.08, 0.15);
                 Algorithms.cartoonize(imageToProcess, 11);
                 Algorithms.traceEdges(imageToProcess, trace);

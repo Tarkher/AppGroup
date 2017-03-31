@@ -14,6 +14,9 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_MOSAIC = 8;
     final static int ALGORITHM_CANNY_HIGH = 9;
     final static int ALGORITHM_CANNY_LOW = 10;
+    final static int ALGORITHM_PAINTING = 11;
+    final static int ALGORITHM_LABYRINTH_MAX = 12;
+    final static int ALGORITHM_LABYRINTH_RATIO = 13;
 
     private CustomImageView customImageView;
     private int algorithm;
@@ -44,6 +47,9 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
         SeekBar seekBarHigh = (SeekBar)activity.findViewById(R.id.seekBarCannyHigh);
         SeekBar seekBarLow = (SeekBar)activity.findViewById(R.id.seekBarCannyLow);
+
+        SeekBar seekBarMax = (SeekBar)activity.findViewById(R.id.seekBarLabyMax);
+        SeekBar seekBarRatio = (SeekBar)activity.findViewById(R.id.seekBarLabyRatio);
 
         switch (algorithm) {
             case ALGORITHM_CONTRAST_EQUALIZATION:
@@ -99,6 +105,17 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 if (progLow2 != 0)
                     progLow2 = 1 / progLow2;
                 Algorithms.cannyEdgeDetector(imageToProcess, progLow2, progHigh2);
+                break;
+            case ALGORITHM_PAINTING:
+                Algorithms.painting(imageToProcess, seekBar.getProgress());
+                break;
+            case ALGORITHM_LABYRINTH_MAX:
+                Algorithms.labyrinth(imageToProcess,
+                        seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
+                break;
+            case ALGORITHM_LABYRINTH_RATIO:
+                Algorithms.labyrinth(imageToProcess,
+                        seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
                 break;
         }
 
