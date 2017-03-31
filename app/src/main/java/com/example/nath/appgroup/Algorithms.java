@@ -1657,8 +1657,8 @@ public class Algorithms {
         int Ny = h/radius;
 
         // For each square of edge radius
-        for (int i = 0; i < Nx; i++) {
-            for (int j = 0; j < Ny; j++) {
+        for (int i = 0; i < Ny; i++) {
+            for (int j = 0; j < Nx; j++) {
                 // For each pixel of this square
                 for (int x = 0; x < radius; x++) {
                     for (int y = 0; y < radius; y++) {
@@ -1722,6 +1722,44 @@ public class Algorithms {
         }
         img.setPixels(tab, 0, 0, w, h);
     }
-}
 
-// 0 <= i < h, 0 <= j < w, tab[ i * w + j]
+    /**
+     * Duplicates the image by permuting pixels depending on their parity. Cycles back to the original
+     * image after repetitive usages (a divisor of the lcm of h*w.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @since 4.0
+     */
+    public static void duplicate (Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int [] tab = img.getPixels(0, 0, w, h);
+        int [] newTab = new int[w*h];
+
+        int dw = (int) Math.floor(w/2.0);
+        int dh = (int) Math.floor(h/2.0);
+
+        // For each square of edge radius
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int tmp = tab[i * w + j];
+
+                if (i % 2 == 0) {
+                    if (j % 2 == 0)
+                        newTab[i / 2 * w + j / 2] = tab[i * w + j];
+                    else
+                        newTab[i / 2 * w + (j - 1) / 2 + dw] = tab[i * w + j];
+                } else {
+                    if (j % 2 == 0)
+                        newTab[((i - 1) / 2 + dh) * w + j / 2] = tab[i * w + j];
+                    else
+                        newTab[((i - 1) / 2 + dh) * w + (j - 1) / 2 + dw] = tab[i * w + j];
+                }
+            }
+        }
+        img.setPixels(newTab, 0, 0, w, h);
+    }
+
+}

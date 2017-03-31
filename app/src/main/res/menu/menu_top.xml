@@ -105,6 +105,10 @@
         android:title="sharpness2"
         app:showAsAction="never" />
     <item
+        android:id="@+id/duplicate"
+        android:title="duplicate"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/resize"
         android:title="resize"
         app:showAsAction="never" />

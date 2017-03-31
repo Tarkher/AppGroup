@@ -198,8 +198,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                Algorithms.meanFilter(imageToProcess, 13);
+                //Algorithms.meanFilter(imageToProcess, 13);
                 //Algorithms.brush(imageToProcess, 10);
+                Algorithms.duplicate(imageToProcess);
+                break;
+
+            case R.id.duplicate:
+                Algorithms.duplicate(imageToProcess);
                 break;
 
             case R.id.labyrinthe:
