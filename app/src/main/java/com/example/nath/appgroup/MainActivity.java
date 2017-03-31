@@ -123,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
         seekBarLabyRatio.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LABYRINTH_RATIO));
 
+        SeekBar seekBarColorFilter = (SeekBar)findViewById(R.id.seekBarColorFilter);
+        seekBarColorFilter.setMax(360);
+        seekBarColorFilter.setProgress(0);
+        seekBarColorFilter.setVisibility(View.INVISIBLE);
+        seekBarColorFilter.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_COLOR_FILTER));
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
@@ -165,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
         seekBarLabyMax.setVisibility(View.INVISIBLE);
         SeekBar seekBarLabyRatio = (SeekBar)findViewById(R.id.seekBarLabyRatio);
         seekBarLabyRatio.setVisibility(View.INVISIBLE);
+        SeekBar seekBarColorFilter = (SeekBar) findViewById(R.id.seekBarColorFilter);
+        seekBarColorFilter.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -188,6 +197,11 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.toGray:
                 Algorithms.toGray(imageToProcess);
+                break;
+
+            case R.id.colorFilter:
+                customImageView.saveImageTemporary();
+                seekBarColorFilter.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.dynamicExtensionColor:

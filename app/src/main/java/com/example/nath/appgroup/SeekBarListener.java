@@ -17,6 +17,7 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_PAINTING = 11;
     final static int ALGORITHM_LABYRINTH_MAX = 12;
     final static int ALGORITHM_LABYRINTH_RATIO = 13;
+    final static int ALGORITHM_COLOR_FILTER = 14;
 
     private CustomImageView customImageView;
     private int algorithm;
@@ -116,6 +117,9 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
             case ALGORITHM_LABYRINTH_RATIO:
                 Algorithms.labyrinth(imageToProcess,
                         seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
+                break;
+            case ALGORITHM_COLOR_FILTER:
+                Algorithms.colorFilter(imageToProcess, seekBar.getProgress());
                 break;
         }
 
