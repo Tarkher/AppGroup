@@ -6,6 +6,7 @@ public class AlgorithmThread {
     public final static int IMG_FACTOR = 3;
     public final static int ALGORITHM_TO_GRAY = 10;
     public final static int ALGORITHM_COLOR_FILTER = 11;
+    public final static int ALGORITHM_COLORIZE = 12;
 
     private Image imgPointer;
     private Image img;
@@ -41,6 +42,11 @@ public class AlgorithmThread {
                             int radius = (Integer)input[0];
                             threadPool[i * IMG_FACTOR + j] = new AlgorithmThreadColorFilter(img, imgPointer,
                                     i * widthStep, j * heightStep, (i + 1) * widthStep, (j + 1) * heightStep, radius);
+                            break;
+                        case ALGORITHM_COLORIZE:
+                            int hue = (Integer)input[0];
+                            threadPool[i * IMG_FACTOR + j] = new AlgorithmThreadColorize(img, imgPointer,
+                                    i * widthStep, j * heightStep, (i + 1) * widthStep, (j + 1) * heightStep, hue);
                             break;
                     }
                 }

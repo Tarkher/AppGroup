@@ -59,7 +59,12 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 Algorithms.contrastEqualization(imageToProcess, seekBar.getProgress());
                 break;
             case ALGORITHM_COLORIZE:
-                Algorithms.colorize(imageToProcess, seekBar.getProgress());
+                //Algorithms.colorize(imageToProcess, seekBar.getProgress());
+                Object[] input0 = new Object[1];
+                input0[0] = seekBar.getProgress();
+                AlgorithmThread algorithmThread0 = new AlgorithmThread(imageToProcess,
+                        AlgorithmThread.ALGORITHM_COLORIZE, input0);
+                algorithmThread0.run();
                 break;
             case ALGORITHM_LUMINOSITY:
                 Algorithms.luminosity(imageToProcess, seekBar.getProgress() - 255);
@@ -121,11 +126,11 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                         seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
                 break;
             case ALGORITHM_COLOR_FILTER:
-                Object[] input = new Object[1];
-                input[0] = seekBar.getProgress();
-                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess,
-                        AlgorithmThread.ALGORITHM_COLOR_FILTER, input);
-                algorithmThread.run();
+                Object[] input1 = new Object[1];
+                input1[0] = seekBar.getProgress();
+                AlgorithmThread algorithmThread1 = new AlgorithmThread(imageToProcess,
+                        AlgorithmThread.ALGORITHM_COLOR_FILTER, input1);
+                algorithmThread1.run();
                 break;
         }
 
