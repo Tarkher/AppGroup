@@ -65,6 +65,10 @@
         android:title="moyenneur"
         app:showAsAction="never" />
     <item
+        android:id="@+id/relief"
+        android:title="relief"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/gaussien"
         android:title="gaussien"
         app:showAsAction="never" />

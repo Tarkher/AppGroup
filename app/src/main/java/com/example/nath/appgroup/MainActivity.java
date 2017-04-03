@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.la);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -245,7 +245,11 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                Algorithms.meanFilter(imageToProcess, 13);
+                Algorithms.meanFilter(imageToProcess, 3);
+                break;
+
+            case R.id.relief:
+                Algorithms.relief(imageToProcess);
                 break;
 
             case R.id.painting:
@@ -264,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.texture:
-                Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+                Bitmap bitmapTmp = BitmapFactory.decodeResource(getResources(), R.drawable.briques);
                 int bitmapHeight = bitmapTmp.getHeight();
                 int bitmapWidth = bitmapTmp.getWidth();
                 int[] pixels = new int[bitmapHeight * bitmapWidth];

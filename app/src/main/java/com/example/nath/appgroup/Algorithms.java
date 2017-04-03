@@ -492,7 +492,6 @@ public class Algorithms {
         int w = img.getWidth();
         int h = img.getHeight();
         int[] tab = img.getPixels(0, 0, img.getWidth(), img.getHeight());
-        img.getPixels(0, 0, img.getWidth(), img.getHeight());
 
         for (int i = 0; i < w * h; i++) {
             int tmp = tab[i];
@@ -1272,6 +1271,21 @@ public class Algorithms {
     }
 
     /**
+     * Calculates the convolution with a 3x3 laplacian mask to detect the edges in an image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolution
+     *
+     * @since 2.0
+     */
+    public static void relief (Image img) {
+        float matrixGrain[][] = {{-2,-1,0}, {-1,1,1}, {0,1,2}};
+        Algorithms.convolutionColor(img, matrixGrain);
+    }
+
+    /**
      * Calculates two convolutions with the two 3x3 Sobel masks and uses the gradient's
      * norm to detect the edges in the image.
      *
@@ -1812,4 +1826,6 @@ public class Algorithms {
 
         img.setPixels(newTab, 0, 0, w, h);
     }
+
+
 }
