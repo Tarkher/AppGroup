@@ -1,6 +1,7 @@
 package com.example.nath.appgroup;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.SeekBar;
 
 import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
@@ -59,7 +60,7 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 Algorithms.contrastEqualization(imageToProcess, seekBar.getProgress());
                 break;
             case ALGORITHM_COLORIZE:
-                //Algorithms.colorize(imageToProcess, seekBar.getProgress());
+                Algorithms.colorize(imageToProcess, seekBar.getProgress());
                 Object[] input0 = new Object[1];
                 input0[0] = seekBar.getProgress();
                 AlgorithmThread algorithmThread0 = new AlgorithmThread(imageToProcess,
