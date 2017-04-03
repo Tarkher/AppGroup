@@ -121,8 +121,10 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                         seekBarMax.getProgress(), 1.0f * (seekBarRatio.getProgress() + 1));
                 break;
             case ALGORITHM_COLOR_FILTER:
-                //Algorithms.colorFilter(imageToProcess, seekBar.getProgress());
-                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess, 11, seekBar.getProgress());
+                Object[] input = new Object[1];
+                input[0] = seekBar.getProgress();
+                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess,
+                        AlgorithmThread.ALGORITHM_COLOR_FILTER, input);
                 algorithmThread.run();
                 break;
         }

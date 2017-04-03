@@ -14,9 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-
 import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
-import com.example.nath.appgroup.AlgorithmThread.AlgorithmThreadToGray;
 
 public class MainActivity extends AppCompatActivity {
     final int SAVE_GALLERY = 100;
@@ -197,7 +195,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.toGrayThread:
-                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess, 10, 0);
+                Object[] input = new Object[0];
+                AlgorithmThread algorithmThread = new AlgorithmThread(imageToProcess,
+                        AlgorithmThread.ALGORITHM_TO_GRAY, input);
                 algorithmThread.run();
                 break;
 
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.colorFilter:
-                customImageView.saveImageTemporary();;
+                customImageView.saveImageTemporary();
                 seekBarColorFilter.setVisibility(View.VISIBLE);
                 break;
 
@@ -246,7 +246,6 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.moyenneur:
                 Algorithms.meanFilter(imageToProcess, 13);
-                //Algorithms.brush(imageToProcess, 10);
                 break;
 
             case R.id.painting:

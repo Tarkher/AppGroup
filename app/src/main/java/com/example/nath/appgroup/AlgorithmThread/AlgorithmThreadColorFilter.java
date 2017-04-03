@@ -6,6 +6,7 @@ import com.example.nath.appgroup.Algorithms;
 import com.example.nath.appgroup.Image;
 
 public class AlgorithmThreadColorFilter extends Thread {
+    private Image img;
     private Image imgPointer;
     private int left;
     private int top;
@@ -13,7 +14,8 @@ public class AlgorithmThreadColorFilter extends Thread {
     private int bottom;
     private int radius;
 
-    public AlgorithmThreadColorFilter(Image imgPointer, int left, int top, int right, int bottom, int radius) {
+    public AlgorithmThreadColorFilter(Image img, Image imgPointer, int left, int top, int right, int bottom, int radius) {
+        this.img = img;
         this.imgPointer = imgPointer;
         this.left = left;
         this.top = top;
@@ -25,7 +27,7 @@ public class AlgorithmThreadColorFilter extends Thread {
     public void run() {
         int w = right - left;
         int h = bottom - top;
-        int[] tab = imgPointer.getPixels(left, top, right, bottom);
+        int[] tab = img.getPixels(left, top, right, bottom);
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {

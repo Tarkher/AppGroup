@@ -3,13 +3,15 @@ package com.example.nath.appgroup.AlgorithmThread;
 import com.example.nath.appgroup.Image;
 
 public class AlgorithmThreadToGray extends Thread {
+    private Image img;
     private Image imgPointer;
     private int left;
     private int top;
     private int right;
     private int bottom;
 
-    public AlgorithmThreadToGray(Image imgPointer, int left, int top, int right, int bottom) {
+    public AlgorithmThreadToGray(Image img, Image imgPointer, int left, int top, int right, int bottom) {
+        this.img = img;
         this.imgPointer = imgPointer;
         this.left = left;
         this.top = top;
@@ -20,7 +22,7 @@ public class AlgorithmThreadToGray extends Thread {
     public void run() {
         int w = right - left;
         int h = bottom - top;
-        int[] tab = imgPointer.getPixels(left, top, right, bottom);
+        int[] tab = img.getPixels(left, top, right, bottom);
 
         for (int i = 0; i < w * h; i++) {
             // Gets the ith argb pixel of the image

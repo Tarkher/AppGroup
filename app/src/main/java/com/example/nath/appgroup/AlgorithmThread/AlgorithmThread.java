@@ -3,21 +3,21 @@ package com.example.nath.appgroup.AlgorithmThread;
 import com.example.nath.appgroup.Image;
 
 public class AlgorithmThread {
-    private final int IMG_FACTOR = 3;
-    private final int ALGORITHM_TO_GRAY = 10;
-    private final int ALGORITHM_SPHERES = 11;
+    public final static int IMG_FACTOR = 3;
+    public final static int ALGORITHM_TO_GRAY = 10;
+    public final static int ALGORITHM_COLOR_FILTER = 11;
 
     private Image imgPointer;
     private Image img;
     private Thread[] threadPool;
-    private int algo;
-    private int radius;
+    private int algorithm;
+    private Object[] input;
 
-    public AlgorithmThread(Image img, int algo, int radius) {
+    public AlgorithmThread(Image img, int algorithm, Object[] input) {
         this.imgPointer = img;
         this.img = img.clone();
-        this.algo = algo;
-        this.radius = radius;
+        this.algorithm = algorithm;
+        this.input = input;
     }
 
     public void run() {
@@ -30,21 +30,19 @@ public class AlgorithmThread {
             int widthStep = width / IMG_FACTOR;
             int heightStep = height / IMG_FACTOR;
 
-            int count = 0;
-
             for (int i = 0; i < IMG_FACTOR; ++i) {
                 for (int j = 0; j < IMG_FACTOR; ++j) {
-                    switch (algo) {
+                    switch (algorithm) {
                         case ALGORITHM_TO_GRAY:
-                            threadPool[count] = new AlgorithmThreadToGray(img,
+                            threadPool[i * IMG_FACTOR + j] = new AlgorithmThreadToGray(img, imgPointer,
                                     i * widthStep, j * heightStep, (i + 1) * widthStep, (j + 1) * heightStep);
                             break;
-                        case ALGORITHM_SPHERES:
-                            threadPool[count] = new AlgorithmThreadColorFilter(img,
+                        case ALGORITHM_COLOR_FILTER:
+                            int radius = (Integer)input[0];
+                            threadPool[i * IMG_FACTOR + j] = new AlgorithmThreadColorFilter(img, imgPointer,
                                     i * widthStep, j * heightStep, (i + 1) * widthStep, (j + 1) * heightStep, radius);
                             break;
                     }
-                    ++count;
                 }
             }
 
@@ -53,9 +51,6 @@ public class AlgorithmThread {
 
             for (int i = 0; i < IMG_FACTOR * IMG_FACTOR; ++i)
                 threadPool[i].join();
-
-            imgPointer.setPixels(img.getPixels(0, 0, img.getWidth(), img.getHeight()),
-                    0, 0, img.getWidth(), img.getHeight());
         }
         catch (Exception e) {
             e.printStackTrace();
