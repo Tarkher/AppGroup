@@ -2,6 +2,9 @@
 
 # TO DO
 
+Textures avec du relief
+
+Multi-Threading
 
 Sobel en couleurs
 

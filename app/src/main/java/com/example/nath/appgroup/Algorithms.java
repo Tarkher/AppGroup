@@ -129,6 +129,17 @@ public class Algorithms {
         img.setPixels(tab, 0, 0, w, h);
     }
 
+    /**
+     * Turns all the pixels of the image into gray level except the ones of a given color.
+     *
+     * @param img
+     * The image we work on
+     *
+     * @param degree
+     * The degree of the hue (in the HSV representation) of the pixels not affected by the filter.
+     *
+     * @since 4.0
+     */
     public static void colorFilter(Image img, int degree) {
         int w = img.getWidth();
         int h = img.getHeight();
@@ -1717,9 +1728,7 @@ public class Algorithms {
                 double coin = Math.random();
                 int winner = coin < 0.5 ? i : j;
 
-                if (k !=0 && (k < max) && (winner % k == 0))
-                    tab[i * w + j] = alpha;
-                else
+                if (!(k !=0 && (k < max) && (winner % k == 0)))
                     tab[i * w + j] = alpha | 0x00FFFFFF;
             }
         }
