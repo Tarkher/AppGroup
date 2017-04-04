@@ -20,6 +20,10 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
     final static int ALGORITHM_LABYRINTH_MAX = 12;
     final static int ALGORITHM_LABYRINTH_RATIO = 13;
     final static int ALGORITHM_COLOR_FILTER = 14;
+    final static int ALGORITHM_FLASHLIGHT_INTENSITY = 15;
+    final static int ALGORITHM_FLASHLIGHT_RADIUS = 16;
+    final static int ALGORITHM_RADIAL_BLUR = 17;
+    final static int ALGORITHM_CIRCULAR_BLUR = 18;
 
     private CustomImageView customImageView;
     private int algorithm;
@@ -53,6 +57,9 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
         SeekBar seekBarMax = (SeekBar)activity.findViewById(R.id.seekBarLabyMax);
         SeekBar seekBarRatio = (SeekBar)activity.findViewById(R.id.seekBarLabyRatio);
+
+        SeekBar seekBarIntensity = (SeekBar)activity.findViewById(R.id.seekBarFlashlightIntensity);
+        SeekBar seekBarRadius= (SeekBar)activity.findViewById(R.id.seekBarFlashlightRadius);
 
         switch (algorithm) {
             case ALGORITHM_CONTRAST_EQUALIZATION:
@@ -130,6 +137,18 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 AlgorithmThread algorithmThread1 = new AlgorithmThread(imageToProcess,
                         AlgorithmThread.ALGORITHM_COLOR_FILTER, input1);
                 algorithmThread1.run();
+                break;
+            case ALGORITHM_FLASHLIGHT_INTENSITY:
+                Algorithms.flashlight(imageToProcess, seekBarIntensity.getProgress(), seekBarRadius.getProgress());
+                break;
+            case ALGORITHM_FLASHLIGHT_RADIUS:
+                Algorithms.flashlight(imageToProcess, seekBarIntensity.getProgress(), seekBarRadius.getProgress());
+                break;
+            case ALGORITHM_RADIAL_BLUR:
+                Algorithms.radialBlur(imageToProcess, seekBar.getProgress());
+                break;
+            case ALGORITHM_CIRCULAR_BLUR:
+                Algorithms.circularBlur(imageToProcess, seekBar.getProgress());
                 break;
         }
 

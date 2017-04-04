@@ -1666,50 +1666,6 @@ public class Algorithms {
     }
 
     /**
-     * Applies the given texture onto the image.
-     *
-     * @param img
-     * The image we work on.
-     *
-     * @param radius
-     * The radius of the brush.
-     *
-     * @since 4.0
-     */
-    public static void brush (Image img, int radius) {
-        int w = img.getWidth();
-        int h = img.getHeight();
-        int [] tab = img.getPixels(0, 0, w, h);
-
-        int Nx = w/radius;
-        int Ny = h/radius;
-
-        // For each square of edge radius
-        for (int i = 0; i < Ny; i++) {
-            for (int j = 0; j < Nx; j++) {
-                // For each pixel of this square
-                for (int x = 0; x < radius; x++) {
-                    for (int y = 0; y < radius; y++) {
-                        // We detect if we are above or under the unit circle, and we choose the most appropriate color.
-                        double relativeX = (x % radius) / radius;
-                        double relativeY = 1 - (y % radius) / radius;
-                        int color;
-                        try {
-                            if (relativeY > Math.sqrt(1 - (1 - relativeX) * (1 - relativeX)))
-                                color = tab[(i * radius + 1) * w + (j * radius - 1)];
-                            else
-                                color = tab[(i * radius + radius) * w + (j * radius + radius)];
-                            tab[(i * radius + x) * w + (j * radius + y)] = color;
-                        }
-                        catch (Exception e) {}
-                    }
-                }
-            }
-        }
-        img.setPixels(tab, 0, 0, w, h);
-    }
-
-    /**
      * Creates a randomly generated labyrinth pattern whose density depends on the pixels' lightness.
      *
      * @param img
@@ -1827,5 +1783,298 @@ public class Algorithms {
         img.setPixels(newTab, 0, 0, w, h);
     }
 
+    /**
+     * Gives a flashlight effect to the image. The bigger the intensity is, the more the image is
+     * enlightened. The radius represents the size of the circle enlightened.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param intensity
+     * The amount of light applied by the flashlight. If it's equal to zero then the whole image is black.
+     *
+     * @param radius
+     * The radius of the zone enlightened by the flashlight.
+     *
+     * @since 4.0
+     */
+    public static void flashlight (Image img, int intensity, int radius) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+
+        float intensityRatio = intensity / 100.0f;
+        float radiusRatio = radius / 100.0f;
+        float midHeight = h / 2.0f;
+        float midWidth = w / 2.0f;
+        double distanceMax = Math.sqrt(midHeight * midHeight + midWidth * midWidth) * radiusRatio * intensityRatio;
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                float x = i - midHeight;
+                float y = j - midWidth;
+                double distance = Math.sqrt(x*x + y*y);
+                float coeff = (float) ((distanceMax - distance) / distanceMax * (1 + intensityRatio));
+                if (coeff < 0)
+                    coeff = 0;
+                int color = tab[i * w + j];
+                int blue = color & 0x000000FF;
+                int green = (color & 0x0000FF00) >> 8;
+                int red = (color & 0x00FF0000) >> 16;
+                blue = (int) (blue * coeff);
+                green = (int) (green * coeff);
+                red = (int) (red * coeff);
+
+                blue = blue > 255 ? 255 : blue;
+                green = green > 255 ? 255 : green;
+                red = red > 255 ? 255 : red;
+
+
+                tab[i * w + j] = 0xFF000000 | (red << 16) | (green << 8) | blue;
+            }
+        }
+
+        img.setPixels(tab, 0, 0, w, h);
+    }
+
+    /**
+     * Returns an approximation of what a pixel would be if it had the coordinates (x,y).
+     *
+     * @param x
+     * The floating x coordinate of a pixel.
+     *
+     * @param y
+     * The floating y coordinate of a pixel.
+     *
+     * @param pixels
+     * The array of pixels.
+     *
+     * @param w
+     * The width of the array of pixels.
+     *
+     * @param h
+     * The height of the array of pixels.
+     *
+     * @return
+     * A linear combination of the colors of the pixels surrounding the (x,y) point.
+     *
+     * @see Algorithms#radialBlur
+     * @see Algorithms#radialExplosion
+     * @see Algorithms#circularBlur
+     *
+     * @since 4.0
+     */
+    private static int getFloatingColor (double x, double y, int [] pixels, int w, int h) {
+        int i = (int) x;
+        int j = (int) y;
+        i = i > h-2 ? h-2 : i < 0 ? 0 : i;
+        j = j > w-2 ? w-2 : j < 0 ? 0 : j;
+        int [] colors = {pixels[i * w + j], pixels[i * w + (j+1)], pixels[(i+1) * w + j],
+                        pixels[(i+1) * w + (j+1)]};
+        double red = 0, green = 0, blue = 0;
+
+        for (int k = 0; k < 4; k++) {
+            int tmp = colors[k];
+            int blueTmp = tmp & 0x000000FF;
+            int greenTmp = (tmp & 0x0000FF00) >> 8;
+            int redTmp = (tmp & 0x00FF0000) >> 16;
+            double beta = Math.abs((x - i - ((3 - k) % 2)) * (y - j - (int) ((3-k) / 2.0f)));
+            red += beta * redTmp;
+            green += beta * greenTmp;
+            blue += beta * blueTmp;
+        }
+        return 0xFF000000 | ((int) red) << 16 | ((int) green) << 8 | ((int) blue);
+    }
+
+    /**
+     * Artistic blur. Mimics a radial explosion.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#getFloatingColor
+     *
+     * @since 4.0
+     */
+    public static void radialExplosion (Image img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+        int[] newTab = new int [w * h];
+
+        double midHeight = h / 2.0;
+        double midWidth = w / 2.0;
+
+        int intensity = 40;
+
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double dx = midHeight - i;
+                double dy = midWidth - j;
+                double norm = Math.sqrt(dx * dx + dy * dy);
+                dx = dx / norm * intensity * Math.random();
+                dy = dy / norm * intensity * Math.random();
+
+                int neighbourColor = getFloatingColor(i + dx, j + dy, tab, w, h);
+                int oldColor = tab[i * w + j];
+
+                double colorRatio = 0.33;
+
+                int blueNeighbour = neighbourColor & 0x000000FF;
+                int greenNeighbour = (neighbourColor & 0x0000FF00) >> 8;
+                int redNeighbour = (neighbourColor & 0x00FF0000) >> 16;
+
+                int blueOld = neighbourColor & 0x000000FF;
+                int greenOld = (neighbourColor & 0x0000FF00) >> 8;
+                int redOld = (neighbourColor & 0x00FF0000) >> 16;
+
+                int red = (int) (redOld * colorRatio + redNeighbour * (1 - colorRatio));
+                int green = (int) (greenOld * colorRatio + greenNeighbour * (1 - colorRatio));
+                int blue = (int) (blueOld * colorRatio + blueNeighbour * (1 - colorRatio));
+
+                newTab[i * w + j] = 0xFF000000 | (red << 16) | (green << 8) | blue;
+            }
+        }
+        img.setPixels(newTab, 0, 0, w, h);
+    }
+
+    /**
+     * Radial blur, it's a classic blur but it uses the polar coordinates to have a radial effect.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param intensity
+     * How far we go (radius-wise) to find the points of same arguments and melt them.
+     *
+     * @see Algorithms#getFloatingColor
+     *
+     * @since 4.0
+     */
+    public static void radialBlur (Image img, int intensity) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+        int[] newTab = new int [w * h];
+
+        double midHeight = h / 2.0;
+        double midWidth = w / 2.0;
+
+        double intensityRatio = intensity / 1000.0;
+
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double x = i - midHeight;
+                double y = j - midWidth;
+
+                double rho = Math.sqrt(x*x+y*y);
+                double theta = Math.atan2(y, x);
+
+                double x2 = rho * (1 - intensityRatio) * Math.cos(theta);
+                double y2 = rho * (1 - intensityRatio) * Math.sin(theta);
+
+                double x3 = rho * (1 + intensityRatio) * Math.cos(theta);
+                double y3 = rho * (1 + intensityRatio) * Math.sin(theta);
+
+                x3 = x3 < -midHeight ? -midHeight : (x3 > midHeight-1 ? midHeight-1 : x3);
+                y3 = y3 < -midWidth ? -midWidth : (y3 > midWidth-1? midWidth-1 : y3);
+
+                int color1 = getFloatingColor(x + midHeight, y  + midWidth, tab, w, h);
+                int color2 = getFloatingColor(x2 + midHeight, y2  + midWidth, tab, w, h);
+                int color3 = getFloatingColor(x3 + midHeight, y3  + midWidth, tab, w, h);
+
+                int blue1 = color1 & 0x000000FF;
+                int green1 = (color1 & 0x0000FF00) >> 8;
+                int red1 = (color1 & 0x00FF0000) >> 16;
+
+                int blue2 = color2 & 0x000000FF;
+                int green2 = (color2 & 0x0000FF00) >> 8;
+                int red2 = (color2 & 0x00FF0000) >> 16;
+
+                int blue3 = color3 & 0x000000FF;
+                int green3 = (color3 & 0x0000FF00) >> 8;
+                int red3 = (color3 & 0x00FF0000) >> 16;
+
+                int newRed = (int) (0.33 * red1 + 0.33 * red2 + 0.33 * red3);
+                int newGreen = (int) (0.33 * green1 + 0.33 * green2 + 0.33 * green3);
+                int newBlue = (int) (0.33 * blue1 + 0.33 * blue2 + 0.33 * blue3);
+
+
+                newTab[i * w + j] = 0xFF000000 | (newRed << 16) | (newGreen << 8) | newBlue;
+            }
+        }
+        img.setPixels(newTab, 0, 0, w, h);
+    }
+
+    /**
+     * Circular blur, it's a classic blur but it uses the polar coordinates to have a circular effect.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @param intensity
+     * How far we go (argument-wise) to find the points of same radius and melt them.
+     *
+     * @see Algorithms#getFloatingColor
+     *
+     * @since 4.0
+     */
+    public static void circularBlur (Image img, int intensity) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int[] tab = img.getPixels(0, 0, w, h);
+        int[] newTab = new int [w * h];
+
+        double midHeight = h / 2.0;
+        double midWidth = w / 2.0;
+
+        double intensityRatio = intensity / 1000.0;
+
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                double x = i - midHeight;
+                double y = j - midWidth;
+
+                double rho = Math.sqrt(x*x+y*y);
+                double theta = Math.atan2(y, x);
+
+                double x2 = rho * Math.cos(theta + intensityRatio);
+                double y2 = rho * Math.sin(theta + intensityRatio);
+
+                double x3 = rho * Math.cos(theta - intensityRatio);
+                double y3 = rho * Math.sin(theta - intensityRatio);
+
+                x3 = x3 < -midHeight ? -midHeight : (x3 > midHeight-1 ? midHeight-1 : x3);
+                y3 = y3 < -midWidth ? -midWidth : (y3 > midWidth-1? midWidth-1 : y3);
+
+                int color1 = getFloatingColor(x + midHeight, y  + midWidth, tab, w, h);
+                int color2 = getFloatingColor(x2 + midHeight, y2  + midWidth, tab, w, h);
+                int color3 = getFloatingColor(x3 + midHeight, y3  + midWidth, tab, w, h);
+
+                int blue1 = color1 & 0x000000FF;
+                int green1 = (color1 & 0x0000FF00) >> 8;
+                int red1 = (color1 & 0x00FF0000) >> 16;
+
+                int blue2 = color2 & 0x000000FF;
+                int green2 = (color2 & 0x0000FF00) >> 8;
+                int red2 = (color2 & 0x00FF0000) >> 16;
+
+                int blue3 = color3 & 0x000000FF;
+                int green3 = (color3 & 0x0000FF00) >> 8;
+                int red3 = (color3 & 0x00FF0000) >> 16;
+
+                int newRed = (int) (0.33 * red1 + 0.33 * red2 + 0.33 * red3);
+                int newGreen = (int) (0.33 * green1 + 0.33 * green2 + 0.33 * green3);
+                int newBlue = (int) (0.33 * blue1 + 0.33 * blue2 + 0.33 * blue3);
+
+
+                newTab[i * w + j] = 0xFF000000 | (newRed << 16) | (newGreen << 8) | newBlue;
+            }
+        }
+        img.setPixels(newTab, 0, 0, w, h);
+    }
 
 }

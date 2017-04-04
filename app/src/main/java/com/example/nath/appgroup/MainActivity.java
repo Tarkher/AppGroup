@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.melenchon);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];
@@ -130,6 +130,34 @@ public class MainActivity extends AppCompatActivity {
         seekBarLabyRatio.setOnSeekBarChangeListener(
                 new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_LABYRINTH_RATIO));
 
+        SeekBar seekBarFlashlightIntensity = (SeekBar)findViewById(R.id.seekBarFlashlightIntensity);
+        seekBarFlashlightIntensity.setMax(200);
+        seekBarFlashlightIntensity.setProgress(100);
+        seekBarFlashlightIntensity.setVisibility(View.INVISIBLE);
+        seekBarFlashlightIntensity.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_FLASHLIGHT_INTENSITY));
+
+        SeekBar seekBarFlashlightRadius = (SeekBar)findViewById(R.id.seekBarFlashlightRadius);
+        seekBarFlashlightRadius.setMax(100);
+        seekBarFlashlightRadius.setProgress(80);
+        seekBarFlashlightRadius.setVisibility(View.INVISIBLE);
+        seekBarFlashlightRadius.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_FLASHLIGHT_RADIUS));
+
+        SeekBar seekBarRadialBlur = (SeekBar)findViewById(R.id.seekBarRadialBlur);
+        seekBarRadialBlur.setMax(180);
+        seekBarRadialBlur.setProgress(20);
+        seekBarRadialBlur.setVisibility(View.INVISIBLE);
+        seekBarRadialBlur.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_RADIAL_BLUR));
+
+        SeekBar seekBarCircularBlur = (SeekBar)findViewById(R.id.seekBarCircularBlur);
+        seekBarCircularBlur.setMax(180);
+        seekBarCircularBlur.setProgress(20);
+        seekBarCircularBlur.setVisibility(View.INVISIBLE);
+        seekBarCircularBlur.setOnSeekBarChangeListener(
+                new SeekBarListener(this, customImageView, SeekBarListener.ALGORITHM_CIRCULAR_BLUR));
+
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 2);
@@ -174,6 +202,14 @@ public class MainActivity extends AppCompatActivity {
         seekBarLabyRatio.setVisibility(View.INVISIBLE);
         SeekBar seekBarColorFilter = (SeekBar)findViewById(R.id.seekBarColorFilter);
         seekBarColorFilter.setVisibility(View.INVISIBLE);
+        SeekBar seekBarFlashlightIntensity = (SeekBar)findViewById(R.id.seekBarFlashlightIntensity);
+        seekBarFlashlightIntensity.setVisibility(View.INVISIBLE);
+        SeekBar seekBarFlashlightRadius = (SeekBar)findViewById(R.id.seekBarFlashlightRadius);
+        seekBarFlashlightRadius.setVisibility(View.INVISIBLE);
+        SeekBar seekBarRadialBlur = (SeekBar) findViewById(R.id.seekBarRadialBlur);
+        seekBarRadialBlur.setVisibility(View.INVISIBLE);
+        SeekBar seekBarCircularBlur = (SeekBar) findViewById(R.id.seekBarCircularBlur);
+        seekBarCircularBlur.setVisibility(View.INVISIBLE);
 
         switch (item.getItemId()){
             case R.id.camera:
@@ -245,7 +281,28 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.moyenneur:
-                Algorithms.meanFilter(imageToProcess, 3);
+                //Algorithms.meanFilter(imageToProcess, 3);
+                Algorithms.radialBlur(imageToProcess, 30);
+                break;
+
+            case R.id.circularBlur:
+                customImageView.saveImageTemporary();
+                seekBarCircularBlur.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.radialBlur:
+                customImageView.saveImageTemporary();
+                seekBarRadialBlur.setVisibility(View.VISIBLE);
+                break;
+
+            case R.id.radialExplosion:
+                Algorithms.radialExplosion(imageToProcess);
+                break;
+
+            case R.id.flashlight:
+                customImageView.saveImageTemporary();
+                seekBarFlashlightIntensity.setVisibility(View.VISIBLE);
+                seekBarFlashlightRadius.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.relief:

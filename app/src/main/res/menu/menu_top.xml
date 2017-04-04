@@ -69,6 +69,22 @@
         android:title="relief"
         app:showAsAction="never" />
     <item
+        android:id="@+id/flashlight"
+        android:title="flashlight"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/radialExplosion"
+        android:title="radialExplosion"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/radialBlur"
+        android:title="radialBlur"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/circularBlur"
+        android:title="circularBlur"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/gaussien"
         android:title="gaussien"
         app:showAsAction="never" />

@@ -170,4 +170,48 @@
         android:layout_above="@+id/seekBarLabyMax"
         android:layout_alignParentStart="true" />
 
+    <SeekBar
+        android:id="@+id/seekBarFlashlightIntensity"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarContrastEqualization"
+        android:layout_alignParentStart="true"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible" />
+
+    <SeekBar
+        android:id="@+id/seekBarFlashlightRadius"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_above="@+id/seekBarFlashlightIntensity"
+        android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarRadialBlur"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarCircularBlur"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
