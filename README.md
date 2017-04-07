@@ -4,7 +4,11 @@
 
 Textures avec du relief
 
-Seekbars manquantes avec valeur et champ descriptif
+Fix CANNY (tester si les seekbars sont inversées et être sur dde l'intervalle de valeurs)
+
+Tester en refaisant projet sous API 22
+
+Bien expliquer les algos, comment on calcule sur l'image, si gestion des bords comment, mettre image avant après.
 
 # CAHIER DES CHARGES
 
