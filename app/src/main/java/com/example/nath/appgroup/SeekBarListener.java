@@ -2,6 +2,7 @@ package com.example.nath.appgroup;
 
 import android.app.Activity;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
 
@@ -37,60 +38,70 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        TextView textViewMiddle = (TextView)activity.findViewById(R.id.textViewMiddle);
+        TextView textViewBottom = (TextView)activity.findViewById(R.id.textViewBottom);
+
         switch (algorithm) {
             case ALGORITHM_CONTRAST_EQUALIZATION:
-
+                textViewBottom.setText("Contrast : " + progress);
                 break;
             case ALGORITHM_COLORIZE:
-
+                textViewBottom.setText("Hue : " + progress);
                 break;
             case ALGORITHM_LUMINOSITY:
-
+                textViewBottom.setText("Intensity : " + progress);
                 break;
             case ALGORITHM_FLASH:
-
+                textViewBottom.setText("Intensity : " + progress);
                 break;
             case ALGORITHM_HOUGH_THETA:
-
+                textViewBottom.setText("Theta : " + progress);
                 break;
             case ALGORITHM_HOUGH_THRESHOLD:
-
+                textViewMiddle.setText("Threshold : " + progress);
                 break;
             case ALGORITHM_SPHERES:
-
+                textViewBottom.setText("Radius : " + progress);
                 break;
             case ALGORITHM_MOSAIC:
-
+                textViewBottom.setText("Seeds : " + progress);
                 break;
             case ALGORITHM_CANNY_HIGH:
-
+                textViewMiddle.setText("High Threshold : " + progress);
                 break;
             case ALGORITHM_CANNY_LOW:
+                textViewBottom.setText("Low Threshold : " + progress);
 
                 break;
             case ALGORITHM_PAINTING:
+                textViewBottom.setText("Iteration : " + progress);
 
                 break;
             case ALGORITHM_LABYRINTH_MAX:
-
+                textViewBottom.setText("Step : " + progress);
                 break;
             case ALGORITHM_LABYRINTH_RATIO:
+                textViewMiddle.setText("Intensity : " + progress);
 
                 break;
             case ALGORITHM_COLOR_FILTER:
+                textViewBottom.setText("Hue : " + progress);
 
                 break;
             case ALGORITHM_FLASHLIGHT_INTENSITY:
+                textViewBottom.setText("Intensity : " + progress);
 
                 break;
             case ALGORITHM_FLASHLIGHT_RADIUS:
+                textViewMiddle.setText("Radius : " + progress);
 
                 break;
             case ALGORITHM_RADIAL_BLUR:
+                textViewBottom.setText("Intensity : " + progress);
 
                 break;
             case ALGORITHM_CIRCULAR_BLUR:
-
+                textViewBottom.setText("Intensity : " + progress);
                 break;
         }
     }
