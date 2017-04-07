@@ -33,6 +33,10 @@
         android:title="contrastEqualization"
         app:showAsAction="never" />
     <item
+        android:id="@+id/contrastConvo"
+        android:title="contrastConvolution"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/colorize"
         android:title="colorize"
         app:showAsAction="never" />

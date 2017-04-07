@@ -1281,7 +1281,22 @@ public class Algorithms {
      * @since 4.0
      */
     public static void relief (Image img) {
-        float matrixGrain[][] = {{-2,-1,0}, {-1,1,1}, {0,1,2}};
+        float matrixGrain[][] = {{-2,-1,0}, {-1,1,1}, {0,-1,-2}};
+        Algorithms.convolutionColor(img, matrixGrain);
+    }
+
+    /**
+     * Calculates the convolution with a 3x3 mask to give more relief to the image.
+     *
+     * @param img
+     * The image we work on.
+     *
+     * @see Algorithms#convolutionColor
+     *
+     * @since 4.0
+     */
+    public static void contrast (Image img) {
+        float matrixGrain[][] = {{-1,1,-1}, {1,2,1}, {-1,1,-1}};
         Algorithms.convolutionColor(img, matrixGrain);
     }
 

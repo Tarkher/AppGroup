@@ -49,28 +49,47 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
                 textViewBottom.setText("Hue : " + progress);
                 break;
             case ALGORITHM_LUMINOSITY:
-                textViewBottom.setText("Intensity : " + progress);
+                int value = progress - 255;
+                textViewBottom.setText("Intensity : " + value);
                 break;
             case ALGORITHM_FLASH:
-                textViewBottom.setText("Intensity : " + progress);
+                double val;
+                if (progress == 0)
+                    val = 0.0;
+                else if (progress < 10)
+                    val = 1.0 - 1.0/progress;
+                else if (progress == 10)
+                    val = 1.0;
+                else
+                    val = 1.0 + (progress - 10) * 0.05;
+                textViewBottom.setText("Intensity : " + val);
                 break;
             case ALGORITHM_HOUGH_THETA:
-                textViewBottom.setText("Theta : " + progress);
+                int value1 = progress + 1;
+                textViewBottom.setText("Theta : " + value1);
                 break;
             case ALGORITHM_HOUGH_THRESHOLD:
-                textViewMiddle.setText("Threshold : " + progress);
+                double value2 = (progress + 1.0) * 1.0;
+                textViewMiddle.setText("Threshold : " + value2);
                 break;
             case ALGORITHM_SPHERES:
+                int value3 = (progress + 2) * 2 + 1;
                 textViewBottom.setText("Radius : " + progress);
                 break;
             case ALGORITHM_MOSAIC:
                 textViewBottom.setText("Seeds : " + progress);
                 break;
             case ALGORITHM_CANNY_HIGH:
-                textViewMiddle.setText("High Threshold : " + progress);
+                double value4 = 0.0;
+                if (progress != 0)
+                    value4 = 1 / (progress * 1.0);
+                textViewMiddle.setText("High Threshold : " + value4);
                 break;
             case ALGORITHM_CANNY_LOW:
-                textViewBottom.setText("Low Threshold : " + progress);
+                double value5 = 0.0;
+                if (progress != 0)
+                    value5 = 1 / (progress * 1.0);
+                textViewBottom.setText("Low Threshold : " + value5);
 
                 break;
             case ALGORITHM_PAINTING:
@@ -78,10 +97,12 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
                 break;
             case ALGORITHM_LABYRINTH_MAX:
-                textViewBottom.setText("Step : " + progress);
+                float value6 = 1.0f * (progress + 1);
+                textViewBottom.setText("Step : " + value6);
                 break;
             case ALGORITHM_LABYRINTH_RATIO:
-                textViewMiddle.setText("Intensity : " + progress);
+                float value7 = 1.0f * (progress + 1);
+                textViewMiddle.setText("Intensity : " + value7);
 
                 break;
             case ALGORITHM_COLOR_FILTER:
