@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
+
 import com.example.nath.appgroup.AlgorithmThread.AlgorithmThread;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
         CustomImageView customImageView = (CustomImageView)findViewById(R.id.customImageView);
         customImageView.setImage(img, true);
         customImageView.setOnTouchListener(new CustomOnTouchListener());
+
+        TextView textViewTop = (TextView)findViewById(R.id.textViewTop);
+        textViewTop.setText("");
+        TextView textViewMiddle = (TextView)findViewById(R.id.textViewMiddle);
+        textViewMiddle.setText("");
+        TextView textViewBottom = (TextView)findViewById(R.id.textViewBottom);
+        textViewBottom.setText("");
 
         SeekBar seekBarContrastEqualization = (SeekBar)findViewById(R.id.seekBarContrastEqualization);
         seekBarContrastEqualization.setMax(255);

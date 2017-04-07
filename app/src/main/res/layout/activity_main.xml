@@ -14,7 +14,8 @@
         android:id="@+id/customImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <SeekBar
         style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -23,9 +24,9 @@
         android:max="255"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/seekBarColorFilter" />
+        android:id="@+id/seekBarColorFilter"
+        android:layout_below="seekBarRadialBlur"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -34,9 +35,9 @@
         android:max="255"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/seekBarContrastEqualization" />
+        android:id="@+id/seekBarContrastEqualization"
+        android:layout_below="seekBarHoughTheta"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarColorize"
@@ -46,8 +47,9 @@
         android:max="255"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarCannyLow"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarLuminosity"
@@ -57,8 +59,9 @@
         android:max="255"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarSpheres"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarFlash"
@@ -68,41 +71,21 @@
         android:max="255"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
-
-    <SeekBar
-        android:id="@+id/seekBarHoughTheta"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBarContrastEqualization"
         android:layout_alignParentStart="true"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible" />
-
-    <SeekBar
-        android:id="@+id/seekBarHoughThreshold"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible"
-        android:layout_above="@+id/seekBarHoughTheta"
-        android:layout_alignParentStart="true" />
+        android:layout_below="seekBarFlashlightRadius"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarSpheres"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:max="100"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="seekBarContrastEqualization"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarMosaic"
@@ -112,85 +95,19 @@
         android:max="100"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
-
-    <SeekBar
-        android:id="@+id/seekBarCannyHigh"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBarContrastEqualization"
-        android:layout_alignParentStart="true"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible" />
-
-    <SeekBar
-        android:id="@+id/seekBarCannyLow"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible"
-        android:layout_above="@+id/seekBarCannyHigh"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentBottom="true" />
 
     <SeekBar
         android:id="@+id/seekBarPainting"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:max="100"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
-
-    <SeekBar
-        android:id="@+id/seekBarLabyMax"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBarContrastEqualization"
-        android:layout_alignParentStart="true"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible" />
-
-    <SeekBar
-        android:id="@+id/seekBarLabyRatio"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible"
-        android:layout_above="@+id/seekBarLabyMax"
-        android:layout_alignParentStart="true" />
-
-    <SeekBar
-        android:id="@+id/seekBarFlashlightIntensity"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBarContrastEqualization"
-        android:layout_alignParentStart="true"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible" />
-
-    <SeekBar
-        android:id="@+id/seekBarFlashlightRadius"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"
-        android:progress="1"
-        android:visibility="invisible"
-        android:layout_above="@+id/seekBarFlashlightIntensity"
-        android:layout_alignParentStart="true" />
+        android:layout_below="seekBarFlash"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarRadialBlur"
@@ -200,8 +117,9 @@
         android:max="100"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarLabyRatio"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:id="@+id/seekBarCircularBlur"
@@ -211,7 +129,128 @@
         android:max="100"
         android:progress="1"
         android:visibility="invisible"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarMosaic"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarHoughTheta"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarCannyHigh"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarHoughThreshold"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarCircularBlur"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarCannyLow"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarHoughThreshold"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarLabyRatio"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarPainting"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarFlashlightRadius"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarColorize"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarCannyHigh"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true"
+        android:layout_below="seekBarFlashlightIntensity"
+        android:layout_alignParentLeft="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarLabyMax"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:id="@+id/seekBarFlashlightIntensity"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:progress="1"
+        android:visibility="invisible"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/textViewTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textViewMiddle"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="15dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewMiddle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textViewBottom"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="16dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarMosaic"
+        android:layout_alignParentStart="true"
+        android:text="TextView" />
 
 </RelativeLayout>
