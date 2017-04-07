@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
         customImageView.setImage(img, true);
         customImageView.setOnTouchListener(new CustomOnTouchListener());
 
-        TextView textViewTop = (TextView)findViewById(R.id.textViewTop);
-        textViewTop.setText("");
         TextView textViewMiddle = (TextView)findViewById(R.id.textViewMiddle);
         textViewMiddle.setText("");
         TextView textViewBottom = (TextView)findViewById(R.id.textViewBottom);
@@ -191,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
         CustomImageView customImageView = (CustomImageView)findViewById(R.id.customImageView);
         Image imageToProcess = customImageView.getImage();
 
+        TextView textViewMiddle = (TextView)findViewById(R.id.textViewMiddle);
+        textViewMiddle.setText("");
+        TextView textViewBottom = (TextView)findViewById(R.id.textViewBottom);
+        textViewBottom.setText("");
+
         SeekBar seekBarContrastEqualization = (SeekBar)findViewById(R.id.seekBarContrastEqualization);
         seekBarContrastEqualization.setVisibility(View.INVISIBLE);
         SeekBar seekBarColorize = (SeekBar)findViewById(R.id.seekBarColorize);
@@ -263,26 +266,31 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.contrastEqualization:
+                textViewBottom.setText("Contrast");
                 customImageView.saveImageTemporary();
                 seekBarContrastEqualization.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.colorize:
+                textViewBottom.setText("Hue");
                 customImageView.saveImageTemporary();
                 seekBarColorize.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.colorFilter:
+                textViewBottom.setText("Hue");
                 customImageView.saveImageTemporary();
                 seekBarColorFilter.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.luminosity:
+                textViewBottom.setText("Intensity");
                 customImageView.saveImageTemporary();
                 seekBarLuminosity.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.flash:
+                textViewBottom.setText("Intensity");
                 customImageView.saveImageTemporary();
                 seekBarFlash.setVisibility(View.VISIBLE);
                 break;
@@ -292,22 +300,25 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.canny:
+                textViewBottom.setText("Low Threshold");
+                textViewMiddle.setText("High Threshold");
                 customImageView.saveImageTemporary();
                 seekBarCannyHigh.setVisibility(View.VISIBLE);
                 seekBarCannyLow.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.moyenneur:
-                //Algorithms.meanFilter(imageToProcess, 3);
-                Algorithms.radialBlur(imageToProcess, 30);
+                Algorithms.meanFilter(imageToProcess, 3);
                 break;
 
             case R.id.circularBlur:
+                textViewBottom.setText("Intensity");
                 customImageView.saveImageTemporary();
                 seekBarCircularBlur.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.radialBlur:
+                textViewBottom.setText("Intensity");
                 customImageView.saveImageTemporary();
                 seekBarRadialBlur.setVisibility(View.VISIBLE);
                 break;
@@ -317,6 +328,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.flashlight:
+                textViewBottom.setText("Intensity");
+                textViewMiddle.setText("Radius");
                 customImageView.saveImageTemporary();
                 seekBarFlashlightIntensity.setVisibility(View.VISIBLE);
                 seekBarFlashlightRadius.setVisibility(View.VISIBLE);
@@ -327,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.painting:
+                textViewBottom.setText("Iteration");
                 customImageView.saveImageTemporary();
                 seekBarPainting.setVisibility(View.VISIBLE);
                 break;
@@ -336,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.labyrinthe:
+                textViewBottom.setText("Step");
+                textViewMiddle.setText("Intensity");
                 customImageView.saveImageTemporary();
                 seekBarLabyMax.setVisibility(View.VISIBLE);
                 seekBarLabyRatio.setVisibility(View.VISIBLE);
@@ -369,6 +385,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.mosaic:
+                textViewBottom.setText("Seeds");
                 customImageView.saveImageTemporary();
                 seekBarMosaic.setVisibility(View.VISIBLE);
                 break;
@@ -398,12 +415,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.houghtransform:
+                textViewBottom.setText("Theta");
+                textViewMiddle.setText("Threshold");
                 customImageView.saveImageTemporary();
                 seekBarHoughTheta.setVisibility(View.VISIBLE);
                 seekBarHoughThreshold.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.spheres:
+                textViewBottom.setText("Radius");
                 customImageView.saveImageTemporary();
                 seekBarSpheres.setVisibility(View.VISIBLE);
                 break;
@@ -425,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //Code from coderzheaven.com
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == SAVE_GALLERY) {

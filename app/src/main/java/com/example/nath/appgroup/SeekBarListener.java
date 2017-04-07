@@ -37,7 +37,62 @@ public class SeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        switch (algorithm) {
+            case ALGORITHM_CONTRAST_EQUALIZATION:
 
+                break;
+            case ALGORITHM_COLORIZE:
+
+                break;
+            case ALGORITHM_LUMINOSITY:
+
+                break;
+            case ALGORITHM_FLASH:
+
+                break;
+            case ALGORITHM_HOUGH_THETA:
+
+                break;
+            case ALGORITHM_HOUGH_THRESHOLD:
+
+                break;
+            case ALGORITHM_SPHERES:
+
+                break;
+            case ALGORITHM_MOSAIC:
+
+                break;
+            case ALGORITHM_CANNY_HIGH:
+
+                break;
+            case ALGORITHM_CANNY_LOW:
+
+                break;
+            case ALGORITHM_PAINTING:
+
+                break;
+            case ALGORITHM_LABYRINTH_MAX:
+
+                break;
+            case ALGORITHM_LABYRINTH_RATIO:
+
+                break;
+            case ALGORITHM_COLOR_FILTER:
+
+                break;
+            case ALGORITHM_FLASHLIGHT_INTENSITY:
+
+                break;
+            case ALGORITHM_FLASHLIGHT_RADIUS:
+
+                break;
+            case ALGORITHM_RADIAL_BLUR:
+
+                break;
+            case ALGORITHM_CIRCULAR_BLUR:
+
+                break;
+        }
     }
 
     @Override
