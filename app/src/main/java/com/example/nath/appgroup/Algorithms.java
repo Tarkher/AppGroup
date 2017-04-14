@@ -1940,9 +1940,9 @@ public class Algorithms {
                 int greenNeighbour = (neighbourColor & 0x0000FF00) >> 8;
                 int redNeighbour = (neighbourColor & 0x00FF0000) >> 16;
 
-                int blueOld = neighbourColor & 0x000000FF;
-                int greenOld = (neighbourColor & 0x0000FF00) >> 8;
-                int redOld = (neighbourColor & 0x00FF0000) >> 16;
+                int blueOld = oldColor & 0x000000FF;
+                int greenOld = (oldColor & 0x0000FF00) >> 8;
+                int redOld = (oldColor & 0x00FF0000) >> 16;
 
                 int red = (int) (redOld * colorRatio + redNeighbour * (1 - colorRatio));
                 int green = (int) (greenOld * colorRatio + greenNeighbour * (1 - colorRatio));
