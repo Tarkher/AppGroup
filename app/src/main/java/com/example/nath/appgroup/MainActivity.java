@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lenna);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.la);
         int bitmapHeight = bitmap.getHeight();
         int bitmapWidth = bitmap.getWidth();
         int[] pixels = new int[bitmapHeight * bitmapWidth];

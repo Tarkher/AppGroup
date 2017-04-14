@@ -6,41 +6,47 @@ import com.example.nath.appgroup.Algorithms;
 import com.example.nath.appgroup.Image;
 
 /**
- * <b>AlgorithmThreadColorFilter is a thread which executes colorFilter algorithm</b>
+ * <b>AlgorithmThreadColorFilter is a thread which executes the colorFilter algorithm</b>
  * <p>
- * This class is used by AlgorithmThread only. It represent a thread in the pool.
+ * This class is used by AlgorithmThread only. It represents a thread in the pool.
  * </p>
  *
  * @author Maxime Romeas Nathan Castets Aziz Fouche
- * @version 3.0
+ * @version 1.0
  */
 class AlgorithmThreadColorFilter extends Thread {
     /**
      * Image to modify
      */
     private Image imgPointer;
+
     /**
-     * Image w're looking for value
+     * Image we are looking at for value
      */
     private Image img;
+
     /**
-     * Top left corner of working area
+     * Top left corner's x coordinate of the working area
      */
     private int left;
+
     /**
-     * Top left corner of working area
+     * Top left corner's y coordinate of the working area
      */
     private int top;
+
     /**
-     * Right bottom corner of working area
+     * Bottom right corner's x coordinate of the working area
      */
     private int right;
+
     /**
-     * Right bottom corner of working area
+     * Bottom right corner's y coordinate of the working area
      */
     private int bottom;
+
     /**
-     * Hue value used by color filter
+     * Hue value used by the color filter
      */
     private int hue;
 
@@ -54,19 +60,19 @@ class AlgorithmThreadColorFilter extends Thread {
      * The image to modify
      *
      * @param left
-     * top left corner of working area
+     * top left corner of the working area
      *
      * @param top
-     * top left corner of working area
+     * top left corner of the working area
      *
      * @param right
-     * right bottom corner of working area
+     * right bottom corner of the working area
      *
      * @param bottom
-     * right bottom corner of working area
+     * right bottom corner of the working area
      *
      * @param hue
-     * The hue value used in color filter
+     * The hue value used in the color filter
      *
      * @since 1.0
      */

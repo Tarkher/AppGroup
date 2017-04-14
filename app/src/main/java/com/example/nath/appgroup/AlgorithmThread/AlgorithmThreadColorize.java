@@ -3,9 +3,9 @@ package com.example.nath.appgroup.AlgorithmThread;
 import com.example.nath.appgroup.Image;
 
 /**
- * <b>AlgorithmThreadColorize is a thread which executes colorize algorithm</b>
+ * <b>AlgorithmThreadColorize is a thread which executes the colorize algorithm</b>
  * <p>
- * This class is used by AlgorithmThread only. It represent a thread in the pool.
+ * This class is used by AlgorithmThread only. It represents a thread in the pool.
  * </p>
  *
  * @author Maxime Romeas Nathan Castets Aziz Fouche
@@ -17,7 +17,7 @@ class AlgorithmThreadColorize extends Thread {
      */
     private Image imgPointer;
     /**
-     * Image w're looking for value
+     * Image we're looking at for value
      */
     private Image img;
     /**

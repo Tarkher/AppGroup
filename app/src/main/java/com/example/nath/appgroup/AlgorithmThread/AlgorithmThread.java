@@ -5,12 +5,12 @@ import com.example.nath.appgroup.Image;
 /**
  * <b>AlgorithmThread manages the thread pool that works on the image</b>
  * <p>
- * This class is not designed to be manipulated by user. The only usage is to create an object with
- * the right input and call the method run.
+ * This class is not designed to be manipulated by the user. Its only usage is to create an object with
+ * the right format and call the method run on it.
  * </p>
  *
  * @author Maxime Romeas Nathan Castets Aziz Fouche
- * @version 3.0
+ * @version 1.0
  */
 
 public class AlgorithmThread {
@@ -26,25 +26,29 @@ public class AlgorithmThread {
      * Image to modify
      */
     private Image imgPointer;
+
     /**
-     * Image w're looking for value
+     * Image we are looking at for value
      */
     private Image img;
+
     /**
-     * Contains all threads
+     * Contains all the threads
      */
+
     private Thread[] threadPool;
     /**
      * Algorithm identifier
      */
+
     private int algorithm;
     /**
      * Inputs specifis to algorithm
      */
-    private Object[] input;
 
+    private Object[] input;
     /**
-     * Constructor which creates object with algorithm on img
+     * Constructor which creates an object with the right algorithm to be called on the image
      *
      * @param img
      * The image we work on
@@ -64,7 +68,7 @@ public class AlgorithmThread {
     }
 
     /**
-     * Start all thread that will execute algorithm on different area of the image
+     * Start all the threads that will execute the algorithm on different areas of the image
      *
      * @since 1.0
      */
