@@ -16,113 +16,103 @@
         android:icon="@android:drawable/ic_menu_save"
         android:title=""
         app:showAsAction="always" />
-    <item
-        android:id="@+id/toGrayThread"
-        android:title="toGrayThread"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/toGray"
-        android:title="toGray"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/dynamicExtensionColor"
-        android:title="dynamicExtensionColor"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/contrastEqualization"
-        android:title="contrastEqualization"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/contrastConvo"
-        android:title="contrastConvolution"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/colorize"
-        android:title="colorize"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/luminosity"
-        android:title="luminosity"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/colorFilter"
-        android:title="colorFilter"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/flash"
-        android:title="flash"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/mosaic"
-        android:title="mosaic"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sobel"
-        android:title="sobel"
-        app:showAsAction="never" />
+
+
     <item
         android:id="@+id/canny"
         android:title="canny"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/moyenneur"
-        android:title="moyenneur"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/relief"
-        android:title="relief"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/flashlight"
-        android:title="flashlight"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/radialExplosion"
-        android:title="radialExplosion"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/radialBlur"
-        android:title="radialBlur"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/circularBlur"
-        android:title="circularBlur"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/gaussien"
-        android:title="gaussien"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/laplacien"
-        android:title="laplacien"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/labyrinthe"
-        android:title="labyrinthe"
         app:showAsAction="never" />
     <item
         android:id="@+id/cartoonize"
         android:title="cartoonize"
         app:showAsAction="never" />
     <item
-        android:id="@+id/painting"
-        android:title="painting"
+        android:id="@+id/circularBlur"
+        android:title="circularBlur"
         app:showAsAction="never" />
     <item
-        android:id="@+id/texture"
-        android:title="texture"
+        android:id="@+id/colorFilter"
+        android:title="colorFilter"
         app:showAsAction="never" />
     <item
-        android:id="@+id/wallTag"
-        android:title="wall tag"
+        android:id="@+id/colorize"
+        android:title="colorize"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contrastConvo"
+        android:title="contrastConvolution"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contrastEqualization"
+        android:title="contrastEqualization"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/duplicate"
+        android:title="duplicate"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/dynamicExtensionColor"
+        android:title="dynamicExtensionColor"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/flash"
+        android:title="flash"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/flashlight"
+        android:title="flashlight"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/gaussien"
+        android:title="gaussien"
         app:showAsAction="never" />
     <item
         android:id="@+id/houghtransform"
         android:title="Hough transform"
         app:showAsAction="never" />
     <item
-        android:id="@+id/spheres"
-        android:title="spheres"
+        android:id="@+id/laplacien"
+        android:title="laplacien"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mosaic"
+        android:title="mosaic"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/moyenneur"
+        android:title="moyenneur"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/labyrinthe"
+        android:title="labyrinthe"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/luminosity"
+        android:title="luminosity"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/painting"
+        android:title="painting"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/radialBlur"
+        android:title="radialBlur"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/radialExplosion"
+        android:title="radialExplosion"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/relief"
+        android:title="relief"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/reset"
+        android:title="reset"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/resize"
+        android:title="resize"
         app:showAsAction="never" />
     <item
         android:id="@+id/rotation"
@@ -137,16 +127,27 @@
         android:title="sharpness2"
         app:showAsAction="never" />
     <item
-        android:id="@+id/duplicate"
-        android:title="duplicate"
+        android:id="@+id/sobel"
+        android:title="sobel"
         app:showAsAction="never" />
     <item
-        android:id="@+id/resize"
-        android:title="resize"
+        android:id="@+id/spheres"
+        android:title="spheres"
         app:showAsAction="never" />
     <item
-        android:id="@+id/reset"
-        android:title="reset"
+        android:id="@+id/texture"
+        android:title="texture"
         app:showAsAction="never" />
-
+    <item
+        android:id="@+id/toGray"
+        android:title="toGray"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/toGrayThread"
+        android:title="toGrayThread"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/wallTag"
+        android:title="wall tag"
+        app:showAsAction="never" />
 </menu>
