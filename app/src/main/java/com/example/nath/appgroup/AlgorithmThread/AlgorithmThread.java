@@ -2,6 +2,17 @@ package com.example.nath.appgroup.AlgorithmThread;
 
 import com.example.nath.appgroup.Image;
 
+/**
+ * <b>AlgorithmThread manages the thread pool that works on the image</b>
+ * <p>
+ * This class is not designed to be manipulated by user. The only usage is to create an object with
+ * the right input and call the method run.
+ * </p>
+ *
+ * @author Maxime Romeas Nathan Castets Aziz Fouche
+ * @version 3.0
+ */
+
 public class AlgorithmThread {
     public final static int IMG_FACTOR = 3;
     public final static int ALGORITHM_TO_GRAY = 10;
@@ -14,6 +25,19 @@ public class AlgorithmThread {
     private int algorithm;
     private Object[] input;
 
+    /**
+     * Constructor which creates object with algorithm on img
+     *
+     * @param img
+     * The image we work on
+     *
+     * @param algorithm
+     * The algorithm identifier, defined above.
+     *
+     * @param input
+     * Contains inputs that are specifics to each algorithm.
+     * @since 1.0
+     */
     public AlgorithmThread(Image img, int algorithm, Object[] input) {
         this.imgPointer = img;
         this.img = img.clone();
@@ -21,6 +45,11 @@ public class AlgorithmThread {
         this.input = input;
     }
 
+    /**
+     * Start all thread that will execute algorithm on different area of the image
+     *
+     * @since 1.0
+     */
     public void run() {
         int width = img.getWidth();
         int height = img.getHeight();

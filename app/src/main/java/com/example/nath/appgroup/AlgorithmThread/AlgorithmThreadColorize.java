@@ -2,7 +2,16 @@ package com.example.nath.appgroup.AlgorithmThread;
 
 import com.example.nath.appgroup.Image;
 
-public class AlgorithmThreadColorize extends Thread {
+/**
+ * <b>AlgorithmThreadColorize is a thread which executes colorize algorithm</b>
+ * <p>
+ * This class is used by AlgorithmThread only. It represent a thread in the pool.
+ * </p>
+ *
+ * @author Maxime Romeas Nathan Castets Aziz Fouche
+ * @version 3.0
+ */
+class AlgorithmThreadColorize extends Thread {
     private Image img;
     private Image imgPointer;
     private int left;
@@ -11,6 +20,33 @@ public class AlgorithmThreadColorize extends Thread {
     private int bottom;
     private int hue;
 
+
+    /**
+     * Instances object AlgorithmThreadColorFilter
+     *
+     * @param img
+     * The image we're looking for value
+     *
+     * @param imgPointer
+     * The image to modify
+     *
+     * @param left
+     * top left corner of working area
+     *
+     * @param top
+     * top left corner of working area
+     *
+     * @param right
+     * right bottom corner of working area
+     *
+     * @param bottom
+     * right bottom corner of working area
+     *
+     * @param hue
+     * The hue value used in color filter
+     *
+     * @since 1.0
+     */
     public AlgorithmThreadColorize(Image img, Image imgPointer, int left, int top, int right, int bottom, int hue) {
         this.img = img;
         this.imgPointer = imgPointer;
@@ -21,6 +57,9 @@ public class AlgorithmThreadColorize extends Thread {
         this.hue = hue;
     }
 
+    /**
+     * Start color filter on the working area
+     */
     public void run() {
         int w = right - left;
         int h = bottom - top;

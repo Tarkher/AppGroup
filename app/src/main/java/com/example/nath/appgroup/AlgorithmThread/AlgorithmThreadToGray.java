@@ -2,7 +2,16 @@ package com.example.nath.appgroup.AlgorithmThread;
 
 import com.example.nath.appgroup.Image;
 
-public class AlgorithmThreadToGray extends Thread {
+/**
+ * <b>AlgorithmThreadToGray is a thread which executes toGray algorithm</b>
+ * <p>
+ * This class is used by AlgorithmThread only. It represent a thread in the pool.
+ * </p>
+ *
+ * @author Maxime Romeas Nathan Castets Aziz Fouche
+ * @version 3.0
+ */
+class AlgorithmThreadToGray extends Thread {
     private Image img;
     private Image imgPointer;
     private int left;
@@ -10,6 +19,29 @@ public class AlgorithmThreadToGray extends Thread {
     private int right;
     private int bottom;
 
+    /**
+     * Instances object AlgorithmThreadColorFilter
+     *
+     * @param img
+     * The image we're looking for value
+     *
+     * @param imgPointer
+     * The image to modify
+     *
+     * @param left
+     * top left corner of working area
+     *
+     * @param top
+     * top left corner of working area
+     *
+     * @param right
+     * right bottom corner of working area
+     *
+     * @param bottom
+     * right bottom corner of working area
+     *
+     * @since 1.0
+     */
     public AlgorithmThreadToGray(Image img, Image imgPointer, int left, int top, int right, int bottom) {
         this.img = img;
         this.imgPointer = imgPointer;
@@ -19,6 +51,9 @@ public class AlgorithmThreadToGray extends Thread {
         this.bottom = bottom;
     }
 
+    /**
+     * Start color filter on the working area
+     */
     public void run() {
         int w = right - left;
         int h = bottom - top;
