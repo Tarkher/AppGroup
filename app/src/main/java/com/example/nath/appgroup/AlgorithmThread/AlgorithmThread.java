@@ -14,15 +14,33 @@ import com.example.nath.appgroup.Image;
  */
 
 public class AlgorithmThread {
+    /**
+     * The square root of the number of sub images
+     */
     public final static int IMG_FACTOR = 3;
     public final static int ALGORITHM_TO_GRAY = 10;
     public final static int ALGORITHM_COLOR_FILTER = 11;
     public final static int ALGORITHM_COLORIZE = 12;
 
+    /**
+     * Image to modify
+     */
     private Image imgPointer;
+    /**
+     * Image w're looking for value
+     */
     private Image img;
+    /**
+     * Contains all threads
+     */
     private Thread[] threadPool;
+    /**
+     * Algorithm identifier
+     */
     private int algorithm;
+    /**
+     * Inputs specifis to algorithm
+     */
     private Object[] input;
 
     /**

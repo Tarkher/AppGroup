@@ -12,12 +12,33 @@ import com.example.nath.appgroup.Image;
  * @version 3.0
  */
 class AlgorithmThreadColorize extends Thread {
-    private Image img;
+    /**
+     * Image to modify
+     */
     private Image imgPointer;
+    /**
+     * Image w're looking for value
+     */
+    private Image img;
+    /**
+     * Top left corner of working area
+     */
     private int left;
+    /**
+     * Top left corner of working area
+     */
     private int top;
+    /**
+     * Right bottom corner of working area
+     */
     private int right;
+    /**
+     * Right bottom corner of working area
+     */
     private int bottom;
+    /**
+     * Hue value used by colorize
+     */
     private int hue;
 
 
